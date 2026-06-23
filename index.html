@@ -3,343 +3,227 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FRS Tier 1 Opportunity Visualization — Jun 10–16 2026</title>
+<title>FRS Tier 1 Opportunity Visualization</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:system-ui,-apple-system,sans-serif;background:#f0efe9;color:#2c2c2a;font-size:13px;}
+body{font-family:system-ui,sans-serif;background:#f0efe9;color:#2c2c2a;font-size:13px;}
 .page{max-width:1400px;margin:0 auto;padding:20px;}
-.header{background:#2c2c2a;color:#fff;border-radius:10px;padding:18px 24px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-.header h1{font-size:18px;font-weight:600;letter-spacing:-.3px;}
-.header .meta{font-size:11px;color:#B4B2A9;margin-top:3px;}
-.header .formula{font-size:11px;color:#d3d1c7;background:rgba(255,255,255,0.08);border-radius:6px;padding:8px 14px;line-height:1.9;margin-top:10px;}
-.frs-hero{text-align:right;}
-.frs-hero .num{font-size:36px;font-weight:700;color:#5DCAA5;}
-.frs-hero .lbl{font-size:10px;color:#B4B2A9;}
-.frs-hero .trend{font-size:11px;color:#F0997B;margin-top:3px;}
-
+.topnav{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.navbtn{padding:7px 18px;font-size:12px;font-weight:500;border:0.5px solid #d3d1c7;border-radius:7px;cursor:pointer;background:#fff;color:#73726c;}
+.navbtn.active{background:#2c2c2a;color:#fff;border-color:#2c2c2a;}
+.section{display:none;}.section.visible{display:block;}
+.hdr{background:#2c2c2a;color:#fff;border-radius:10px;padding:18px 24px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.hdr h1{font-size:18px;font-weight:600;}
+.hdr .meta{font-size:11px;color:#B4B2A9;margin-top:3px;}
+.hdr .fml{font-size:11px;color:#d3d1c7;background:rgba(255,255,255,0.08);border-radius:6px;padding:8px 14px;line-height:1.9;margin-top:10px;}
+.hero{text-align:right;}.hero .num{font-size:36px;font-weight:700;color:#5DCAA5;}
+.hero .lbl{font-size:10px;color:#B4B2A9;}.hero .trend{font-size:11px;color:#F0997B;margin-top:3px;}
 .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:14px;}
 .kpi{background:#fff;border-radius:8px;padding:10px 14px;border:0.5px solid #e0dfd8;}
-.kpi-lbl{font-size:10px;color:#73726c;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;}
-.kpi-val{font-size:20px;font-weight:600;}
-
-/* ABC cards */
-.abc-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px;}
-.abc-card{border-radius:10px;padding:16px 18px;border:1.5px solid;cursor:pointer;transition:transform .12s,box-shadow .12s;}
-.abc-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.12);}
-.abc-card.selected{box-shadow:0 0 0 3px #2c2c2a;}
-.abc-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
-.abc-badge{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:3px 8px;border-radius:4px;}
-.lift-box{text-align:right;}
-.lift-num{font-size:22px;font-weight:700;}
-.lift-lbl{font-size:9px;opacity:.65;margin-top:1px;}
-.abc-title{font-size:13px;font-weight:600;margin-bottom:2px;}
-.abc-vol{font-size:20px;font-weight:700;}
-.abc-sub{font-size:11px;opacity:.65;margin-bottom:8px;}
-.meter-bg{background:rgba(0,0,0,.1);border-radius:3px;height:5px;margin-bottom:10px;}
-.meter-fill{height:5px;border-radius:3px;}
-.abc-desc{font-size:11px;line-height:1.6;opacity:.85;margin-bottom:10px;}
-.markers-title{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;opacity:.55;margin-bottom:5px;border-top:0.5px solid rgba(0,0,0,.1);padding-top:8px;}
-.mrow{display:flex;align-items:center;gap:5px;margin-bottom:3px;}
-.mbar-bg{flex:1;background:rgba(0,0,0,.08);border-radius:2px;height:5px;}
-.mbar-fill{height:5px;border-radius:2px;}
-.mlbl{font-size:9px;min-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.75;}
-.mpct{font-size:9px;font-weight:600;min-width:36px;text-align:right;}
-.abc-action{font-size:10px;font-weight:500;padding:5px 10px;border-radius:4px;display:inline-block;margin-top:8px;}
-.card-a{background:#fff8f5;border-color:#E8806A;} .badge-a{background:#fce8df;color:#712B13;} .val-a{color:#993C1D;} .lift-a{color:#D85A30;} .act-a{background:#fce8df;color:#712B13;}
-.card-b{background:#f4f2fb;border-color:#7269CC;} .badge-b{background:#e8e6f8;color:#26215C;} .val-b{color:#534AB7;} .lift-b{color:#534AB7;} .act-b{background:#e8e6f8;color:#26215C;}
-.card-c{background:#f0faf5;border-color:#44B88A;} .badge-c{background:#d9f2e8;color:#04342C;} .val-c{color:#0F6E56;} .lift-c{color:#0F6E56;} .act-c{background:#d9f2e8;color:#04342C;}
-
-/* Simulator */
-.sim-panel{background:#fff;border-radius:10px;padding:18px;border:0.5px solid #e0dfd8;margin-bottom:14px;}
-.sim-body{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:16px;align-items:end;margin-top:12px;}
-.slider-wrap label{display:block;font-size:11px;font-weight:500;margin-bottom:4px;}
-.slider-wrap .slider-sub{font-size:10px;color:#73726c;margin-top:3px;}
-input[type=range]{width:100%;accent-color:#534AB7;}
-.sim-result{background:#2c2c2a;color:#fff;border-radius:8px;padding:14px 18px;text-align:center;min-width:140px;}
-.sim-frs{font-size:30px;font-weight:700;color:#5DCAA5;}
-.sim-lbl{font-size:10px;color:#B4B2A9;margin-top:2px;}
-.sim-lift{font-size:12px;color:#9FE1CB;margin-top:4px;}
-.sim-footer{display:flex;gap:16px;margin-top:10px;font-size:11px;color:#73726c;flex-wrap:wrap;}
-.sim-footer strong{color:#2c2c2a;}
-
-/* Panels */
+.klbl{font-size:10px;color:#73726c;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;}
+.kval{font-size:20px;font-weight:600;}
 .panel{background:#fff;border-radius:10px;padding:18px;border:0.5px solid #e0dfd8;}
-.panel-title{font-size:13px;font-weight:600;margin-bottom:3px;}
-.panel-sub{font-size:11px;color:#73726c;margin-bottom:12px;}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.ptitle{font-size:13px;font-weight:600;margin-bottom:3px;}
+.psub{font-size:11px;color:#73726c;margin-bottom:12px;}
 .full{margin-bottom:14px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
 .tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;}
-.tab{padding:4px 11px;font-size:11px;border:0.5px solid #d3d1c7;border-radius:5px;cursor:pointer;background:#fff;color:#73726c;transition:all .15s;}
-.tab:hover{background:#f5f5f3;}
+.tab{padding:4px 11px;font-size:11px;border:0.5px solid #d3d1c7;border-radius:5px;cursor:pointer;background:#fff;color:#73726c;}
 .tab.active{background:#2c2c2a;color:#fff;border-color:#2c2c2a;}
 .legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:10px;color:#73726c;}
 .legend span{display:flex;align-items:center;gap:3px;}
 .dot{width:9px;height:9px;border-radius:2px;display:inline-block;flex-shrink:0;}
 .note{font-size:10px;color:#5F5E5A;background:#f1efe8;border-radius:5px;padding:7px 10px;line-height:1.6;margin-top:8px;}
-
-/* WoW */
-.trend-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;}
-.trend-kpi{background:#f5f5f3;border-radius:6px;padding:8px 12px;}
-.trend-kpi .tklbl{font-size:10px;color:#73726c;margin-bottom:2px;}
-.trend-kpi .tkval{font-size:16px;font-weight:600;}
-.trend-kpi .tkdelta{font-size:10px;margin-top:1px;}
-.dn{color:#993C1D;} .up{color:#0F6E56;}
-.trend-grid{display:grid;grid-template-columns:3fr 2fr;gap:16px;}
-
-/* Driver table */
+.warn{font-size:10px;color:#633806;background:#FAEEDA;border-radius:5px;padding:7px 10px;line-height:1.6;margin-top:8px;border:0.5px solid #EF9F27;}
+.abc-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px;}
+.abc-card{border-radius:10px;padding:14px 16px;border:1.5px solid;cursor:pointer;transition:transform .12s;}
+.abc-card:hover{transform:translateY(-2px);}
+.abc-card.selected{box-shadow:0 0 0 2.5px #2c2c2a;}
+.abc-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.abc-badge{font-size:10px;font-weight:700;text-transform:uppercase;padding:3px 8px;border-radius:4px;}
+.lift-box{text-align:right;}.lift-num{font-size:20px;font-weight:700;}
+.lift-lbl{font-size:9px;opacity:.65;margin-top:1px;}
+.abc-vol{font-size:20px;font-weight:700;}
+.abc-sub{font-size:11px;opacity:.65;margin-bottom:6px;}
+.meter-bg{background:rgba(0,0,0,.1);border-radius:3px;height:5px;margin-bottom:8px;}
+.meter-fill{height:5px;border-radius:3px;}
+.abc-desc{font-size:11px;line-height:1.6;opacity:.85;margin-bottom:8px;}
+.mtitle{font-size:9px;font-weight:600;text-transform:uppercase;opacity:.55;margin-bottom:5px;border-top:0.5px solid rgba(0,0,0,.1);padding-top:8px;}
+.mrow{display:flex;align-items:center;gap:5px;margin-bottom:3px;}
+.mbg{flex:1;background:rgba(0,0,0,.08);border-radius:2px;height:5px;}
+.mfill{height:5px;border-radius:2px;}
+.mlbl{font-size:9px;min-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.75;}
+.mpct{font-size:9px;font-weight:600;min-width:36px;text-align:right;}
+.abc-action{font-size:10px;font-weight:500;padding:5px 10px;border-radius:4px;display:inline-block;margin-top:6px;}
+.ca{background:#fff8f5;border-color:#E8806A;}.ba{background:#fce8df;color:#712B13;}.va{color:#993C1D;}.la{color:#D85A30;}.aa{background:#fce8df;color:#712B13;}
+.cb{background:#f4f2fb;border-color:#7269CC;}.bb{background:#e8e6f8;color:#26215C;}.vb{color:#534AB7;}.lb{color:#534AB7;}.ab{background:#e8e6f8;color:#26215C;}
+.cc{background:#f0faf5;border-color:#44B88A;}.bc{background:#d9f2e8;color:#04342C;}.vc{color:#0F6E56;}.lc{color:#0F6E56;}.ac{background:#d9f2e8;color:#04342C;}
 .dtable{width:100%;border-collapse:collapse;font-size:11px;}
 .dtable th{text-align:left;padding:6px 8px;border-bottom:1px solid #e0dfd8;color:#73726c;font-size:10px;text-transform:uppercase;letter-spacing:.4px;cursor:pointer;white-space:nowrap;}
-.dtable th:hover{color:#2c2c2a;}
 .dtable td{padding:5px 8px;border-bottom:0.5px solid #f0eee8;vertical-align:middle;}
 .dtable tr:hover td{background:#fafaf8;}
-.dtable tr.hl-a td{background:#fff8f5!important;}
-.dtable tr.hl-b td{background:#f4f2fb!important;}
-.dtable tr.hl-c td{background:#f0faf5!important;}
-.bbar-bg{background:#f0eee8;border-radius:3px;height:6px;min-width:60px;}
-.bbar-fill{height:6px;border-radius:3px;}
-.badge{display:inline-block;padding:2px 6px;border-radius:3px;font-size:10px;font-weight:600;}
+.dtable tr.nc td{opacity:.5;}
+.bbg{background:#f0eee8;border-radius:3px;height:6px;min-width:60px;}
+.bfill{height:6px;border-radius:3px;}
+.bdg{display:inline-block;padding:2px 6px;border-radius:3px;font-size:10px;font-weight:600;}
 .pill{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;}
-
-/* Transfer */
+.sv4{background:#e8e6f8;color:#26215C;}.sest{background:#f1efe8;color:#5F5E5A;}
 .xfer{background:#fff5f3;border-radius:10px;padding:18px;border:1px solid #F0997B;margin-bottom:14px;}
-.focus-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;}
+.fgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;}
 .fc{background:#fff;border-radius:7px;padding:10px 12px;border:0.5px solid #e0dfd8;}
-.fc .fclbl{font-size:10px;text-transform:uppercase;letter-spacing:.4px;font-weight:600;margin-bottom:3px;}
-.fc .fcval{font-size:16px;font-weight:700;margin-bottom:2px;}
-.fc .fcnote{font-size:10px;color:#73726c;line-height:1.5;}
-
-/* ── NAV + README ─────────────────────────────────────────────────────── */
-.topnav{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
-.topnav .navbtn{padding:7px 18px;font-size:12px;font-weight:500;border:0.5px solid #d3d1c7;border-radius:7px;cursor:pointer;background:#fff;color:#73726c;transition:all .15s;}
-.topnav .navbtn:hover{background:#f5f5f3;}
-.topnav .navbtn.active{background:#2c2c2a;color:#fff;border-color:#2c2c2a;}
-.section{display:none;}.section.visible{display:block;}
-
-/* Rubric cards */
+.fclbl{font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+.fcval{font-size:16px;font-weight:700;margin-bottom:2px;}
+.fcnote{font-size:10px;color:#73726c;line-height:1.5;}
+.trend-grid{display:grid;grid-template-columns:3fr 2fr;gap:16px;}
+.tkpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;}
+.tkpi{background:#f5f5f3;border-radius:6px;padding:8px 12px;}
+.tklbl{font-size:10px;color:#73726c;margin-bottom:2px;}
+.tkval{font-size:16px;font-weight:600;}
+.dn{color:#993C1D;}.up{color:#0F6E56;}
 .rubric-row{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:0;align-items:stretch;margin-bottom:20px;}
-.rubric-card{border-radius:10px;padding:20px;border:2px solid;}
-.rubric-and{display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#73726c;padding:0 10px;min-width:44px;}
-.rubric-circle{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff;margin:0 auto 12px;}
-.rubric-q{font-size:14px;font-weight:600;text-align:center;margin-bottom:12px;}
-.rubric-pass{margin-bottom:8px;padding:8px 10px;border-radius:6px;font-size:11px;line-height:1.6;}
-.rubric-fail{padding:8px 10px;border-radius:6px;font-size:11px;line-height:1.6;}
-.pass-badge{display:inline-block;background:#d9f2e8;color:#04342C;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;margin-bottom:4px;}
-.fail-badge{display:inline-block;background:#fce8df;color:#712B13;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;margin-bottom:4px;}
-.card-a-rubric{background:#EEF6FF;border-color:#5BA3E8;}
-.card-b-rubric{background:#FFF8EE;border-color:#D4A843;}
-.card-c-rubric{background:#F3EEFF;border-color:#9B7FD4;}
-.rubric-note{background:#fff;border-radius:8px;padding:14px 18px;border:0.5px solid #e0dfd8;font-size:11px;line-height:1.8;margin-bottom:16px;}
-.rubric-note strong{color:#2c2c2a;}
-
-/* Tag reference table */
-.tag-table{width:100%;border-collapse:collapse;font-size:11px;}
-.tag-table th{text-align:left;padding:7px 10px;border-bottom:1.5px solid #e0dfd8;font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:#73726c;font-weight:600;}
-.tag-table td{padding:6px 10px;border-bottom:0.5px solid #f0eee8;vertical-align:top;line-height:1.5;}
-.tag-table tr:hover td{background:#fafaf8;}
-.tag-mono{font-family:monospace;font-size:10px;font-weight:600;}
-.bucket-pill{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;}
+.rcard{border-radius:10px;padding:20px;border:2px solid;}
+.rand{display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#73726c;padding:0 10px;min-width:44px;}
+.rcirc{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff;margin:0 auto 12px;}
+.rq{font-size:14px;font-weight:600;text-align:center;margin-bottom:12px;}
+.rpass{margin-bottom:8px;padding:8px 10px;border-radius:6px;font-size:11px;line-height:1.6;background:#d9f2e8;}
+.rfail{padding:8px 10px;border-radius:6px;font-size:11px;line-height:1.6;background:#fce8df;}
+.pbd{display:inline-block;background:#d9f2e8;color:#04342C;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;margin-bottom:4px;}
+.fbd{display:inline-block;background:#fce8df;color:#712B13;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;margin-bottom:4px;}
+.ra{background:#EEF6FF;border-color:#5BA3E8;}
+.rb{background:#FFF8EE;border-color:#D4A843;}
+.rc{background:#F3EEFF;border-color:#9B7FD4;}
+.ttable{width:100%;border-collapse:collapse;font-size:11px;}
+.ttable th{text-align:left;padding:7px 10px;border-bottom:1.5px solid #e0dfd8;font-size:10px;text-transform:uppercase;color:#73726c;font-weight:600;}
+.ttable td{padding:6px 10px;border-bottom:0.5px solid #f0eee8;vertical-align:top;line-height:1.5;}
+.ttable tr:hover td{background:#fafaf8;}
+.tmono{font-family:monospace;font-size:10px;font-weight:600;}
 </style>
 </head>
 <body>
 <div class="page">
-
-<!-- NAV -->
 <div class="topnav">
-  <button class="navbtn active" onclick="showSection('dashboard',this)">📊 Dashboard</button>
-  <button class="navbtn" onclick="showSection('readme',this)">📖 Read Me — Rubric & Tag Reference</button>
+  <button class="navbtn active" onclick="showSec('dash',this)">📊 Dashboard</button>
+  <button class="navbtn" onclick="showSec('sizing',this)">🎯 Opportunity sizing</button>
+  <button class="navbtn" onclick="showSec('readme',this)">📖 Rubric & tag reference</button>
 </div>
 
-<!-- DASHBOARD SECTION -->
-<div id="sec-dashboard" class="section visible">
-
-<!-- HEADER -->
-<div class="header">
+<!-- ═══════════════════ DASHBOARD ═══════════════════ -->
+<div id="sec-dash" class="section visible">
+<div class="hdr">
   <div>
     <h1>FRS Tier 1 Opportunity Visualization</h1>
-    <div class="meta">Jun 10–16 2026 · 96,600 unresolved contacts decomposed · A∧B∧C resolution rubric · GBSG Product Support & Services</div>
-    <div class="formula">
-      <strong>FRS%</strong> = Resolved ÷ Total scored &nbsp;·&nbsp;
-      A contact resolves only when <strong>A</strong> (issue addressed) ∧ <strong>B</strong> (nothing pending) ∧ <strong>C</strong> (customer confirmed) all pass &nbsp;·&nbsp;
-      Addressability: <span style="color:#F0997B;">Agent/Process 70.1%</span> · <span style="color:#85B7EB;">Customer-Side 20.5%</span> · <span style="color:#B4B2A9;">System/Artifact 9.4%</span>
-    </div>
+    <div class="meta">May 25–Jun 21 2026 · 372,148 unresolved · GBSG SABER-scored · A∧B∧C rubric</div>
+    <div class="fml"><strong>FRS%</strong> = Resolved ÷ Total scored &nbsp;·&nbsp; Data-backed Controllable % from v4 applied &nbsp;·&nbsp; Recoverable ceiling: <span style="color:#5DCAA5;font-weight:600">+24.2pp</span> &nbsp;·&nbsp; Non-conversation floor: <span style="color:#F0997B">71,872 contacts cannot be resolved by initiatives</span></div>
   </div>
-  <div class="frs-hero">
-    <div class="num">47.4%</div>
-    <div class="lbl">Week FRS · 87,477 / 184,555</div>
-    <div class="trend">▼ −4.8pp from 6-week peak of 52.0%</div>
-  </div>
+  <div class="hero"><div class="num">48.4%</div><div class="lbl">Baseline FRS · 720,617 scored</div><div class="trend">▲ Goal 79% · gap = 30.6pp</div></div>
+</div>
+<div class="kpis">
+  <div class="kpi"><div class="klbl">Total scored</div><div class="kval">720,617</div></div>
+  <div class="kpi"><div class="klbl">Resolved</div><div class="kval" style="color:#0F6E56">348,469</div></div>
+  <div class="kpi"><div class="klbl">Unresolved</div><div class="kval" style="color:#993C1D">372,148</div></div>
+  <div class="kpi"><div class="klbl">Recoverable ceiling</div><div class="kval" style="color:#534AB7">+24.2pp</div></div>
+  <div class="kpi"><div class="klbl">Non-conv floor</div><div class="kval" style="color:#854F0B">71,872</div></div>
+  <div class="kpi"><div class="klbl">Goal gap</div><div class="kval" style="color:#993C1D">−30.6pp</div></div>
 </div>
 
-<!-- KPIs -->
-<div class="kpis">
-  <div class="kpi"><div class="kpi-lbl">Total scored</div><div class="kpi-val">184,555</div></div>
-  <div class="kpi"><div class="kpi-lbl">Resolved</div><div class="kpi-val" style="color:#0F6E56">87,477</div></div>
-  <div class="kpi"><div class="kpi-lbl">Unresolved</div><div class="kpi-val" style="color:#993C1D">96,600</div></div>
-  <div class="kpi"><div class="kpi-lbl">Bucket A failures</div><div class="kpi-val" style="color:#D85A30">27,854</div></div>
-  <div class="kpi"><div class="kpi-lbl">Bucket B failures</div><div class="kpi-val" style="color:#534AB7">66,941</div></div>
-  <div class="kpi"><div class="kpi-lbl">Bucket C failures</div><div class="kpi-val" style="color:#0F6E56">1,796</div></div>
+<!-- WEEK FILTER -->
+<div style="background:#fff;border-radius:10px;padding:12px 18px;border:0.5px solid #e0dfd8;margin-bottom:14px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+  <div style="font-size:12px;font-weight:600;color:#2c2c2a">📅 Week filter:</div>
+  <div class="tabs" style="margin-bottom:0">
+    <button class="tab active wktab" onclick="setWeek(-1,this)">All 4 weeks (May 25–Jun 21)</button>
+    <button class="tab wktab" onclick="setWeek(0,this)">wk 05-25</button>
+    <button class="tab wktab" onclick="setWeek(1,this)">wk 06-01 ▲ peak unresolved</button>
+    <button class="tab wktab" onclick="setWeek(2,this)">wk 06-08</button>
+    <button class="tab wktab" onclick="setWeek(3,this)">wk 06-15</button>
+  </div>
+  <div id="wkBanner" style="font-size:11px;color:#73726c;margin-left:auto"></div>
 </div>
 
 <!-- ABC CARDS -->
 <div class="abc-row">
-  <div class="abc-card card-a" id="cardA" onclick="filterBucket('A')">
-    <div class="abc-hdr">
-      <span class="abc-badge badge-a">Bucket A · 11 tags</span>
-      <div class="lift-box"><div class="lift-num lift-a">+15.1pp</div><div class="lift-lbl">FRS lift if fixed<br>→ 62.5%</div></div>
-    </div>
-    <div class="abc-title">Issue not addressed</div>
-    <div class="abc-vol val-a">27,854</div>
-    <div class="abc-sub">28.7% of gap · 15.1% of all scored contacts</div>
-    <div class="meter-bg"><div class="meter-fill" style="width:28.7%;background:#D85A30"></div></div>
-    <div class="abc-desc">Contact ended before meaningful engagement — wrong queue, dropped, ghost call, system failure. FRS was structurally impossible.</div>
-    <div class="markers-title">Top markers by volume</div>
-    <div class="mrow"><span class="mlbl">cust_stopped_responding</span><div class="mbar-bg"><div class="mbar-fill" style="width:100%;background:#C0392B"></div></div><span class="mpct val-a">5,688</span></div>
-    <div class="mrow"><span class="mlbl">no_customer_utterance</span><div class="mbar-bg"><div class="mbar-fill" style="width:94%;background:#CD5C5C"></div></div><span class="mpct val-a">5,368</span></div>
-    <div class="mrow"><span class="mlbl">contact_ended_unexpectedly</span><div class="mbar-bg"><div class="mbar-fill" style="width:76%;background:#D97070"></div></div><span class="mpct val-a">4,349</span></div>
-    <div class="mrow"><span class="mlbl">misrouted_contact</span><div class="mbar-bg"><div class="mbar-fill" style="width:75%;background:#E08888"></div></div><span class="mpct val-a">4,315</span></div>
-    <div class="mrow"><span class="mlbl">voicemail / system_msg</span><div class="mbar-bg"><div class="mbar-fill" style="width:61%;background:#EEAAAA"></div></div><span class="mpct val-a">3,459</span></div>
-    <div class="mrow"><span class="mlbl">Other 6 tags</span><div class="mbar-bg"><div class="mbar-fill" style="width:79%;background:#F5C0C0"></div></div><span class="mpct val-a">4,675</span></div>
-    <div class="abc-action act-a">🎯 Routing · Drops · System stability</div>
+  <div class="abc-card ca" id="cardA" onclick="filterBucket('A')">
+    <div class="abc-hdr"><span class="abc-badge ba">Bucket A · 11 tags</span><div class="lift-box"><div class="lift-num la">+4.2pp</div><div class="lift-lbl">Data-backed ceiling</div></div></div>
+    <div style="font-size:13px;font-weight:600;margin-bottom:2px">Issue not addressed</div>
+    <div class="abc-vol va">92,836</div><div class="abc-sub">24.9% of unresolved</div>
+    <div class="meter-bg"><div class="meter-fill" style="width:24.9%;background:#D85A30"></div></div>
+    <div class="abc-desc">Contact ended before meaningful engagement. Non-conversation tags = 71,872 structural floor.</div>
+    <div class="mtitle">Top markers</div>
+    <div class="mrow"><span class="mlbl">customer_stopped_responding</span><div class="mbg"><div class="mfill" style="width:100%;background:#C0392B"></div></div><span class="mpct va">21,301</span></div>
+    <div class="mrow"><span class="mlbl">contact_ended_unexpectedly</span><div class="mbg"><div class="mfill" style="width:82%;background:#D97070"></div></div><span class="mpct va">17,402</span></div>
+    <div class="mrow"><span class="mlbl">misrouted_contact</span><div class="mbg"><div class="mfill" style="width:75%;background:#E08888"></div></div><span class="mpct va">15,976</span></div>
+    <div class="abc-action aa">🎯 Routing · Drop reduction · Channel workstream</div>
   </div>
-
-  <div class="abc-card card-b" id="cardB" onclick="filterBucket('B')">
-    <div class="abc-hdr">
-      <span class="abc-badge badge-b">Bucket B · 15 tags</span>
-      <div class="lift-box"><div class="lift-num lift-b">+36.3pp</div><div class="lift-lbl">FRS lift if fixed<br>→ 83.7%</div></div>
-    </div>
-    <div class="abc-title">Something still pending</div>
-    <div class="abc-vol val-b">66,941</div>
-    <div class="abc-sub">69.3% of gap · 36.3% of all scored contacts</div>
-    <div class="meter-bg"><div class="meter-fill" style="width:69.3%;background:#534AB7"></div></div>
-    <div class="abc-desc">Issue was engaged but resolution requires follow-up — transfer, Intuit process, escalation, policy, known bug. The dominant lever.</div>
-    <div class="markers-title">Top markers by volume</div>
-    <div class="mrow"><span class="mlbl">transfer_recommended</span><div class="mbar-bg"><div class="mbar-fill" style="width:100%;background:#1A3A8B"></div></div><span class="mpct val-b">21,529</span></div>
-    <div class="mrow"><span class="mlbl">intuit_process_pending</span><div class="mbar-bg"><div class="mbar-fill" style="width:66%;background:#2952A3"></div></div><span class="mpct val-b">14,174</span></div>
-    <div class="mrow"><span class="mlbl">escalation_required</span><div class="mbar-bg"><div class="mbar-fill" style="width:40%;background:#4168BB"></div></div><span class="mpct val-b">8,581</span></div>
-    <div class="mrow"><span class="mlbl">policy_restriction</span><div class="mbar-bg"><div class="mbar-fill" style="width:19%;background:#5B80CA"></div></div><span class="mpct val-b">4,124</span></div>
-    <div class="mrow"><span class="mlbl">automated_process</span><div class="mbar-bg"><div class="mbar-fill" style="width:17%;background:#7598D6"></div></div><span class="mpct val-b">3,743</span></div>
-    <div class="mrow"><span class="mlbl">Other 10 tags</span><div class="mbar-bg"><div class="mbar-fill" style="width:69%;background:#AABFE8"></div></div><span class="mpct val-b">14,790</span></div>
-    <div class="abc-action act-b">🎯 Transfer quality · Process closure · Escalation</div>
+  <div class="abc-card cb" id="cardB" onclick="filterBucket('B')">
+    <div class="abc-hdr"><span class="abc-badge bb">Bucket B · 16 tags</span><div class="lift-box"><div class="lift-num lb">+19.5pp</div><div class="lift-lbl">Data-backed ceiling</div></div></div>
+    <div style="font-size:13px;font-weight:600;margin-bottom:2px">Something still pending</div>
+    <div class="abc-vol vb">277,516</div><div class="abc-sub">74.6% of unresolved · dominant lever</div>
+    <div class="meter-bg"><div class="meter-fill" style="width:74.6%;background:#534AB7"></div></div>
+    <div class="abc-desc">Issue engaged but resolution needs follow-up. intuit_process_pending at 12.8% FRS — highest-leverage fix.</div>
+    <div class="mtitle">Top markers by ceiling</div>
+    <div class="mrow"><span class="mlbl">intuit_process_pending (FRS 12.8%)</span><div class="mbg"><div class="mfill" style="width:100%;background:#1A3A8B"></div></div><span class="mpct vb">+6.9pp</span></div>
+    <div class="mrow"><span class="mlbl">transfer_recommended (FRS 47.8%)</span><div class="mbg"><div class="mfill" style="width:76%;background:#2952A3"></div></div><span class="mpct vb">+5.2pp</span></div>
+    <div class="mrow"><span class="mlbl">escalation_required (FRS 10.3%)</span><div class="mbg"><div class="mfill" style="width:56%;background:#4168BB"></div></div><span class="mpct vb">+3.8pp</span></div>
+    <div class="abc-action ab">🎯 Internal process fix · Transfer quality · Case mgmt</div>
   </div>
-
-  <div class="abc-card card-c" id="cardC" onclick="filterBucket('C')">
-    <div class="abc-hdr">
-      <span class="abc-badge badge-c">Bucket C · 4 tags</span>
-      <div class="lift-box"><div class="lift-num lift-c">+1.0pp</div><div class="lift-lbl">FRS lift if fixed<br>→ 48.4%</div></div>
-    </div>
-    <div class="abc-title">Customer didn't confirm</div>
-    <div class="abc-vol val-c">1,796</div>
-    <div class="abc-sub">1.9% of gap · 1.0% of all scored contacts</div>
-    <div class="meter-bg"><div class="meter-fill" style="width:1.9%;background:#0F6E56"></div></div>
-    <div class="abc-desc">Steps were taken but customer expressed confusion, dissatisfaction, or transcript lacked confirmation evidence.</div>
-    <div class="markers-title">All markers</div>
-    <div class="mrow"><span class="mlbl">no_clear_evidence</span><div class="mbar-bg"><div class="mbar-fill" style="width:100%;background:#1D9E75"></div></div><span class="mpct val-c">652</span></div>
-    <div class="mrow"><span class="mlbl">no_clear_resolution</span><div class="mbar-bg"><div class="mbar-fill" style="width:78%;background:#3DB88A"></div></div><span class="mpct val-c">507</span></div>
-    <div class="mrow"><span class="mlbl">customer_dissatisfied</span><div class="mbar-bg"><div class="mbar-fill" style="width:61%;background:#5DCAA5"></div></div><span class="mpct val-c">397</span></div>
-    <div class="mrow"><span class="mlbl">customer_confused</span><div class="mbar-bg"><div class="mbar-fill" style="width:37%;background:#9FE1CB"></div></div><span class="mpct val-c">240</span></div>
-    <div class="abc-action act-c">🎯 Closing technique · Clarity · Confirmation</div>
+  <div class="abc-card cc" id="cardC" onclick="filterBucket('C')">
+    <div class="abc-hdr"><span class="abc-badge bc">Bucket C · 4 tags</span><div class="lift-box"><div class="lift-num lc">+0.3pp</div><div class="lift-lbl">Data-backed ceiling</div></div></div>
+    <div style="font-size:13px;font-weight:600;margin-bottom:2px">Customer didn't confirm</div>
+    <div class="abc-vol vc">6,449</div><div class="abc-sub">1.7% of unresolved</div>
+    <div class="meter-bg"><div class="meter-fill" style="width:1.7%;background:#0F6E56"></div></div>
+    <div class="abc-desc">Steps taken but customer expressed confusion or transcript lacked confirmation.</div>
+    <div class="mtitle">All markers</div>
+    <div class="mrow"><span class="mlbl">no_clear_evidence</span><div class="mbg"><div class="mfill" style="width:100%;background:#1D9E75"></div></div><span class="mpct vc">2,527</span></div>
+    <div class="mrow"><span class="mlbl">no_clear_resolution</span><div class="mbg"><div class="mfill" style="width:80%;background:#3DB88A"></div></div><span class="mpct vc">2,032</span></div>
+    <div class="mrow"><span class="mlbl">customer_dissatisfied</span><div class="mbg"><div class="mfill" style="width:62%;background:#5DCAA5"></div></div><span class="mpct vc">1,579</span></div>
+    <div class="mrow"><span class="mlbl">customer_confused</span><div class="mbg"><div class="mfill" style="width:33%;background:#9FE1CB"></div></div><span class="mpct vc">839</span></div>
+    <div class="abc-action ac">🎯 Closing technique · Clarity · Confirmation</div>
   </div>
 </div>
 
-<!-- SIMULATOR -->
-<div class="sim-panel">
-  <div class="panel-title">🎛 FRS impact simulator</div>
-  <div class="panel-sub">Drag sliders to model what FRS% would be if you closed a % of each bucket's unresolved contacts</div>
-  <div class="sim-body">
-    <div class="slider-wrap">
-      <label style="color:#D85A30">Bucket A — fix <span id="aVal">0</span>% <span style="font-weight:400;font-size:10px">(of 27,854)</span></label>
-      <input type="range" min="0" max="100" value="0" id="slA" oninput="updateSim()">
-      <div class="slider-sub">+<span id="aAdd">0</span> contacts recovered · max +15.1pp</div>
-    </div>
-    <div class="slider-wrap">
-      <label style="color:#534AB7">Bucket B — fix <span id="bVal">0</span>% <span style="font-weight:400;font-size:10px">(of 66,941)</span></label>
-      <input type="range" min="0" max="100" value="0" id="slB" oninput="updateSim()">
-      <div class="slider-sub">+<span id="bAdd">0</span> contacts recovered · max +36.3pp</div>
-    </div>
-    <div class="slider-wrap">
-      <label style="color:#0F6E56">Bucket C — fix <span id="cVal">0</span>% <span style="font-weight:400;font-size:10px">(of 1,796)</span></label>
-      <input type="range" min="0" max="100" value="0" id="slC" oninput="updateSim()">
-      <div class="slider-sub">+<span id="cAdd">0</span> contacts recovered · max +1.0pp</div>
-    </div>
-    <div class="sim-result">
-      <div class="sim-frs" id="simFRS">47.4%</div>
-      <div class="sim-lbl">Simulated FRS</div>
-      <div class="sim-lift" id="simLift">Move sliders ↑</div>
-    </div>
-  </div>
-  <div class="sim-footer">
-    <span>Baseline resolved: <strong>87,477</strong></span>
-    <span>Simulated resolved: <strong id="simRes">87,477</strong></span>
-    <span>Additional: <strong id="simAdd2" style="color:#0F6E56">+0</strong></span>
-    <span style="margin-left:auto">To reach 60% FRS → need <strong>29,056</strong> more resolved contacts</span>
-  </div>
-</div>
-
-<!-- WoW TREND -->
-<div class="panel full">
-  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:4px;">
-    <div>
-      <div class="panel-title">📉 Week-over-week FRS trend — wk20 to wk25 (6 weeks)</div>
-      <div class="panel-sub">FRS declining 4 consecutive weeks from peak 52.0% (wk21) → 47.2% (wk25)</div>
-    </div>
+<!-- WATERFALL + TREND -->
+<div class="two-col">
+  <div class="panel">
+    <div class="ptitle">FRS waterfall — Total scored → Unresolved → Resolved</div>
+    <div class="psub">Total scored (100%) steps down through unresolved. Resolved anchored at bottom.</div>
     <div class="tabs">
-      <button class="tab ttab active" onclick="switchTrend('frs',this)">FRS %</button>
-      <button class="tab ttab" onclick="switchTrend('unresolved',this)">Unresolved</button>
-      <button class="tab ttab" onclick="switchTrend('transfer',this)">Transfer rate</button>
+      <button class="tab active" onclick="switchWF('abc',this)">A / B / C</button>
+      <button class="tab" onclick="switchWF('drivers',this)">Top drivers</button>
+      <button class="tab" onclick="switchWF('problem',this)">Problem area</button>
+      <button class="tab" onclick="switchWF('tier',this)">By tier</button>
+      <button class="tab" onclick="switchWF('partner',this)">By partner</button>
     </div>
+    <div style="position:relative;height:320px"><canvas id="wfChart"></canvas></div>
+    <div id="wfLeg" class="legend"></div>
+    <div class="note">Hover bars for detail. Resolved (green) = 48.4% FRS. Bucket A/B/C brackets shown on A/B/C tab only.</div>
   </div>
-  <div class="trend-kpis">
-    <div class="trend-kpi"><div class="tklbl">wk20 → wk25 change</div><div class="tkval dn">−4.1pp</div><div class="tkdelta dn">51.3% → 47.2%</div></div>
-    <div class="trend-kpi"><div class="tklbl">6-week peak (wk21)</div><div class="tkval">52.0%</div><div class="tkdelta" style="color:#73726c">May 17–23</div></div>
-    <div class="trend-kpi"><div class="tklbl">Current wk25</div><div class="tkval dn">47.2%</div><div class="tkdelta dn">−4.8pp from peak</div></div>
-    <div class="trend-kpi"><div class="tklbl">T1 FRS wk25 vs wk20</div><div class="tkval dn">−2.6pp</div><div class="tkdelta dn">52.1% → 49.5%</div></div>
+  <div class="panel">
+    <div class="ptitle">📉 WoW FRS trend — May 25 → Jun 21</div>
+    <div class="psub">4-week trend by driver</div>
+    <div class="tabs">
+      <button class="tab active ttab" onclick="switchTrend('overall',this)">Overall FRS</button>
+      <button class="tab ttab" onclick="switchTrend('drivers',this)">Top drivers FRS%</button>
+      <button class="tab ttab" onclick="switchTrend('volume',this)">Unresolved volume</button>
+    </div>
+    <div class="trend-grid">
+      <div>
+        <div style="position:relative;height:220px"><canvas id="trendChart"></canvas></div>
+        <div id="trendLeg" class="legend"></div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:500;margin-bottom:6px">Daily FRS — Jun 14–21</div>
+        <div style="position:relative;height:196px"><canvas id="dailyChart"></canvas></div>
+        <div class="note">Weekend days = low volume · Read Mon–Fri</div>
+      </div>
+    </div>
+    <div class="note" style="margin-top:8px"><strong>Signal:</strong> transfer_recommended FRS declining weekly: 50.8% → 44.9%. intuit_process_pending stable at ~12.8% — high volume, very low resolution.</div>
   </div>
-  <div class="trend-grid">
-    <div>
-      <div style="position:relative;height:220px"><canvas id="trendChart"></canvas></div>
-      <div id="trendLegend" class="legend"></div>
-    </div>
-    <div>
-      <div style="font-size:11px;font-weight:500;margin-bottom:6px">Daily FRS — Jun 14–21 (current week)</div>
-      <div style="position:relative;height:200px"><canvas id="dailyChart"></canvas></div>
-      <div class="note">Weekend days (gray) run 25× lower volume — read Mon–Fri as the operational signal</div>
-    </div>
-  </div>
-  <div class="note" style="margin-top:10px"><strong>Trend signal:</strong> FRS declining 4 straight weeks (52.0% → 47.2%, −4.8pp). Unresolved holding at 96k+. T1 FRS mirrors overall. Transfer rate stable ~18%. Bucket B (36.3pp opportunity) is the primary intervention target.</div>
-</div>
-
-<!-- WATERFALL -->
-<div class="panel full">
-  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:4px;">
-    <div>
-      <div class="panel-title">FRS waterfall — Total scored → Unresolved buckets → Resolved</div>
-      <div class="panel-sub">Total scored (100%) at left. Resolved (47.4%) anchored at bottom right. Unresolved buckets fill the gap — A at top, B in middle, C just above resolved. Markers cascade inside each bucket.</div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;">
-      <span style="font-size:11px;color:#73726c">Partner:</span>
-      <select id="partnerSel" onchange="onPartnerChange()" style="font-size:11px;padding:4px 10px;border:0.5px solid #d3d1c7;border-radius:5px;background:#fff;cursor:pointer">
-        <option value="ALL">All partners</option>
-        <option value="FOUNDEVER">FOUNDEVER (39.3%)</option>
-        <option value="CONCENTRIX">CONCENTRIX (36.3%)</option>
-        <option value="TELEPERFORMANCE">TELEPERFORMANCE (7.6%)</option>
-        <option value="ALORICA">ALORICA (6.5%)</option>
-        <option value="INTUIT">INTUIT (5.5%)</option>
-        <option value="WORKING SOLUTIONS">WORKING SOLUTIONS (3.6%)</option>
-        <option value="KMK VENTURES">KMK VENTURES (1.3%)</option>
-      </select>
-    </div>
-  </div>
-  <div id="partnerBanner" style="display:none;background:#fff8f3;border:0.5px solid #F0997B;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:11px;color:#712B13"></div>
-  <div style="position:relative;height:500px"><canvas id="wfChart"></canvas></div>
-  <div id="wfLegend" class="legend"></div>
-  <div class="note" style="margin-top:8px"><strong>How to read:</strong> Black bar = 100% (184,555 scored). Green bar = 47.4% resolved (87,477), anchored at bottom. The gap between them is the 52.6% unresolved — split into Bucket A (top, red), Bucket B (middle, blue), Bucket C (just above green, gold). Markers inside each bucket show the individual driver breakdown. Hover any bar for detail.</div>
 </div>
 
 <!-- DRIVER TABLE -->
-<div class="panel full">
+<div class="full panel">
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap">
-    <div class="panel-title">All primary_tag drivers — sorted by FRS impact</div>
+    <div class="ptitle">All primary_tag drivers — real data · May 25–Jun 21</div>
     <div class="tabs" style="margin-left:auto;margin-bottom:0">
       <button class="tab ftab active" id="fAll" onclick="filterBucket('ALL')">All</button>
       <button class="tab ftab" id="fA" onclick="filterBucket('A')" style="border-color:#E8806A;color:#712B13">Bucket A</button>
@@ -347,602 +231,898 @@ input[type=range]{width:100%;accent-color:#534AB7;}
       <button class="tab ftab" id="fC" onclick="filterBucket('C')" style="border-color:#44B88A;color:#04342C">Bucket C</button>
     </div>
   </div>
-  <div class="panel-sub">FRS impact = pp gained if that tag were fully resolved. Click column headers to sort.</div>
+  <div class="psub">Controllable % from v4 (data-backed) or estimated. Ceiling = (unresolved ÷ scored) × Ctrl%. Click headers to sort.</div>
   <div style="overflow-x:auto">
     <table class="dtable">
       <thead><tr>
         <th onclick="sortD(0)">Tag ↕</th><th onclick="sortD(1)">Bucket ↕</th>
-        <th onclick="sortD(2)">Addressability ↕</th><th onclick="sortD(3)">Unresolved ↕</th>
-        <th onclick="sortD(4)">% gap ↕</th><th>Volume</th>
-        <th onclick="sortD(6)">Cumul% ↕</th><th onclick="sortD(7)">FRS impact ↕</th>
-        <th>Action focus</th>
+        <th onclick="sortD(2)">Initiative ↕</th><th onclick="sortD(3)">Unresolved ↕</th>
+        <th onclick="sortD(4)">FRS% ↕</th><th>Volume</th>
+        <th onclick="sortD(6)">Ctrl% ↕</th><th onclick="sortD(8)">Ceiling ↕</th><th>Action</th>
       </tr></thead>
       <tbody id="dtBody"></tbody>
     </table>
   </div>
-  <div class="note" style="margin-top:8px">Top 3 drivers account for <strong>45.9%</strong> of gap = <strong>24.6pp</strong> FRS opportunity. All Bucket B — directly addressable through transfer & process quality.</div>
+  <div class="warn">⚠ Orange rows = non-conversation (abandon/voicemail/dead-air). These resolve at ~0–5% FRS — structural floor, not fixable by coaching or process. Need a separate channel workstream.</div>
 </div>
 
-<!-- TRANSFER CALLOUT -->
-<div class="xfer">
-  <div style="font-size:13px;font-weight:600;color:#712B13;margin-bottom:3px">📍 Transfer-out deep dive — 19,328 contacts · transfer_recommended = #1 driver · 11.7pp FRS impact</div>
-  <div style="font-size:11px;color:#993C1D;margin-bottom:10px">Breakdown of 21,529 transfer_recommended: Bad transfer untagged 13,596 · Advised/needs transfer 7,661 · Bad transfer to mgr/resdesk 272</div>
-  <div class="focus-grid">
-    <div class="fc"><div class="fclbl" style="color:#0C447C">Tier focus</div><div class="fcval" style="color:#0C447C">Tier 1 = 90.3%</div><div class="fcnote">17,454 contacts · More concentrated than overall (77%) · T1 transferring out and still failing</div></div>
-    <div class="fc"><div class="fclbl" style="color:#712B13">Partner focus</div><div class="fcval" style="color:#712B13">FNDVR 42% + CONC 30%</div><div class="fcnote">72% of transfer-out cases · Same 2 partners dominate overall unresolved</div></div>
-    <div class="fc"><div class="fclbl" style="color:#04342C">Channel focus</div><div class="fcval" style="color:#04342C">Inbound 59.5%</div><div class="fcnote">11,500 contacts · Called in, transferred, still not resolved · Warm-transfer protocol review</div></div>
-    <div class="fc"><div class="fclbl" style="color:#444">NLH signal</div><div class="fcval" style="color:#444">Only 0.3%</div><div class="fcnote">≈58 contacts · Transfer failures almost entirely non-NLH · Not a focus area for transfers</div></div>
-  </div>
-</div>
-
-
-</div><!-- end sec-dashboard -->
-
-<!-- README SECTION -->
-<div id="sec-readme" class="section">
-
-  <!-- Header -->
-  <div class="header" style="margin-bottom:20px;">
+<!-- WHAT NEEDS TO HAPPEN -->
+<div class="full panel" id="actionPanel">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:4px">
     <div>
-      <h1>FRS A∧B∧C Resolution Rubric — Tag Reference</h1>
-      <div class="meta">A contact is Resolved (verdict = 1) only when ALL THREE criteria pass simultaneously</div>
+      <div class="ptitle">🎯 What needs to happen — unresolved action plan</div>
+      <div class="psub">Top drivers ranked by impact · what initiative addresses it · specific action required</div>
     </div>
-    <div style="text-align:right;font-size:28px;font-weight:700;color:#5DCAA5;">A ∧ B ∧ C</div>
+    <div id="wkActionLabel" style="font-size:11px;color:#73726c;background:#f5f5f3;border-radius:5px;padding:4px 10px">All 4 weeks</div>
   </div>
-
-  <!-- Rubric Visual -->
-  <div class="panel" style="margin-bottom:16px;">
-    <div class="panel-title" style="margin-bottom:16px;">The three-criteria rubric — all must pass for FRS = Resolved</div>
-    <div class="rubric-row">
-      <!-- A -->
-      <div class="rubric-card card-a-rubric">
-        <div class="rubric-circle" style="background:#5BA3E8;">A</div>
-        <div class="rubric-q">Was the issue addressed?</div>
-        <div class="rubric-pass" style="background:#d9f2e8;">
-          <span class="pass-badge">PASS ✓</span><br>
-          The expert engaged with the customer's issue and provided guidance or a solution.
-        </div>
-        <div class="rubric-fail" style="background:#fce8df;">
-          <span class="fail-badge">FAIL ✗</span><br>
-          Issue was acknowledged but not addressed, or the call ended before the expert could engage.
-        </div>
-      </div>
-      <div class="rubric-and">AND</div>
-      <!-- B -->
-      <div class="rubric-card card-b-rubric">
-        <div class="rubric-circle" style="background:#D4A843;">B</div>
-        <div class="rubric-q">Is anything still pending?</div>
-        <div class="rubric-pass" style="background:#d9f2e8;">
-          <span class="pass-badge">PASS ✓</span><br>
-          No open dependencies remain — no pending Intuit action, customer action, or external process.
-        </div>
-        <div class="rubric-fail" style="background:#fce8df;">
-          <span class="fail-badge">FAIL ✗</span><br>
-          A blocker remains: a follow-up needed, a transfer required, or the customer must still act.
-        </div>
-      </div>
-      <div class="rubric-and">AND</div>
-      <!-- C -->
-      <div class="rubric-card card-c-rubric">
-        <div class="rubric-circle" style="background:#9B7FD4;">C</div>
-        <div class="rubric-q">Did the customer understand the outcome?</div>
-        <div class="rubric-pass" style="background:#d9f2e8;">
-          <span class="pass-badge">PASS ✓</span><br>
-          The customer confirmed understanding — they acknowledged next steps or the resolution. Did not challenge the expert or show disapproval.
-        </div>
-        <div class="rubric-fail" style="background:#fce8df;">
-          <span class="fail-badge">FAIL ✗</span><br>
-          No confirmation from customer. They may have ended the call confused or without clarity.
-        </div>
-      </div>
-    </div>
-    <div style="text-align:center;font-size:12px;color:#73726c;margin-top:8px;font-style:italic;">
-      Contact &amp; Domain follow the same rubric. Domain (TTL and FS) has a few nuances on overlay credits.
-    </div>
-  </div>
-
-  <!-- Methodology Notes -->
-  <div class="panel" style="margin-bottom:16px;">
-    <div class="panel-title" style="margin-bottom:10px;">Methodology notes</div>
-    <div class="rubric-note">
-      <strong>Primary tag is selected by priority hierarchy.</strong> A contact that fails both B and C only gets one tag — whichever ranks highest in the V2 hierarchy. This mapping tells you the <em>primary</em> reason each tag represents, not the only verdict it could fail.<br><br>
-      <strong>Some assignments are judgment calls.</strong> Example: <code>customer_refuses_steps</code> could be argued as A-FAIL (no real engagement) or C-FAIL (rejected the outcome). It is placed in B because there was a path forward that the customer chose not to complete. Similarly, <code>transfer_recommended</code> could be overlay-credited as Resolved (good transfer) — bucketed here as B because the contact itself did not close.<br><br>
-      <strong>Overlay-credited tags exist outside this framework.</strong> Three tags (<code>customer_action_required</code>, <code>multi_issue_flag_partial_res</code>, <code>good_transfer_recommended</code>) can be marked Resolved via overlay even though they fail B. Those overlays apply on top of the A+B+C rubric.<br><br>
-      <strong>Total count: 32 V2 tags.</strong> 11 A-FAIL + 16 B-FAIL + 4 C-FAIL + 1 Other. (<code>multi_issue_flag_partial_res</code> and <code>multi_issue_flag_no_res</code> are V1 synthetic tags; V2 redistributes multi-issue contacts to underlying real tags so they are not separately bucketed here.)
-    </div>
-  </div>
-
-  <!-- Tag Reference Tables -->
-  <div class="panel" style="margin-bottom:16px;">
-    <div class="panel-title" style="margin-bottom:4px;">Bucket A — Issue not addressed <span style="font-weight:400;color:#73726c;font-size:12px;">(11 tags · 27,854 unresolved · 15.1% of scored · +15.1pp FRS opportunity)</span></div>
-    <div class="panel-sub">Contact ended before meaningful engagement. FRS was structurally impossible.</div>
-    <table class="tag-table">
-      <thead><tr><th>Primary Tag (V2)</th><th>Why it lands here</th><th>Volume</th><th>FRS impact</th></tr></thead>
-      <tbody>
-        <tr><td><span class="tag-mono" style="color:#8B1A1A">voice_mail_or_system_message</span></td><td>No live interaction at all — voicemail or automated message</td><td>3,459</td><td><span class="bucket-pill" style="background:#fce8df;color:#712B13">+1.9pp</span></td></tr>
-        <tr><td><span class="tag-mono" style="color:#8B1A1A">no_agent_utterance</span></td><td>Agent never spoke or typed during the contact</td><td>917</td><td><span class="bucket-pill" style="background:#fce8df;color:#712B13">+0.5pp</span></td></tr>
-        <tr><td><span class="tag-mono" style="color:#8B1A1A">no_customer_utterance</span></td><td>Customer never spoke or typed during the contact</td><td>5,368</td><td><span class="bucket-pill" style="background:#fce8df;color:#712B13">+2.9pp</span></td></tr>
-        <tr><td><span class="tag-mono" style="color:#8B1A1A">customer_stopped_responding</span></td><td>Customer disengaged before issue could be addressed</td><td>5,688</td><td><span class="bucket-pill" style="background:#fce8df;color:#712B13">+3.1pp</span></td></tr>
-        <tr><td><span class="tag-mono" style="color:#8B1A1A">agent_stopped_responding</span></td><td>Agent disengaged before resolving</td><td>1,121</td><td><span class="bucket-pill" style="background:#fce8df;color:#712B13">+0.6pp</span></td></tr>
-        <tr><td><span class="tag-mono" style="color:#8B1A1A">screenshare_error</span></td><td>Screen-share tool failed, blocking real engagement</td><td>491</td><td><span class="bucket-pill" style="background:#fce8df;color:#712B13">+0.3pp</span></td></tr>
-        <tr><td><span class="tag-mono" style="color:#8B1A1A">system_crash_agent</span></td><td>Agent-side technical failure prevented engagement</td><td>1,387</td><td><span class="bucket-pill" style="background:#fce8df;color:#712B13">+0.8pp</span></td></tr>
-        <tr><td><span class="tag-mono" style="color:#8B1A1A">system_crash_customer</span></td><td>Customer-side technical failure prevented engagement</td><td>527</td><td><span class="bucket-pill" style="background:#fce8df;color:#712B13">+0.3pp</span></td></tr>
-        <tr><td><span class="tag-mono" style="color:#8B1A1A">contact_ended_unexpectedly</span></td><td>Contact dropped before resolution was attempted</td><td>4,349</td><td><span class="bucket-pill" style="background:#fce8df;color:#712B13">+2.4pp</span></td></tr>
-        <tr><td><span class="tag-mono" style="color:#8B1A1A">channel_switch_to_call</span></td><td>Chat ended before resolving; customer told to call</td><td>232</td><td><span class="bucket-pill" style="background:#fce8df;color:#712B13">+0.1pp</span></td></tr>
-        <tr style="background:#fff8f5"><td><span class="tag-mono" style="color:#8B1A1A">misrouted_contact</span></td><td>Wrong queue — issue not addressed by the right team</td><td>4,315</td><td><span class="bucket-pill" style="background:#fce8df;color:#712B13">+2.3pp</span></td></tr>
-      </tbody>
+  <div style="overflow-x:auto">
+    <table class="dtable" id="actionTable">
+      <thead><tr>
+        <th>Driver (primary_tag)</th>
+        <th>Bucket</th>
+        <th>Unresolved ↕</th>
+        <th>FRS%</th>
+        <th>WoW trend</th>
+        <th>Initiative</th>
+        <th>Ctrl%</th>
+        <th>Ceiling</th>
+        <th>What needs to happen</th>
+      </tr></thead>
+      <tbody id="actionBody"></tbody>
     </table>
   </div>
-
-  <div class="panel" style="margin-bottom:16px;">
-    <div class="panel-title" style="margin-bottom:4px;">Bucket B — Something still pending <span style="font-weight:400;color:#73726c;font-size:12px;">(15 tags · 66,941 unresolved · 36.3% of scored · +36.3pp FRS opportunity)</span></div>
-    <div class="panel-sub">Issue was engaged but resolution requires a follow-up action. The largest bucket — the primary lever for FRS improvement.</div>
-    <table class="tag-table">
-      <thead><tr><th>Primary Tag (V2)</th><th>Why it lands here</th><th>Volume</th><th>FRS impact</th></tr></thead>
-      <tbody>
-        <tr style="background:#f4f2fb"><td><span class="tag-mono" style="color:#1A3A6B">transfer_recommended</span></td><td>Transfer needed; not closed on this contact</td><td>21,529</td><td><span class="bucket-pill" style="background:#e8e6f8;color:#26215C">+11.7pp</span></td></tr>
-        <tr style="background:#f4f2fb"><td><span class="tag-mono" style="color:#1A3A6B">intuit_process_pending</span></td><td>Internal Intuit process must complete after the contact</td><td>14,174</td><td><span class="bucket-pill" style="background:#e8e6f8;color:#26215C">+7.7pp</span></td></tr>
-        <tr style="background:#f4f2fb"><td><span class="tag-mono" style="color:#1A3A6B">escalation_or_assistance_required</span></td><td>Escalated to manager / SME — another team must follow up</td><td>8,581</td><td><span class="bucket-pill" style="background:#e8e6f8;color:#26215C">+4.6pp</span></td></tr>
-        <tr><td><span class="tag-mono" style="color:#1A3A6B">intuit_process_pending</span></td><td>Internal Intuit process must complete after the contact</td><td>—</td><td>—</td></tr>
-        <tr><td><span class="tag-mono" style="color:#1A3A6B">automated_process</span></td><td>An automated process is pending completion</td><td>3,743</td><td><span class="bucket-pill" style="background:#e8e6f8;color:#26215C">+2.0pp</span></td></tr>
-        <tr><td><span class="tag-mono" style="color:#1A3A6B">wait_external_process</span></td><td>Waiting on external action (IRS, bank, etc.)</td><td>511</td><td><span class="bucket-pill" style="background:#e8e6f8;color:#26215C">+0.3pp</span></td></tr>
-        <tr><td><span class="tag-mono" style="color:#1A3A6B">external_support_recommended</span></td><td>Customer needs non-Intuit support to resolve</td><td>2,944</td><td><span class="bucket-pill" style="background:#e8e6f8;color:#26215C">+1.6pp</span></td></tr>
-        <tr><td><span class="tag-mono" style="color:#1A3A6B">technical_investigation</span></td><td>More investigation needed beyond this contact</td><td>1,302</td><td><span class="bucket-pill" style="background:#e8e6f8;color:#26215C">+0.7pp</span></td></tr>
-        <tr><td><span class="tag-mono" style="color:#1A3A6B">customer_action_required</span></td><td>Customer must perform an action post-call <em style="color:#73726c">(overlay-creditable)</em></td><td>—</td><td>—</td></tr>
-        <tr><td><span class="tag-mono" style="color:#1A3A6B">policy_restriction</span></td><td>Intuit policy blocks resolution on this call</td><td>4,124</td><td><span class="bucket-pill" style="background:#e8e6f8;color:#26215C">+2.2pp</span></td></tr>
-        <tr><td><span class="tag-mono" style="color:#1A3A6B">known_issue</span></td><td>Known issue; fix is pending elsewhere</td><td>3,119</td><td><span class="bucket-pill" style="background:#e8e6f8;color:#26215C">+1.7pp</span></td></tr>
-        <tr><td><span class="tag-mono" style="color:#1A3A6B">feature_not_available</span></td><td>Customer needs a feature that does not exist in the product</td><td>569</td><td><span class="bucket-pill" style="background:#e8e6f8;color:#26215C">+0.3pp</span></td></tr>
-        <tr><td><span class="tag-mono" style="color:#1A3A6B">billing_issue</span></td><td>Billing-related issue requiring backend action</td><td>41</td><td><span class="bucket-pill" style="background:#e8e6f8;color:#26215C">+0.0pp</span></td></tr>
-        <tr><td><span class="tag-mono" style="color:#1A3A6B">form_unavailable</span></td><td>Required tax form / document not yet available</td><td>1</td><td><span class="bucket-pill" style="background:#e8e6f8;color:#26215C">+0.0pp</span></td></tr>
-        <tr><td><span class="tag-mono" style="color:#1A3A6B">product_limitation</span></td><td>Product bug or limitation; no on-call fix possible</td><td>2,527</td><td><span class="bucket-pill" style="background:#e8e6f8;color:#26215C">+1.4pp</span></td></tr>
-        <tr><td><span class="tag-mono" style="color:#1A3A6B">customer_cannot_continue</span></td><td>Customer is blocked and cannot proceed</td><td>3,445</td><td><span class="bucket-pill" style="background:#e8e6f8;color:#26215C">+1.9pp</span></td></tr>
-        <tr><td><span class="tag-mono" style="color:#1A3A6B">customer_refuses_steps</span></td><td>Customer declined the recommended steps <em style="color:#73726c">(judgment call — B not A)</em></td><td>331</td><td><span class="bucket-pill" style="background:#e8e6f8;color:#26215C">+0.2pp</span></td></tr>
-      </tbody>
-    </table>
+  <div class="note" style="margin-top:8px">
+    <strong>Reading this:</strong> WoW trend = change in unresolved volume from wk 05-25 to wk 06-15 (↑ = getting worse, ↓ = improving). 
+    Ceiling = max FRS lift if Controllable% is fully addressed. Focus on high volume + low FRS% + rising trend.
   </div>
+</div>
 
-  <div class="two-col" style="gap:12px">
-    <div class="panel">
-      <div class="panel-title" style="margin-bottom:4px;">Bucket C — Customer did not confirm <span style="font-weight:400;color:#73726c;font-size:12px;">(4 tags · 1,796 · +1.0pp)</span></div>
-      <div class="panel-sub">Steps taken but customer did not confirm understanding or satisfaction.</div>
-      <table class="tag-table">
-        <thead><tr><th>Tag</th><th>Why</th><th>Vol</th><th>Impact</th></tr></thead>
-        <tbody>
-          <tr><td><span class="tag-mono" style="color:#7B6000">customer_confused</span></td><td>Customer expressed confusion / did not understand</td><td>240</td><td><span class="bucket-pill" style="background:#d9f2e8;color:#04342C">+0.1pp</span></td></tr>
-          <tr><td><span class="tag-mono" style="color:#7B6000">customer_dissatisfied</span></td><td>Customer expressed dissatisfaction with the resolution</td><td>397</td><td><span class="bucket-pill" style="background:#d9f2e8;color:#04342C">+0.2pp</span></td></tr>
-          <tr><td><span class="tag-mono" style="color:#7B6000">no_clear_resolution</span></td><td>Steps unclear; customer could not confirm outcome</td><td>507</td><td><span class="bucket-pill" style="background:#d9f2e8;color:#04342C">+0.3pp</span></td></tr>
-          <tr><td><span class="tag-mono" style="color:#7B6000">no_clear_evidence</span></td><td>Transcript lacks evidence of customer confirmation</td><td>652</td><td><span class="bucket-pill" style="background:#d9f2e8;color:#04342C">+0.4pp</span></td></tr>
-        </tbody>
-      </table>
+<!-- TRANSFER -->
+<div class="xfer">
+  <div style="font-size:13px;font-weight:600;color:#712B13;margin-bottom:3px">📍 Transfer lens — transfer_recommended resolves at 47.8% vs 73.5% for GOOD transfers (v4 Lens B)</div>
+  <div style="font-size:11px;color:#993C1D;margin-bottom:10px">75,499 unresolved · Ctrl 50% (v4) · Ceiling +5.2pp · BAD+ADVISED resolve at ~1% — routing quality is the lever</div>
+  <div class="fgrid">
+    <div class="fc"><div class="fclbl" style="color:#0C447C">Tier</div><div class="fcval" style="color:#0C447C">Tier 1 = 90.3%</div><div class="fcnote">17,454 contacts. More concentrated than overall (77%). T1 transferring out and still failing.</div></div>
+    <div class="fc"><div class="fclbl" style="color:#712B13">Partner</div><div class="fcval" style="color:#712B13">FNDVR 42% + CONC 30%</div><div class="fcnote">72% of transfer-out cases. Same 2 partners dominate.</div></div>
+    <div class="fc"><div class="fclbl" style="color:#04342C">Channel</div><div class="fcval" style="color:#04342C">Inbound 59.5%</div><div class="fcnote">Called in, transferred, still not resolved. Warm-transfer protocol review needed.</div></div>
+    <div class="fc"><div class="fclbl" style="color:#444">NLH</div><div class="fcval" style="color:#444">Only 0.3%</div><div class="fcnote">Transfer failures almost entirely non-NLH.</div></div>
+  </div>
+</div>
+</div><!-- end sec-dash -->
+
+<!-- ═══════════════════ OPPORTUNITY SIZING ═══════════════════ -->
+<div id="sec-sizing" class="section">
+<div class="hdr">
+  <div><h1>FRS Opportunity Sizing — v4 Tag Lens</h1><div class="meta">10 fixable tags · data-backed Controllable % · effectiveness % = judgment dial</div></div>
+  <div class="hero"><div class="num" style="color:#EF9F27">+13.7pp</div><div class="lbl">Tag lens ceiling (100% eff)</div><div class="trend" style="color:#5DCAA5">v4 Tag lens lift: +11.1pp</div></div>
+</div>
+<div class="kpis">
+  <div class="kpi"><div class="klbl">Baseline FRS</div><div class="kval">48.4%</div></div>
+  <div class="kpi"><div class="klbl">Tag lens ceiling</div><div class="kval" style="color:#534AB7">+13.7pp</div></div>
+  <div class="kpi"><div class="klbl">Tag lens lift (v4)</div><div class="kval" style="color:#EF9F27">+11.1pp</div></div>
+  <div class="kpi"><div class="klbl">+ Transfer lens</div><div class="kval" style="color:#185FA5">+5.1pp</div></div>
+  <div class="kpi"><div class="klbl">+ Quartile + Intent</div><div class="kval" style="color:#0F6E56">+3.6pp</div></div>
+  <div class="kpi"><div class="klbl">Total projected (v4)</div><div class="kval" style="color:#5DCAA5">69.3%</div></div>
+</div>
+<div class="full panel">
+  <div class="ptitle" style="margin-bottom:4px">Foundation — 10 fixable tags (share × Controllable % = recoverable ceiling)</div>
+  <div class="psub">v4 data-backed controllable %. Ceiling = tag's share of contacts × Ctrl%. Total ceiling ~13.7pp.</div>
+  <table class="ttable">
+    <thead><tr><th>Tag (V2)</th><th>Share of contacts</th><th>Controllable % (v4)</th><th>Ceiling (pp)</th><th>Root-cause group</th><th>Initiative</th></tr></thead>
+    <tbody id="v4Body"></tbody>
+  </table>
+  <div style="margin-top:10px;padding:10px 12px;background:#f4f2fb;border-radius:6px;font-size:11px;color:#26215C;border:0.5px solid #7269CC">
+    <strong>v4 Tag lens total: +13.7pp ceiling · +11.1pp lift at v4 effectiveness %</strong> · escalation_or_assistance_required leads at +5.2pp ceiling (86% Ctrl) · Shared tags split sequentially — no double-counting · IEP Migration is an enabler, not a bar
+  </div>
+  <div class="warn" style="margin-top:8px">⚠ Scenario model — not a forecast. Ceiling is data-backed. Effectiveness % is an unvalidated judgment dial. Do not quote projected FRS without stakeholder alignment.</div>
+</div>
+
+<!-- SIMULATOR -->
+<div class="full panel">
+  <div class="ptitle" style="margin-bottom:4px">🎛 Initiative simulator — adjust effectiveness % per initiative</div>
+  <div class="psub">Ceiling = data-backed Ctrl% from v4. Effectiveness = your judgment dial. Defaults loaded from v4 Tag lens.</div>
+  <div id="initSliders" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px"></div>
+  <div style="display:flex;align-items:center;gap:16px;margin-top:16px;flex-wrap:wrap">
+    <div style="background:#2c2c2a;color:#fff;border-radius:8px;padding:14px 18px;text-align:center;min-width:140px">
+      <div style="font-size:30px;font-weight:700;color:#5DCAA5" id="simFRS">48.4%</div>
+      <div style="font-size:10px;color:#B4B2A9;margin-top:2px">Simulated FRS</div>
+      <div style="font-size:12px;color:#9FE1CB;margin-top:4px" id="simLift">Move sliders ↑</div>
     </div>
-    <div class="panel">
-      <div class="panel-title" style="margin-bottom:4px;">Other — Does not fit A / B / C cleanly</div>
-      <div class="panel-sub">Catch-all for edge cases that don't match predefined categories.</div>
-      <table class="tag-table">
-        <thead><tr><th>Tag</th><th>Why</th><th>Vol</th></tr></thead>
-        <tbody>
-          <tr><td><span class="tag-mono" style="color:#444">other</span></td><td>Catch-all — could be any failure mode. Review and re-tag.</td><td>9</td></tr>
-        </tbody>
-      </table>
-      <div class="note" style="margin-top:12px">
-        <strong>Overlay-creditable tags:</strong> <code>customer_action_required</code>, <code>multi_issue_flag_partial_res</code>, <code>good_transfer_recommended</code> can be marked Resolved via overlay even though they technically fail B. These overlays apply on top of the A+B+C rubric and are not counted in the unresolved gap.
+    <div style="flex:1;min-width:200px">
+      <div style="font-size:11px;color:#73726c;margin-bottom:6px">FRS progress toward 79% goal</div>
+      <div style="height:28px;border-radius:5px;overflow:hidden;background:#f0eee8;position:relative">
+        <div id="simBar" style="height:100%;background:#1D9E75;transition:width .3s;width:48.4%"></div>
+        <div style="position:absolute;left:0;top:0;height:100%;display:flex;align-items:center;padding:0 8px;font-size:11px;font-weight:600;color:#fff" id="simBarLbl">48.4%</div>
+        <div style="position:absolute;right:0;top:0;width:1.5px;height:100%;background:#993C1D;opacity:.6"></div>
+      </div>
+      <div style="display:flex;gap:16px;margin-top:8px;font-size:11px;color:#73726c;flex-wrap:wrap">
+        <span>Residual to 79%: <strong id="simResidual" style="color:#993C1D">30.6pp</strong></span>
+        <span>Tag lens lift: <strong id="simLiftPts" style="color:#0F6E56">+0.0pp</strong></span>
       </div>
     </div>
   </div>
+  <div class="warn" style="margin-top:10px">⚠ Scenario — not a forecast. Ceiling is data-backed. Effectiveness % is an unvalidated judgment dial.</div>
+</div>
+</div><!-- end sec-sizing -->
 
+<!-- ═══════════════════ READ ME ═══════════════════ -->
+<div id="sec-readme" class="section">
+<div class="hdr" style="margin-bottom:20px">
+  <div><h1>FRS A∧B∧C Rubric — Tag Reference</h1><div class="meta">A contact resolves only when ALL THREE criteria pass simultaneously</div></div>
+  <div style="font-size:28px;font-weight:700;color:#5DCAA5">A ∧ B ∧ C</div>
+</div>
+<div class="panel" style="margin-bottom:16px">
+  <div class="ptitle" style="margin-bottom:16px">The three-criteria rubric</div>
+  <div class="rubric-row">
+    <div class="rcard ra">
+      <div class="rcirc" style="background:#5BA3E8">A</div>
+      <div class="rq">Was the issue addressed?</div>
+      <div class="rpass"><span class="pbd">PASS ✓</span><br>Expert engaged and provided guidance or a solution.</div>
+      <div class="rfail"><span class="fbd">FAIL ✗</span><br>Issue acknowledged but not addressed, or call ended before expert could engage.</div>
+    </div>
+    <div class="rand">AND</div>
+    <div class="rcard rb">
+      <div class="rcirc" style="background:#D4A843">B</div>
+      <div class="rq">Is anything still pending?</div>
+      <div class="rpass"><span class="pbd">PASS ✓</span><br>No open dependencies — no pending Intuit action, customer action, or external process.</div>
+      <div class="rfail"><span class="fbd">FAIL ✗</span><br>A blocker remains: follow-up needed, transfer required, or customer must still act.</div>
+    </div>
+    <div class="rand">AND</div>
+    <div class="rcard rc">
+      <div class="rcirc" style="background:#9B7FD4">C</div>
+      <div class="rq">Did the customer understand the outcome?</div>
+      <div class="rpass"><span class="pbd">PASS ✓</span><br>Customer confirmed understanding — acknowledged next steps or resolution.</div>
+      <div class="rfail"><span class="fbd">FAIL ✗</span><br>No confirmation. Customer ended the call confused or without clarity.</div>
+    </div>
+  </div>
+</div>
+<div class="panel" style="margin-bottom:16px">
+  <div class="ptitle" style="margin-bottom:10px">Methodology notes</div>
+  <div style="background:#fff;border-radius:8px;padding:14px 18px;border:0.5px solid #e0dfd8;font-size:11px;line-height:1.8">
+    <strong>Primary tag by priority hierarchy.</strong> A contact failing both B and C gets one tag — whichever ranks highest in V2 hierarchy.<br><br>
+    <strong>Judgment calls.</strong> <code>customer_refuses_steps</code> is B (path forward existed). <code>transfer_recommended</code> is B (contact didn't close) but can be overlay-credited for good transfers.<br><br>
+    <strong>Overlay-credited tags.</strong> <code>customer_action_required</code>, <code>multi_issue_flag_partial_res</code>, <code>good_transfer_recommended</code> can be Resolved via overlay even though they fail B.<br><br>
+    <strong>32 V2 tags total.</strong> 11 A-FAIL + 16 B-FAIL + 4 C-FAIL + 1 Other.
+  </div>
+</div>
+<div class="panel">
+  <div class="ptitle" style="margin-bottom:4px">All 31 active tags — real data May 25–Jun 21</div>
+  <div class="psub">Sorted by unresolved volume. Non-conversation tags in orange.</div>
+  <table class="ttable"><thead><tr><th>Tag</th><th>Bucket</th><th>Unresolved</th><th>FRS%</th><th>Ctrl%</th><th>Ceiling</th><th>Why it lands here</th></tr></thead>
+  <tbody id="rmBody"></tbody></table>
+</div>
 </div><!-- end sec-readme -->
 </div><!-- end page -->
 
 <script>
-// ─── CONSTANTS ────────────────────────────────────────────────────────────────
-var T=184555, R=87477;
-var BA=27854, BB=66941, BC=1796, BO=9;
-// Band boundaries (bottom-up)
-var C_BOT=R, C_TOP=R+BC;           // 87477–89273
-var O_BOT=C_TOP, O_TOP=C_TOP+BO;  // 89273–89282
-var B_BOT=O_TOP, B_TOP=O_TOP+BB;  // 89282–156223
-var A_BOT=B_TOP, A_TOP=A_BOT+BA;  // 156223–184077
+// ═══════════════════════════════════════════════════
+// ALL DATA
+// ═══════════════════════════════════════════════════
+var S=720617, RES=348469, UNR=372148, BASE=48.4;
 
-// ─── SIMULATOR ───────────────────────────────────────────────────────────────
-function updateSim(){
-  var a=+document.getElementById('slA').value;
-  var b=+document.getElementById('slB').value;
-  var c=+document.getElementById('slC').value;
-  document.getElementById('aVal').textContent=a;
-  document.getElementById('bVal').textContent=b;
-  document.getElementById('cVal').textContent=c;
-  var addA=Math.round(BA*a/100), addB=Math.round(BB*b/100), addC=Math.round(BC*c/100);
-  document.getElementById('aAdd').textContent=addA.toLocaleString();
-  document.getElementById('bAdd').textContent=addB.toLocaleString();
-  document.getElementById('cAdd').textContent=addC.toLocaleString();
-  var simR=R+addA+addB+addC;
-  var simF=(simR/T*100).toFixed(1);
-  var lift=((simR-R)/T*100).toFixed(1);
-  document.getElementById('simFRS').textContent=simF+'%';
-  document.getElementById('simRes').textContent=simR.toLocaleString();
-  document.getElementById('simAdd2').textContent='+'+(addA+addB+addC).toLocaleString();
-  document.getElementById('simLift').textContent=lift>0?'+'+lift+'pp vs current FRS':'No change yet';
-}
+var DR=[
+  {t:'transfer_recommended',             bk:'B',v:75499,frs:47.8,ctrl:'50%',ceil:5.24,init:'Routing (E2E)',nc:false},
+  {t:'intuit_process_pending',           bk:'B',v:58311,frs:12.8,ctrl:'85%',ceil:6.88,init:'Internal Process Fix',nc:false},
+  {t:'escalation_or_assistance_required',bk:'B',v:32170,frs:10.3,ctrl:'86%',ceil:3.84,init:'Case Management',nc:false},
+  {t:'no_customer_utterance',            bk:'A',v:22427,frs:0.0, ctrl:'0%', ceil:0,   init:'Non-conversation',nc:true},
+  {t:'customer_stopped_responding',      bk:'A',v:21301,frs:5.3, ctrl:'0%', ceil:0,   init:'Non-conversation',nc:true},
+  {t:'voice_mail_or_system_message',     bk:'A',v:17508,frs:0.1, ctrl:'0%', ceil:0,   init:'Non-conversation',nc:true},
+  {t:'contact_ended_unexpectedly',       bk:'A',v:17402,frs:3.9, ctrl:'24%',ceil:0.58,init:'Defect Management',nc:false},
+  {t:'misrouted_contact',                bk:'A',v:15976,frs:2.5, ctrl:'66%',ceil:1.46,init:'Routing (E2E)',nc:false},
+  {t:'policy_restriction',              bk:'B',v:15587,frs:10.7,ctrl:'70%',ceil:1.51,init:'Policy Review',nc:false},
+  {t:'automated_process',              bk:'B',v:15044,frs:7.5, ctrl:'14%',ceil:0.29,init:'Internal Process Fix',nc:false},
+  {t:'customer_cannot_continue',       bk:'B',v:13421,frs:9.0, ctrl:'35%',ceil:0.65,init:'Defect Management',nc:false},
+  {t:'external_support_recommended',   bk:'B',v:11439,frs:14.7,ctrl:'30%',ceil:0.48,init:'Escalation Path',nc:false},
+  {t:'known_issue',                    bk:'B',v:10160,frs:13.4,ctrl:'65%',ceil:0.92,init:'Knowledge Mgmt',nc:false},
+  {t:'product_limitation',             bk:'B',v:9889, frs:22.9,ctrl:'57%',ceil:0.80,init:'Defect Management',nc:false},
+  {t:'system_crash_agent',             bk:'A',v:5251, frs:7.8, ctrl:'45%',ceil:0.33,init:'Agent Tooling',nc:false},
+  {t:'technical_investigation',        bk:'B',v:5173, frs:12.8,ctrl:'60%',ceil:0.43,init:'Agent Tooling',nc:false},
+  {t:'agent_stopped_responding',       bk:'A',v:4279, frs:6.5, ctrl:'0%', ceil:0,   init:'Non-conversation',nc:true},
+  {t:'no_agent_utterance',             bk:'A',v:3830, frs:0.1, ctrl:'0%', ceil:0,   init:'Non-conversation',nc:true},
+  {t:'no_clear_evidence',              bk:'C',v:2527, frs:0.1, ctrl:'1%', ceil:0.00,init:'Expert AI Co-Pilot',nc:true},
+  {t:'feature_not_available',          bk:'B',v:2193, frs:35.7,ctrl:'55%',ceil:0.17,init:'Knowledge Mgmt',nc:false},
+  {t:'no_clear_resolution',            bk:'C',v:2032, frs:16.8,ctrl:'50%',ceil:0.14,init:'Expert AI Co-Pilot',nc:false},
+  {t:'screenshare_error',              bk:'A',v:2004, frs:12.5,ctrl:'70%',ceil:0.19,init:'Agent Tooling',nc:false},
+  {t:'system_crash_customer',          bk:'A',v:1982, frs:10.1,ctrl:'45%',ceil:0.12,init:'Defect Management',nc:false},
+  {t:'wait_external_process',          bk:'B',v:1937, frs:10.3,ctrl:'30%',ceil:0.08,init:'Internal Process Fix',nc:false},
+  {t:'customer_dissatisfied',          bk:'C',v:1579, frs:12.5,ctrl:'30%',ceil:0.07,init:'Expert AI Co-Pilot',nc:false},
+  {t:'customer_refuses_steps',         bk:'B',v:1257, frs:8.9, ctrl:'0%', ceil:0,   init:'—',nc:false},
+  {t:'channel_switch_to_call',         bk:'A',v:861,  frs:4.1, ctrl:'0%', ceil:0,   init:'Non-conversation',nc:true},
+  {t:'customer_confused',              bk:'C',v:839,  frs:17.2,ctrl:'50%',ceil:0.06,init:'Expert AI Co-Pilot',nc:false},
+  {t:'billing_issue',                  bk:'B',v:222,  frs:22.6,ctrl:'0%', ceil:0,   init:'—',nc:false},
+  {t:'other',                          bk:'OTHER',v:42,frs:6.7,ctrl:'0%',ceil:0,   init:'—',nc:false},
+  {t:'form_unavailable',               bk:'B',v:6,    frs:25.0,ctrl:'0%', ceil:0,   init:'—',nc:false},
+];
 
-// ─── WoW TREND ───────────────────────────────────────────────────────────────
-var WK=['wk20','wk21','wk22','wk23','wk24','wk25'];
-var WK_FULL=['wk20: 10-16 May','wk21: 17-23 May','wk22: 24-30 May','wk23: 31 May–6 Jun','wk24: 7-13 Jun','wk25: 14-20 Jun'];
-var TSETS={
-  frs:{yMin:44,yMax:56,sfx:'%',ds:[
-    {label:'Overall FRS%',data:[51.3,52.0,49.2,48.3,47.5,47.2],color:'#1D9E75',fill:true,dash:[]},
-    {label:'Tier 1 FRS%', data:[52.1,53.0,51.2,49.5,49.0,49.5],color:'#185FA5',fill:false,dash:[]},
-    {label:'NLH FRS%',    data:[50.5,51.0,48.7,49.0,47.9,47.6],color:'#D85A30',fill:false,dash:[4,3]},
-  ]},
-  unresolved:{yMin:0,yMax:115000,sfx:'',ds:[
-    {label:'Contacts unresolved',data:[100114,92727,90333,105649,96375,96625],color:'#993C1D',fill:true,dash:[]},
-    {label:'T1 unresolved',      data:[77559,70970,67381,82911,75573,72061],  color:'#534AB7',fill:false,dash:[]},
-    {label:'NLH unresolved',     data:[5500,5173,5040,5886,5660,5519],        color:'#D85A30',fill:false,dash:[4,3]},
-  ]},
-  transfer:{yMin:15,yMax:24,sfx:'%',ds:[
-    {label:'Overall transfer%',data:[17.6,18.2,18.2,18.4,18.3,18.2],color:'#888780',fill:true,dash:[]},
-    {label:'T1 transfer%',     data:[21.0,21.0,20.9,20.6,19.9,19.2],color:'#0C447C',fill:false,dash:[]},
-  ]},
+var V4=[
+  {t:'contact_ended_unexpectedly',        sh:10.7,ctrl:24.0,ceil:2.6,grp:'Termination',      init:'Defect Mgmt'},
+  {t:'escalation_or_assistance_required', sh:6.0, ctrl:86.0,ceil:5.2,grp:'Routing & Handoff',init:'Case Mgmt'},
+  {t:'product_limitation',               sh:3.0, ctrl:58.0,ceil:1.7,grp:'Product & Tool',   init:'Defect Mgmt'},
+  {t:'multi_issue_flag_no_res',          sh:2.4, ctrl:75.1,ceil:1.8,grp:'Multi-issue',       init:'Expert AI Co-Pilot'},
+  {t:'misrouted_contact',               sh:2.3, ctrl:65.8,ceil:1.5,grp:'Routing & Handoff', init:'Routing E2E'},
+  {t:'system_crash',                    sh:1.0, ctrl:45.1,ceil:0.5,grp:'Product & Tool',    init:'Defect Mgmt'},
+  {t:'customer_confused',               sh:0.6, ctrl:46.1,ceil:0.3,grp:'Customer-side',     init:'Knowledge Mgmt'},
+  {t:'no_clear_evidence',               sh:0.5, ctrl:1.1, ceil:0.0,grp:'Low-signal',        init:'Expert AI Co-Pilot'},
+  {t:'no_clear_resolution',             sh:0.4, ctrl:50.7,ceil:0.2,grp:'Low-signal',        init:'Expert AI Co-Pilot'},
+  {t:'automated_process',              sh:0.2, ctrl:13.7,ceil:0.0,grp:'Process',            init:'Internal Process Fix'},
+];
+
+var WK_LABELS=['wk 05-25','wk 06-01','wk 06-08','wk 06-15'];
+var WK_SCORED= [170302,193115,177403,179444];
+var WK_RES=    [83448, 92309, 85508, 86851];
+var WK_UNR=    [86854,100806, 91895, 92593];
+var WK_FRS=    [49.0,  47.8,  48.2,  48.4];
+
+var WK_VOL={
+  'transfer_recommended':             [16804,20175,19535,18985],
+  'intuit_process_pending':           [14740,15798,13911,13862],
+  'escalation_or_assistance_required':[6885, 8713, 8337, 8235],
+  'no_customer_utterance':            [4999, 6492, 5118, 5818],
+  'customer_stopped_responding':      [4515, 5741, 5516, 5529],
+  'voice_mail_or_system_message':     [5018, 4685, 3380, 4425],
+  'contact_ended_unexpectedly':       [4165, 4736, 4276, 4225],
+  'misrouted_contact':                [3551, 4112, 4219, 4094],
+  'policy_restriction':               [3697, 4256, 3935, 3699],
+  'automated_process':                [3749, 4247, 3684, 3364],
+  'customer_cannot_continue':         [3284, 3631, 3287, 3219],
+  'external_support_recommended':     [2747, 3133, 2738, 2821],
+  'known_issue':                      [1853, 2764, 2532, 3011],
+  'product_limitation':               [2239, 2715, 2435, 2500],
+  'system_crash_agent':               [1327, 1353, 1357, 1214],
+  'technical_investigation':          [1211, 1358, 1316, 1288],
+  'agent_stopped_responding':         [984,  1106, 1103, 1086],
+  'no_agent_utterance':               [951,  1089,  922,  868],
+  'no_clear_evidence':                [559,   740,  626,  602],
+  'feature_not_available':            [505,   591,  558,  539],
+  'no_clear_resolution':              [470,   569,  504,  489],
+  'screenshare_error':                [488,   546,  463,  507],
+  'system_crash_customer':            [533,   483,  495,  471],
+  'wait_external_process':            [472,   497,  448,  520],
+  'customer_dissatisfied':            [351,   428,  372,  428],
+  'customer_refuses_steps':           [305,   324,  318,  310],
+  'channel_switch_to_call':           [199,   208,  224,  230],
+  'customer_confused':                [184,   231,  224,  200],
+  'billing_issue':                    [59,     66,   53,   44],
+  'other':                            [9,      15,    8,   10],
+  'form_unavailable':                 [1,       4,    1,    0]
 };
-var curTrendKey='frs', tChart=null;
+var WK_FRS_DR={
+  'transfer_recommended':             [50.8,49.1,46.1,44.9],
+  'intuit_process_pending':           [12.7,13.3,12.9,12.3],
+  'escalation_or_assistance_required':[10.3,10.7,10.1,10.2],
+  'no_customer_utterance':            [0.0, 0.0, 0.0, 0.0],
+  'customer_stopped_responding':      [5.0, 5.6, 4.9, 5.4],
+  'voice_mail_or_system_message':     [0.1, 0.1, 0.2, 0.0],
+  'contact_ended_unexpectedly':       [4.0, 4.0, 3.8, 3.8],
+  'misrouted_contact':                [2.7, 3.0, 2.1, 2.5],
+  'policy_restriction':               [10.6,10.8,10.3,11.1],
+  'automated_process':                [7.5, 7.3, 8.0, 7.4],
+  'customer_cannot_continue':         [9.2, 9.5, 9.1, 8.1],
+  'external_support_recommended':     [13.9,14.4,15.1,15.5],
+  'known_issue':                      [13.4,13.5,14.2,12.5],
+  'product_limitation':               [22.8,23.6,22.6,22.6],
+  'system_crash_agent':               [7.4, 8.0, 7.6, 8.0],
+  'technical_investigation':          [12.8,12.7,13.0,12.6],
+  'agent_stopped_responding':         [7.3, 5.9, 5.4, 7.4],
+  'no_agent_utterance':               [0.1, 0.2, 0.1, 0.1],
+  'no_clear_evidence':                [0.0, 0.1, 0.2, 0.0],
+  'feature_not_available':            [35.0,36.7,34.7,36.1],
+  'no_clear_resolution':              [16.4,19.1,13.8,17.5],
+  'screenshare_error':                [11.9,11.5,13.9,12.6],
+  'system_crash_customer':            [10.3,11.5, 9.8, 8.7],
+  'wait_external_process':            [8.5,11.9,10.0,10.5],
+  'customer_dissatisfied':            [14.6,11.4,14.1,10.3],
+  'customer_refuses_steps':           [8.1,10.0, 9.9, 7.5],
+  'channel_switch_to_call':           [5.7, 3.7, 3.0, 4.2],
+  'customer_confused':                [20.7,16.9,14.2,17.4],
+  'billing_issue':                    [25.3,21.4,17.2,26.7],
+  'other':                            [0.0, 6.2,11.1, 9.1],
+  'form_unavailable':                 [0.0, 0.0,50.0,100.0]
+};
 
-function mkTDS(key){
-  return TSETS[key].ds.map(function(d){return{
-    label:d.label,data:d.data,borderColor:d.color,
-    backgroundColor:d.fill?hexToRgba(d.color,0.08):'transparent',
-    fill:d.fill,tension:.35,pointRadius:5,pointBackgroundColor:d.color,
-    borderDash:d.dash,pointHoverRadius:7
-  };});
+var ACTIONS={
+  'transfer_recommended':'Fix routing quality — reduce BAD/ADVISED transfers. Warm-handoff protocol, right-queue-first-time.',
+  'intuit_process_pending':'Close the async loop — build post-contact confirmation so customers know their Intuit process completed.',
+  'escalation_or_assistance_required':'Reduce need to escalate — equip T1 with in-contact SME guidance and auto-ID tools.',
+  'no_customer_utterance':'IVR/queue redesign — reduce hold times. Channel workstream needed, not coaching.',
+  'customer_stopped_responding':'Proactive check-in before customer disengages. Channel workstream + IVR.',
+  'voice_mail_or_system_message':'Outbound callback strategy. Non-conversation floor — channel workstream.',
+  'contact_ended_unexpectedly':'Connection stability + callback triggers for drops. Defect Management.',
+  'misrouted_contact':'Fix routing logic — correct queue mapping, intent capture. Routing E2E initiative.',
+  'policy_restriction':'Policy exception review. Agent guidance for policy navigation.',
+  'automated_process':'Notify customer when automated process completes. Internal Process Fix.',
+  'customer_cannot_continue':'Simplify steps, reduce complexity. Accessibility review.',
+  'external_support_recommended':'Improve referral quality — warm handoff not cold redirect.',
+  'known_issue':'Proactive notification to customers about known issues before they call.',
+  'product_limitation':'Workaround documentation via Knowledge Mgmt. Defect mgmt for bug escalation.',
+  'system_crash_agent':'Agent tooling stability — fix crash at source. Defect Management.',
+  'technical_investigation':'Set investigation SLA, communicate timeline. Case Management.',
+  'agent_stopped_responding':'QA flag for no-agent-response. Agent accountability + monitoring.',
+  'no_agent_utterance':'Ghost contact detection. QA + monitoring.',
+  'no_clear_evidence':'Transcript quality / recording completeness. May be tooling issue.',
+  'feature_not_available':'Roadmap communication to agents and customers. Knowledge Mgmt.',
+  'no_clear_resolution':'Closing script coaching — agent states resolution clearly before ending.',
+  'screenshare_error':'Screenshare tooling fix. Agent Tooling initiative.',
+  'system_crash_customer':'App stability fix at source. Defect Management.',
+  'wait_external_process':'External dependency tracking — set ETA, follow up when complete.',
+  'customer_dissatisfied':'De-escalation + closing coaching. Expert AI Co-Pilot real-time guidance.',
+  'customer_refuses_steps':'Objection handling coaching — alternative path scripting.',
+  'channel_switch_to_call':'Chat-first resolution capability — reduce chat-to-call deflection.',
+  'customer_confused':'Plain-language communication coaching. Expert AI Co-Pilot.',
+  'billing_issue':'Billing team integration — warm transfer to billing.',
+  'other':'Review and re-tag. Data quality initiative.',
+  'form_unavailable':'Proactive notification when form becomes available.'
+};
+
+var BKG={A:'#fce8df',B:'#e8e6f8',C:'#d9f2e8',OTHER:'#f0efe9'};
+var BKC={A:'#712B13',B:'#26215C',C:'#04342C',OTHER:'#888'};
+var BKF={A:'#D85A30',B:'#534AB7',C:'#0F6E56',OTHER:'#888'};
+
+// ═══════════════════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════════════════
+function showSec(id,btn){
+  document.querySelectorAll('.section').forEach(function(s){s.classList.remove('visible');});
+  document.getElementById('sec-'+id).classList.add('visible');
+  document.querySelectorAll('.navbtn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
 }
-function hexToRgba(hex,a){
-  var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
-  return 'rgba('+r+','+g+','+b+','+a+')';
+
+// ═══════════════════════════════════════════════════
+// WEEK FILTER
+// ═══════════════════════════════════════════════════
+var curWeek=-1;
+function setWeek(wk,btn){
+  curWeek=wk;
+  document.querySelectorAll('.wktab').forEach(function(t){t.classList.remove('active');});
+  btn.classList.add('active');
+  var banner=document.getElementById('wkBanner');
+  var lbl=document.getElementById('wkActionLabel');
+  if(wk===-1){
+    if(banner) banner.textContent='Showing 4-week totals (May 25 - Jun 21)';
+    if(lbl) lbl.textContent='All 4 weeks';
+    updateKPIs(-1);
+  } else {
+    if(banner) banner.textContent=WK_LABELS[wk]+' · '+WK_SCORED[wk].toLocaleString()+' scored · '+WK_UNR[wk].toLocaleString()+' unresolved · FRS '+WK_FRS[wk]+'%';
+    if(lbl) lbl.textContent=WK_LABELS[wk];
+    updateKPIs(wk);
+  }
+  renderDT(curSort);
+  renderActionTable(wk);
 }
-function buildTLegend(key){
-  var box=document.getElementById('trendLegend'); if(!box) return;
+
+function updateKPIs(wk){
+  var scored,resolved,unres,frs;
+  if(wk===-1){scored=720617;resolved=348469;unres=372148;frs='48.4';}
+  else{scored=WK_SCORED[wk];resolved=WK_RES[wk];unres=WK_UNR[wk];frs=WK_FRS[wk].toFixed(1);}
+  var kv=document.querySelectorAll('.kval');
+  if(kv.length>=3){kv[0].textContent=scored.toLocaleString();kv[1].textContent=resolved.toLocaleString();kv[2].textContent=unres.toLocaleString();}
+  var hero=document.querySelector('.hero .num');
+  if(hero) hero.textContent=frs+'%';
+}
+
+// ═══════════════════════════════════════════════════
+// DRIVER TABLE
+// ═══════════════════════════════════════════════════
+var curFilter='ALL', curSort=DR.slice(), sDir=-1, sCol=8;
+
+function renderDT(data){
+  var tb=document.getElementById('dtBody'); if(!tb) return;
+  tb.innerHTML='';
+  var mx=0;
+  data.forEach(function(d){var v=curWeek===-1?d.v:(WK_VOL[d.t]?WK_VOL[d.t][curWeek]:0);if(v>mx)mx=v;});
+  data.forEach(function(d){
+    var vol=curWeek===-1?d.v:(WK_VOL[d.t]?WK_VOL[d.t][curWeek]:0);
+    var frs=curWeek===-1?d.frs:(WK_FRS_DR[d.t]?WK_FRS_DR[d.t][curWeek]:d.frs);
+    var show=curFilter==='ALL'||curFilter===d.bk;
+    var tr=document.createElement('tr');
+    tr.style.display=show?'':'none';
+    if(d.nc) tr.classList.add('nc');
+    var bw=mx>0?Math.round(vol/mx*100):0;
+    var pb=d.ceil>=3?'#e8e6f8':d.ceil>=1?'#f4f2fb':'#f0efe9';
+    var pc=d.ceil>=3?'#26215C':d.ceil>=1?'#534AB7':'#73726c';
+    var fc=frs<15?'#993C1D':frs<30?'#854F0B':'#0F6E56';
+    var row=[];
+    row.push('<td style="font-family:monospace;font-size:10px;white-space:nowrap;color:'+(d.nc?'#854F0B':'#2c2c2a')+'">'+(d.nc?'⚠ ':'')+d.t+'</td>');
+    row.push('<td><span class="bdg" style="background:'+(BKG[d.bk]||'#f0efe9')+';color:'+(BKC[d.bk]||'#888')+'">'+d.bk+'</span></td>');
+    row.push('<td style="font-size:10px;color:#73726c">'+d.init+'</td>');
+    row.push('<td style="font-weight:600">'+vol.toLocaleString()+'</td>');
+    row.push('<td style="color:'+fc+';font-weight:600">'+frs+'%</td>');
+    row.push('<td><div class="bbg"><div class="bfill" style="width:'+bw+'%;background:'+(BKF[d.bk]||'#888')+';opacity:.7"></div></div></td>');
+    row.push('<td>'+d.ctrl+'</td>');
+    row.push('<td><span class="pill" style="background:'+pb+';color:'+pc+'">'+(d.ceil>0?'+'+d.ceil.toFixed(1)+'pp':'—')+'</span></td>');
+    row.push('<td style="font-size:10px;max-width:180px">'+d.init+'</td>');
+    tr.innerHTML=row.join('');
+    tb.appendChild(tr);
+  });
+}
+
+function filterBucket(bk){
+  curFilter=bk;
+  document.querySelectorAll('.ftab').forEach(function(t){t.classList.remove('active');});
+  var el=document.getElementById('f'+bk); if(el) el.classList.add('active');
+  if(bk==='ALL') document.getElementById('fAll').classList.add('active');
+  ['A','B','C'].forEach(function(x){var e=document.getElementById('card'+x);if(e)e.classList.toggle('selected',x===bk);});
+  renderDT(curSort);
+}
+
+function sortD(col){
+  var keys=['t','bk','init','v','frs','','ctrl','','ceil'];
+  var k=keys[col]; if(!k) return;
+  sDir=(sCol===col)?sDir*-1:(col<3?1:-1); sCol=col;
+  curSort=DR.slice().sort(function(a,b){
+    var av=a[k],bv=b[k];
+    return typeof av==='number'?sDir*(bv-av):sDir*String(av).localeCompare(String(bv));
+  });
+  renderDT(curSort);
+}
+sortD(8);
+
+// ═══════════════════════════════════════════════════
+// ACTION TABLE
+// ═══════════════════════════════════════════════════
+function renderActionTable(wk){
+  var tb=document.getElementById('actionBody'); if(!tb) return;
+  tb.innerHTML='';
+  var rows=DR.filter(function(d){return d.v>0;}).map(function(d){
+    var vol=wk===-1?d.v:(WK_VOL[d.t]?WK_VOL[d.t][wk]:0);
+    var frs=wk===-1?d.frs:(WK_FRS_DR[d.t]?WK_FRS_DR[d.t][wk]:d.frs);
+    var wk0=WK_VOL[d.t]?WK_VOL[d.t][0]:0;
+    var wk3=WK_VOL[d.t]?WK_VOL[d.t][3]:0;
+    return {t:d.t,bk:d.bk,vol:vol,frs:frs,trend:wk3-wk0,ctrl:d.ctrl,ceil:d.ceil,init:d.init,nc:d.nc};
+  }).sort(function(a,b){return b.vol-a.vol;});
+  var mx=rows.length>0?rows[0].vol:1;
+  rows.forEach(function(r){
+    if(r.vol===0) return;
+    var tr=document.createElement('tr');
+    if(r.nc) tr.classList.add('nc');
+    var trendStr=r.trend>0?'<span style="color:#993C1D;font-weight:600">↑ +'+r.trend.toLocaleString()+'</span>':r.trend<0?'<span style="color:#0F6E56;font-weight:600">↓ '+r.trend.toLocaleString()+'</span>':'<span style="color:#73726c">→ flat</span>';
+    var bw=Math.round(r.vol/mx*100);
+    var pb=r.ceil>=3?'#e8e6f8':r.ceil>=1?'#f4f2fb':'#f0efe9';
+    var pc=r.ceil>=3?'#26215C':r.ceil>=1?'#534AB7':'#73726c';
+    var fc=r.frs<15?'#993C1D':r.frs<30?'#854F0B':'#0F6E56';
+    var act=ACTIONS[r.t]||'—';
+    var row=[];
+    row.push('<td style="font-family:monospace;font-size:10px;white-space:nowrap;color:'+(r.nc?'#854F0B':'#2c2c2a')+'">'+(r.nc?'⚠ ':'')+r.t+'</td>');
+    row.push('<td><span class="bdg" style="background:'+(BKG[r.bk]||'#f0efe9')+';color:'+(BKC[r.bk]||'#888')+'">'+r.bk+'</span></td>');
+    row.push('<td style="font-weight:600">'+r.vol.toLocaleString()+'<div class="bbg" style="margin-top:2px"><div class="bfill" style="width:'+bw+'%;background:'+(BKF[r.bk]||'#888')+';opacity:.7"></div></div></td>');
+    row.push('<td style="color:'+fc+';font-weight:600">'+r.frs+'%</td>');
+    row.push('<td>'+trendStr+'</td>');
+    row.push('<td style="font-size:10px;color:#73726c;white-space:nowrap">'+r.init+'</td>');
+    row.push('<td>'+r.ctrl+'</td>');
+    row.push('<td><span class="pill" style="background:'+pb+';color:'+pc+'">'+(r.ceil>0?'+'+r.ceil.toFixed(1)+'pp':'—')+'</span></td>');
+    row.push('<td style="font-size:10px;color:#444;max-width:280px;line-height:1.5">'+act+'</td>');
+    tr.innerHTML=row.join('');
+    tb.appendChild(tr);
+  });
+}
+renderActionTable(-1);
+
+// ═══════════════════════════════════════════════════
+// V4 TABLE
+// ═══════════════════════════════════════════════════
+(function(){
+  var tb=document.getElementById('v4Body'); if(!tb) return;
+  V4.forEach(function(t){
+    var tr=document.createElement('tr');
+    var pb=t.ceil>=3?'#e8e6f8':t.ceil>=1?'#f4f2fb':'#f0efe9';
+    var pc=t.ceil>=3?'#26215C':t.ceil>=1?'#534AB7':'#73726c';
+    var row=[];
+    row.push('<td style="font-family:monospace;font-size:10px;color:#1A3A6B">'+t.t+'</td>');
+    row.push('<td>'+t.sh+'%</td>');
+    row.push('<td style="font-weight:600;color:#534AB7">'+t.ctrl+'%</td>');
+    row.push('<td><span class="pill" style="background:'+pb+';color:'+pc+';font-weight:600">'+(t.ceil>0?'+'+t.ceil.toFixed(1)+'pp':'—')+'</span></td>');
+    row.push('<td style="font-size:10px;color:#73726c">'+t.grp+'</td>');
+    row.push('<td style="font-size:10px;color:#73726c">'+t.init+'</td>');
+    tr.innerHTML=row.join('');
+    tb.appendChild(tr);
+  });
+  var tot=document.createElement('tr');
+  tot.style.fontWeight='600';
+  tot.style.borderTop='1.5px solid #e0dfd8';
+  tot.innerHTML='<td colspan="3" style="padding:8px">Total recoverable ceiling</td><td><span class="pill" style="background:#e8e6f8;color:#26215C;font-weight:700">+13.7pp</span></td><td colspan="2"></td>';
+  tb.appendChild(tot);
+})();
+
+// ═══════════════════════════════════════════════════
+// WATERFALL
+// ═══════════════════════════════════════════════════
+var WF={
+  abc:[
+    {l:'Total Scored', bot:0,      top:720617,c:'#1a1a1a',pct:100.0,type:'total',  frs:null},
+    {l:'Bucket A',     bot:627781, top:720617,c:'#8B1A1A',pct:12.9, type:'bucket', frs:null},
+    {l:'cust_stopped', bot:699316, top:720617,c:'#C0392B',pct:3.0,  type:'marker', frs:5.3},
+    {l:'cont_ended',   bot:681914, top:699316,c:'#D97070',pct:2.4,  type:'marker', frs:3.9},
+    {l:'misrouted',    bot:665938, top:681914,c:'#E08888',pct:2.2,  type:'marker', frs:2.5},
+    {l:'Other A tags', bot:627781, top:665938,c:'#F5C0C0',pct:5.3,  type:'mOther', frs:null},
+    {l:'Bucket B',     bot:350265, top:627781,c:'#1A3A6B',pct:38.5, type:'bucket', frs:null},
+    {l:'transfer_rec', bot:552282, top:627781,c:'#1E3F9E',pct:10.5, type:'marker', frs:47.8},
+    {l:'intuit_proc',  bot:493971, top:552282,c:'#2952A3',pct:8.1,  type:'marker', frs:12.8},
+    {l:'escalation',   bot:461801, top:493971,c:'#4168BB',pct:4.5,  type:'marker', frs:10.3},
+    {l:'Other B tags', bot:350265, top:461801,c:'#AABFE8',pct:15.4, type:'mOther', frs:null},
+    {l:'Bucket C',     bot:348469, top:350265,c:'#7B6000',pct:0.2,  type:'bucket', frs:null},
+    {l:'no_clr_ev',    bot:349617, top:350265,c:'#B8960C',pct:0.1,  type:'marker', frs:null},
+    {l:'no_clr_res',   bot:348921, top:349617,c:'#D4B84A',pct:0.1,  type:'marker', frs:null},
+    {l:'cust_conf',    bot:348469, top:348921,c:'#F2E2A0',pct:0.1,  type:'marker', frs:null},
+    {l:'Resolved',     bot:0,      top:348469,c:'#2D7D46',pct:48.4, type:'resolved',frs:null}
+  ],
+  drivers:[
+    {l:'Total Scored',          bot:0,      top:720617,c:'#1a1a1a',pct:100.0,type:'total',  frs:null},
+    {l:'transfer_recommended',  bot:645118, top:720617,c:'#1E3F9E',pct:10.5, type:'bucket', frs:47.8},
+    {l:'intuit_process_pending',bot:586807, top:645118,c:'#2952A3',pct:8.1,  type:'bucket', frs:12.8},
+    {l:'escalation_required',   bot:554637, top:586807,c:'#4168BB',pct:4.5,  type:'bucket', frs:10.3},
+    {l:'no_cust_utterance',     bot:532210, top:554637,c:'#888780',pct:3.1,  type:'bucket', frs:0.0},
+    {l:'cust_stopped',          bot:510909, top:532210,c:'#D97070',pct:3.0,  type:'bucket', frs:5.3},
+    {l:'voicemail',             bot:493401, top:510909,c:'#B4B2A9',pct:2.4,  type:'bucket', frs:0.1},
+    {l:'contact_ended',         bot:475999, top:493401,c:'#E08888',pct:2.4,  type:'bucket', frs:3.9},
+    {l:'misrouted',             bot:460023, top:475999,c:'#5B80CA',pct:2.2,  type:'bucket', frs:2.5},
+    {l:'policy_restriction',    bot:444436, top:460023,c:'#26215C',pct:2.2,  type:'bucket', frs:10.7},
+    {l:'automated_process',     bot:429392, top:444436,c:'#534AB7',pct:2.1,  type:'bucket', frs:7.5},
+    {l:'Other drivers',         bot:348469, top:429392,c:'#888780',pct:11.2, type:'mOther', frs:null},
+    {l:'Resolved',              bot:0,      top:348469,c:'#2D7D46',pct:48.4, type:'resolved',frs:null}
+  ],
+  problem:[
+    {l:'Total Scored',     bot:0,      top:720617,c:'#1a1a1a',pct:100.0,type:'total'},
+    {l:'(none) untagged',  bot:581806, top:720617,c:'#26215C',pct:19.3, type:'bucket'},
+    {l:'Misrouted Contact',bot:553151, top:581806,c:'#534AB7',pct:4.0,  type:'bucket'},
+    {l:'Disc/Ghost Call',  bot:540498, top:553151,c:'#7F77DD',pct:1.8,  type:'bucket'},
+    {l:'Chat',             bot:528961, top:540498,c:'#AFA9EC',pct:1.6,  type:'bucket'},
+    {l:'Banking',          bot:518169, top:528961,c:'#04342C',pct:1.5,  type:'bucket'},
+    {l:'Billing',          bot:508493, top:518169,c:'#0F6E56',pct:1.3,  type:'bucket'},
+    {l:'Unable to Reach',  bot:499189, top:508493,c:'#1D9E75',pct:1.3,  type:'bucket'},
+    {l:'Payroll',          bot:489885, top:499189,c:'#5DCAA5',pct:1.3,  type:'bucket'},
+    {l:'Disconnect',       bot:482070, top:489885,c:'#854F0B',pct:1.1,  type:'bucket'},
+    {l:'Ghost Call',       bot:474999, top:482070,c:'#BA7517',pct:1.0,  type:'bucket'},
+    {l:'Other 200 areas',  bot:348469, top:474999,c:'#888780',pct:17.6, type:'mOther'},
+    {l:'Resolved',         bot:0,      top:348469,c:'#2D7D46',pct:48.4, type:'resolved'}
+  ],
+  tier:[
+    {l:'Total Scored',bot:0,      top:720617,c:'#1a1a1a',pct:100.0,type:'total'},
+    {l:'Tier 1 (77%)',bot:433863, top:720617,c:'#0C447C',pct:39.8, type:'bucket'},
+    {l:'Tier 2 (17%)',bot:370598, top:433863,c:'#185FA5',pct:8.8,  type:'bucket'},
+    {l:'Analyst (4%)',bot:355712, top:370598,c:'#378ADD',pct:2.1,  type:'bucket'},
+    {l:'Tier 3+Other',bot:348469, top:355712,c:'#85B7EB',pct:1.0,  type:'mOther'},
+    {l:'Resolved',    bot:0,      top:348469,c:'#2D7D46',pct:48.4, type:'resolved'}
+  ],
+  partner:[
+    {l:'Total Scored',   bot:0,      top:720617,c:'#1a1a1a',pct:100.0,type:'total'},
+    {l:'FOUNDEVER (39%)',bot:575479, top:720617,c:'#712B13',pct:20.1, type:'bucket'},
+    {l:'CONCENTRIX (36%)',bot:441346,top:575479,c:'#993C1D',pct:18.6, type:'bucket'},
+    {l:'TELEPERF (8%)',  bot:411574, top:441346,c:'#D85A30',pct:4.1,  type:'bucket'},
+    {l:'ALORICA (7%)',   bot:385524, top:411574,c:'#F0997B',pct:3.6,  type:'bucket'},
+    {l:'INTUIT+Other',   bot:348469, top:385524,c:'#e8a882',pct:5.1,  type:'mOther'},
+    {l:'Resolved',       bot:0,      top:348469,c:'#2D7D46',pct:48.4, type:'resolved'}
+  ]
+};
+var curWFKey='abc';
+var wfInst=null;
+
+function buildWFData(key){
+  var segs=WF[key],labels=[],floats=[],colors=[],borders=[];
+  segs.forEach(function(s){
+    labels.push(s.l);
+    floats.push([s.bot,s.top]);
+    colors.push(s.c);
+    borders.push(s.type==='bucket'||s.type==='total'||s.type==='resolved'?'rgba(0,0,0,.25)':'rgba(255,255,255,.15)');
+  });
+  return{labels:labels,floats:floats,colors:colors,borders:borders};
+}
+function buildWFLegend(key){
+  var box=document.getElementById('wfLeg'); if(!box) return;
   box.innerHTML='';
-  TSETS[key].ds.forEach(function(d){
+  WF[key].forEach(function(s){
+    if(s.type==='marker') return;
     var sp=document.createElement('span');
-    sp.innerHTML='<span class="dot" style="background:'+(d.dash.length?'transparent':''+d.color)+
-      ';'+(d.dash.length?'border:1.5px dashed '+d.color+';':'')+'">&nbsp;</span>'+d.label;
+    sp.innerHTML='<span class="dot" style="background:'+s.c+'"></span>'+s.l;
+    box.appendChild(sp);
+  });
+}
+function switchWF(key,btn){
+  curWFKey=key;
+  document.querySelectorAll('.tabs .tab').forEach(function(t){
+    if(t.closest('.panel')===btn.closest('.panel')) t.classList.remove('active');
+  });
+  btn.classList.add('active');
+  var d=buildWFData(key);
+  buildWFLegend(key);
+  wfInst.data.labels=d.labels;
+  wfInst.data.datasets[0].data=d.floats;
+  wfInst.data.datasets[0].backgroundColor=d.colors;
+  wfInst.data.datasets[0].borderColor=d.borders;
+  wfInst._key=key;
+  wfInst.update();
+}
+(function(){
+  var canvas=document.getElementById('wfChart'); if(!canvas) return;
+  var d=buildWFData('abc');
+  buildWFLegend('abc');
+  wfInst=new Chart(canvas,{
+    type:'bar',
+    data:{labels:d.labels,datasets:[{data:d.floats,backgroundColor:d.colors,borderColor:d.borders,borderWidth:1,borderRadius:2,borderSkipped:false}]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{
+        title:function(i){return WF[curWFKey][i[0].dataIndex].l;},
+        label:function(c){
+          var seg=WF[curWFKey][c.dataIndex]; if(!seg) return '';
+          var v=seg.top-seg.bot;
+          if(seg.type==='total') return '720,617 total scored (100%)';
+          if(seg.type==='resolved') return '348,469 resolved · 48.4% FRS';
+          var line=v.toLocaleString()+' contacts · '+seg.pct+'% of scored';
+          if(seg.frs!=null) line+=' · Tag FRS: '+seg.frs+'%';
+          return line;
+        }
+      }}},
+      scales:{
+        x:{ticks:{autoSkip:false,maxRotation:50,font:{size:9},color:'#73726c'},grid:{display:false}},
+        y:{min:0,max:800000,ticks:{callback:function(v){return v===0?'0':(v/1000).toFixed(0)+'k';},font:{size:10},color:'#73726c',maxTicksLimit:8},grid:{color:'rgba(115,114,108,.07)'}}
+      }
+    },
+    plugins:[{id:'wfDeco',afterDatasetsDraw:function(chart){
+      var ctx=chart.ctx,meta=chart.getDatasetMeta(0),yS=chart.scales.y;
+      var segs=WF[chart._key||'abc'];
+      ctx.save(); ctx.setLineDash([3,4]); ctx.strokeStyle='rgba(100,100,100,.18)'; ctx.lineWidth=1;
+      for(var i=0;i<meta.data.length-1;i++){
+        var b0=meta.data[i],b1=meta.data[i+1];
+        var s0=segs[i],s1=segs[i+1];
+        if(!b0||!b1||!s0||!s1||s0.type==='resolved'||s1.type==='resolved') continue;
+        var y=yS.getPixelForValue(s1.top);
+        ctx.beginPath(); ctx.moveTo(b0.x+b0.width/2,y); ctx.lineTo(b1.x-b1.width/2,y); ctx.stroke();
+      }
+      ctx.restore();
+      ctx.save(); ctx.textAlign='center'; ctx.textBaseline='middle';
+      segs.forEach(function(seg,i){
+        var bar=meta.data[i]; if(!bar) return;
+        var barH=yS.getPixelForValue(seg.bot)-yS.getPixelForValue(seg.top);
+        var midY=(yS.getPixelForValue(seg.bot)+yS.getPixelForValue(seg.top))/2;
+        if((seg.type==='total'||seg.type==='resolved')&&barH>14){
+          ctx.font='bold 11px system-ui'; ctx.fillStyle='#fff';
+          ctx.fillText(seg.pct+'%',bar.x,midY);
+        } else if(seg.type==='bucket'&&barH>14){
+          ctx.font='bold 10px system-ui'; ctx.fillStyle='#fff';
+          ctx.fillText(seg.frs!=null?'FRS '+seg.frs+'%':seg.pct+'%',bar.x,midY);
+        } else if((seg.type==='marker'||seg.type==='mOther')&&barH>12&&seg.pct>=1.5){
+          ctx.font='9px system-ui'; ctx.fillStyle='rgba(255,255,255,.85)';
+          ctx.fillText(seg.frs!=null?seg.frs+'%':seg.pct+'%',bar.x,midY);
+        }
+      });
+      ctx.restore();
+      if((chart._key||'abc')==='abc'){
+        ctx.save(); ctx.font='bold 10px system-ui'; ctx.lineWidth=1.5;
+        [{si:1,ei:5,label:'Bucket A (12.9pp)',color:'#8B1A1A'},
+         {si:6,ei:10,label:'Bucket B (38.5pp)',color:'#1A3A6B'},
+         {si:11,ei:14,label:'Bucket C',color:'#7B6000'}
+        ].forEach(function(g){
+          var b0=meta.data[g.si],bE=meta.data[g.ei]; if(!b0||!bE) return;
+          var x1=b0.x-b0.width/2+2,x2=bE.x+bE.width/2-2,y=chart.chartArea.top+6;
+          ctx.strokeStyle=g.color; ctx.fillStyle=g.color; ctx.textAlign='center'; ctx.setLineDash([]);
+          ctx.beginPath(); ctx.moveTo(x1,y+10); ctx.lineTo(x1,y); ctx.lineTo(x2,y); ctx.lineTo(x2,y+10); ctx.stroke();
+          if(x2-x1>60) ctx.fillText(g.label,(x1+x2)/2,y-4);
+        });
+        ctx.restore();
+      }
+    }}]
+  });
+  wfInst._key='abc';
+})();
+
+// ═══════════════════════════════════════════════════
+// TREND CHARTS
+// ═══════════════════════════════════════════════════
+var WK_FULL=['wk 05-25','wk 06-01','wk 06-08','wk 06-15'];
+var TDATA={
+  overall:{yMin:44,yMax:52,sfx:'%',ds:[
+    {label:'Overall FRS%',data:[49.0,47.8,48.2,48.4],color:'#1D9E75',fill:true,dash:[]}
+  ]},
+  drivers:{yMin:0,yMax:60,sfx:'%',ds:[
+    {label:'transfer_recommended',             data:[50.8,49.1,46.1,44.9],color:'#1A3A6B',fill:false,dash:[]},
+    {label:'intuit_process_pending',           data:[12.7,13.3,12.9,12.3],color:'#D85A30',fill:false,dash:[]},
+    {label:'escalation_or_assistance_required',data:[10.3,10.7,10.1,10.2],color:'#534AB7',fill:false,dash:[4,3]}
+  ]},
+  volume:{yMin:0,yMax:110000,sfx:'',ds:[
+    {label:'transfer_recommended unresolved',  data:[16804,20175,19535,18985],color:'#1A3A6B',fill:false,dash:[]},
+    {label:'intuit_process_pending unresolved',data:[14740,15798,13911,13862],color:'#D85A30',fill:false,dash:[]},
+    {label:'Total unresolved',                 data:[86854,100806,91895,92593],color:'#888780',fill:true,dash:[]}
+  ]}
+};
+var curTK='overall';
+var tInst=null;
+
+function mkDS(key){
+  return TDATA[key].ds.map(function(d){
+    return{label:d.label,data:d.data,borderColor:d.color,
+      backgroundColor:d.fill?d.color+'28':'transparent',
+      fill:d.fill,tension:.35,pointRadius:4,pointBackgroundColor:d.color,borderDash:d.dash};
+  });
+}
+function buildTLeg(key){
+  var box=document.getElementById('trendLeg'); if(!box) return;
+  box.innerHTML='';
+  TDATA[key].ds.forEach(function(d){
+    var sp=document.createElement('span');
+    sp.innerHTML='<span class="dot" style="background:'+d.color+'"></span>'+d.label;
     box.appendChild(sp);
   });
 }
 function switchTrend(key,btn){
-  curTrendKey=key;
+  curTK=key;
   document.querySelectorAll('.ttab').forEach(function(t){t.classList.remove('active');});
   btn.classList.add('active');
-  var ts=TSETS[key];
-  tChart.data.datasets=mkTDS(key);
-  tChart.options.scales.y.min=ts.yMin;
-  tChart.options.scales.y.max=ts.yMax;
-  tChart.update();
-  buildTLegend(key);
+  tInst.data.datasets=mkDS(key);
+  tInst.options.scales.y.min=TDATA[key].yMin;
+  tInst.options.scales.y.max=TDATA[key].yMax;
+  tInst.update();
+  buildTLeg(key);
 }
-
-// Init trend
 (function(){
-  var el=document.getElementById('trendChart'); if(!el) return;
-  var ts=TSETS.frs;
-  buildTLegend('frs');
-  tChart=new Chart(el,{
+  var canvas=document.getElementById('trendChart'); if(!canvas) return;
+  buildTLeg('overall');
+  tInst=new Chart(canvas,{
     type:'line',
-    data:{labels:WK,datasets:mkTDS('frs')},
+    data:{labels:WK_FULL,datasets:mkDS('overall')},
     options:{
       responsive:true,maintainAspectRatio:false,
       interaction:{mode:'index',intersect:false},
-      plugins:{
-        legend:{display:false},
-        tooltip:{callbacks:{
-          title:function(i){return WK_FULL[i[0].dataIndex];},
-          label:function(c){return c.dataset.label+': '+c.raw.toLocaleString()+TSETS[curTrendKey].sfx;},
-          afterBody:function(items){
-            if(curTrendKey!=='frs') return[];
-            var idx=items[0].dataIndex; if(idx===0) return[];
-            var prev=TSETS.frs.ds[0].data[idx-1], curr=TSETS.frs.ds[0].data[idx];
-            var d=(curr-prev).toFixed(1);
-            return['WoW: '+(d>0?'+':'')+d+'pp'];
-          }
-        }}
-      },
+      plugins:{legend:{display:false},tooltip:{callbacks:{
+        title:function(i){return WK_FULL[i[0].dataIndex];},
+        label:function(c){return c.dataset.label+': '+c.raw.toLocaleString()+(TDATA[curTK].sfx||'');}
+      }}},
       scales:{
-        x:{ticks:{font:{size:11},color:'#73726c'},grid:{display:false}},
-        y:{min:ts.yMin,max:ts.yMax,
-          ticks:{callback:function(v){return v+TSETS[curTrendKey].sfx;},font:{size:11},color:'#73726c'},
-          grid:{color:'rgba(115,114,108,0.1)'}}
+        x:{ticks:{font:{size:10},color:'#73726c'},grid:{display:false}},
+        y:{min:44,max:52,ticks:{callback:function(v){return v+(TDATA[curTK].sfx||'');},font:{size:10},color:'#73726c'},grid:{color:'rgba(115,114,108,.08)'}}
       }
-    },
-    plugins:[{id:'refLine',afterDraw:function(chart){
-      if(curTrendKey!=='frs') return;
-      var yS=chart.scales.y; if(!yS||yS.min>47.4) return;
-      var y=yS.getPixelForValue(47.4),ctx=chart.ctx;
-      ctx.save(); ctx.setLineDash([5,5]); ctx.strokeStyle='rgba(153,60,29,0.4)'; ctx.lineWidth=1;
-      ctx.beginPath(); ctx.moveTo(chart.chartArea.left,y); ctx.lineTo(chart.chartArea.right,y); ctx.stroke();
-      ctx.font='9px system-ui'; ctx.fillStyle='rgba(153,60,29,0.75)'; ctx.textAlign='right';
-      ctx.fillText('Focus wk 47.4%',chart.chartArea.right-4,y-4); ctx.restore();
-    }}]
+    }
   });
 })();
 
-// Daily chart
 (function(){
-  var el=document.getElementById('dailyChart'); if(!el) return;
+  var canvas=document.getElementById('dailyChart'); if(!canvas) return;
   var lbl=['Sun 14','Mon 15','Tue 16','Wed 17','Thu 18','Fri 19','Sat 20','Sun 21'];
   var ov=[45.3,46.9,47.3,45.1,49.0,48.6,46.7,40.5];
   var t1=[45.8,48.5,49.6,48.2,51.0,50.7,49.5,40.5];
   var we=[true,false,false,false,false,false,true,true];
-  new Chart(el,{type:'bar',
+  new Chart(canvas,{
+    type:'bar',
     data:{labels:lbl,datasets:[
       {label:'Overall FRS%',data:ov,
-        backgroundColor:ov.map(function(_,i){return we[i]?'rgba(136,135,128,0.35)':'rgba(29,158,117,0.80)';}),
+        backgroundColor:ov.map(function(_,i){return we[i]?'rgba(136,135,128,.35)':'rgba(29,158,117,.80)';}),
         borderColor:ov.map(function(_,i){return we[i]?'#B4B2A9':'#0F6E56';}),
         borderWidth:1,borderRadius:3,order:2},
       {label:'T1 FRS%',data:t1,type:'line',borderColor:'#185FA5',backgroundColor:'transparent',
         pointBackgroundColor:t1.map(function(_,i){return we[i]?'#B4B2A9':'#185FA5';}),
         pointRadius:4,tension:.3,order:1}
     ]},
-    options:{responsive:true,maintainAspectRatio:false,
+    options:{
+      responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{callbacks:{
-        title:function(i){return lbl[i[0].dataIndex]+' · Jun 2026';},
+        title:function(i){return lbl[i[0].dataIndex]+' Jun 2026';},
         label:function(c){return c.dataset.label+': '+c.raw+'%'+(we[c.dataIndex]?' [weekend]':'');}
       }}},
       scales:{
         x:{ticks:{font:{size:10},color:'#73726c'},grid:{display:false}},
-        y:{min:38,max:54,ticks:{callback:function(v){return v+'%';},font:{size:10},color:'#73726c'},
-          grid:{color:'rgba(115,114,108,0.1)'}}
-      }}
+        y:{min:38,max:54,ticks:{callback:function(v){return v+'%';},font:{size:10},color:'#73726c'},grid:{color:'rgba(115,114,108,.08)'}}
+      }
+    }
   });
 })();
 
-// ─── WATERFALL ────────────────────────────────────────────────────────────────
-// Bars defined bottom-up. Each: {l, bot, top, c, pct, type, bk}
-var BARS=[
-  // Total (full bar 0→T)
-  {l:'Total\nScored\n100%',   bot:0,    top:T,     c:'#1a1a1a',type:'total'},
-  // Bucket A at top of gap, then markers cascade DOWN
-  {l:'Bucket A\n15.1%',       bot:A_BOT,top:T,     c:'#8B1A1A',type:'bucket',bk:'A',pct:15.1},
-  {l:'cust_stopped\n_resp\n3.1%',  bot:A_TOP-5688,              top:A_TOP,               c:'#C0392B',type:'marker',bk:'A',pct:3.1},
-  {l:'no_cust\n_utterance\n2.9%',  bot:A_TOP-5688-5368,         top:A_TOP-5688,          c:'#CD5C5C',type:'marker',bk:'A',pct:2.9},
-  {l:'contact_ended\n_unexp\n2.4%',bot:A_TOP-5688-5368-4349,    top:A_TOP-5688-5368,     c:'#D97070',type:'marker',bk:'A',pct:2.4},
-  {l:'misrouted\n_contact\n2.3%',  bot:A_TOP-5688-5368-4349-4315,top:A_TOP-5688-5368-4349,c:'#E08888',type:'marker',bk:'A',pct:2.3},
-  {l:'voicemail\n/sys_msg\n1.9%',  bot:160898,top:164357,         c:'#EAA0A0',type:'marker',bk:'A',pct:1.9},
-  {l:'Other A\n6 tags\n2.4%',      bot:A_BOT, top:160898,         c:'#F5C0C0',type:'mOther',bk:'A',pct:2.4},
-  // Bucket B in middle, markers cascade DOWN
-  {l:'Bucket B\n36.3%',       bot:B_BOT,top:B_TOP,  c:'#1A3A6B',type:'bucket',bk:'B',pct:36.3},
-  {l:'transfer\n_recom\n11.7%',    bot:B_TOP-21529,            top:B_TOP,       c:'#1E3F9E',type:'marker',bk:'B',pct:11.7},
-  {l:'intuit_proc\n_pend\n7.7%',   bot:B_TOP-21529-14174,      top:B_TOP-21529, c:'#2952A3',type:'marker',bk:'B',pct:7.7},
-  {l:'escalation\n_req\n4.6%',     bot:B_TOP-21529-14174-8581, top:B_TOP-21529-14174,c:'#4168BB',type:'marker',bk:'B',pct:4.6},
-  {l:'policy\n_restrict\n2.2%',    bot:107815,top:111939,        c:'#5B80CA',type:'marker',bk:'B',pct:2.2},
-  {l:'automated\n_process\n2.0%',  bot:104072,top:107815,        c:'#7598D6',type:'marker',bk:'B',pct:2.0},
-  {l:'Other B\n10 tags\n8.0%',     bot:B_BOT, top:104072,        c:'#AABFE8',type:'mOther',bk:'B',pct:8.0},
-  // Bucket C just above resolved
-  {l:'Bucket C\n1.0%',        bot:C_BOT,top:C_TOP,  c:'#7B6000',type:'bucket',bk:'C',pct:1.0},
-  {l:'no_clear\n_evidence\n0.4%',  bot:88621,top:C_TOP,  c:'#B8960C',type:'marker',bk:'C',pct:0.4},
-  {l:'no_clear\n_resolution\n0.3%',bot:88114,top:88621,  c:'#D4B84A',type:'marker',bk:'C',pct:0.3},
-  {l:'cust\n_dissatisfied\n0.2%',  bot:87717,top:88114,  c:'#E8CE75',type:'marker',bk:'C',pct:0.2},
-  {l:'cust\n_confused\n0.1%',      bot:C_BOT,top:87717,  c:'#F2E2A0',type:'marker',bk:'C',pct:0.1},
-  // Resolved anchored at bottom
-  {l:'Resolved\nContacts\n47.4%', bot:0,    top:R,     c:'#2D7D46',type:'resolved',pct:47.4},
+// ═══════════════════════════════════════════════════
+// SIMULATOR
+// ═══════════════════════════════════════════════════
+var SIM_INITS=[
+  {name:'Case Management',   ceil:3.5, eff:60},
+  {name:'Defect Management', ceil:2.6, eff:65},
+  {name:'Routing (E2E)',     ceil:2.5, eff:70},
+  {name:'Expert AI Co-Pilot',ceil:2.2, eff:55},
+  {name:'Knowledge Mgmt',    ceil:0.3, eff:40}
 ];
+var simVals={};
+SIM_INITS.forEach(function(i){simVals[i.name]=i.eff;});
 
-var wfInst=null;
-function buildWFDatasets(){
-  var labels=[],floats=[],colors=[],borders=[];
-  BARS.forEach(function(b){
-    labels.push(b.l.replace(/\n/g,' '));
-    floats.push([b.bot,b.top]);
-    colors.push(b.c);
-    borders.push(b.type==='bucket'||b.type==='total'||b.type==='resolved'
-      ?'rgba(0,0,0,0.25)':'rgba(255,255,255,0.12)');
+function buildSimSliders(){
+  var container=document.getElementById('initSliders'); if(!container) return;
+  container.innerHTML='';
+  SIM_INITS.forEach(function(init){
+    var div=document.createElement('div');
+    div.style.cssText='background:#f5f5f3;border-radius:8px;padding:12px;';
+    var id=init.name.replace(/\s/g,'_');
+    div.innerHTML='<div style="font-size:11px;font-weight:600;color:#534AB7;margin-bottom:2px">'+init.name+'</div>'+
+      '<div style="font-size:10px;color:#73726c;margin-bottom:6px">Ceiling: +'+init.ceil.toFixed(1)+'pp</div>'+
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">'+
+        '<input type="range" min="0" max="100" value="'+init.eff+'" style="flex:1;accent-color:#534AB7" oninput="updateSimSizing(\''+init.name+'\',this.value)">'+
+        '<span style="font-size:12px;font-weight:600;min-width:40px;color:#534AB7" id="sv_'+id+'">'+init.eff+'%</span>'+
+      '</div>'+
+      '<div style="font-size:10px;color:#73726c">Lift: +<span id="sl_'+id+'">'+(init.ceil*init.eff/100).toFixed(2)+'</span>pp</div>';
+    container.appendChild(div);
   });
-  return{labels:labels,floats:floats,colors:colors,borders:borders};
 }
+function updateSimSizing(name,v){
+  simVals[name]=+v;
+  var id=name.replace(/\s/g,'_');
+  var svEl=document.getElementById('sv_'+id);
+  var slEl=document.getElementById('sl_'+id);
+  var init=null;
+  for(var i=0;i<SIM_INITS.length;i++){if(SIM_INITS[i].name===name){init=SIM_INITS[i];break;}}
+  if(svEl) svEl.textContent=v+'%';
+  if(slEl&&init) slEl.textContent=(init.ceil*(+v)/100).toFixed(2);
+  var lift=0;
+  SIM_INITS.forEach(function(i){lift+=i.ceil*(simVals[i.name]/100);});
+  var simF=(BASE+lift).toFixed(1);
+  var frsEl=document.getElementById('simFRS');
+  var liftEl=document.getElementById('simLift');
+  var barEl=document.getElementById('simBar');
+  var lblEl=document.getElementById('simBarLbl');
+  var resEl=document.getElementById('simResidual');
+  var ptEl=document.getElementById('simLiftPts');
+  if(frsEl) frsEl.textContent=simF+'%';
+  if(liftEl) liftEl.textContent='+'+lift.toFixed(1)+'pp vs baseline';
+  if(barEl) barEl.style.width=Math.min(+simF,100)+'%';
+  if(lblEl) lblEl.textContent=simF+'%';
+  if(resEl) resEl.textContent=(79-simF).toFixed(1)+'pp';
+  if(ptEl) ptEl.textContent='+'+lift.toFixed(1)+'pp';
+}
+buildSimSliders();
+updateSimSizing('Case Management',simVals['Case Management']);
+
+// ═══════════════════════════════════════════════════
+// README TAG TABLE
+// ═══════════════════════════════════════════════════
+var WHY={
+  'transfer_recommended':'Transfer needed; not closed on this contact',
+  'intuit_process_pending':'Internal Intuit process must complete after contact',
+  'escalation_or_assistance_required':'Escalated to manager/SME — another team must follow up',
+  'no_customer_utterance':'Customer never spoke or typed — non-conversation',
+  'customer_stopped_responding':'Customer disengaged before issue could be addressed',
+  'voice_mail_or_system_message':'Voicemail or automated message — no live interaction',
+  'contact_ended_unexpectedly':'Contact dropped before resolution was attempted',
+  'misrouted_contact':'Wrong queue — issue not addressed by the right team',
+  'policy_restriction':'Intuit policy blocks resolution on this call',
+  'automated_process':'An automated process is pending completion',
+  'customer_cannot_continue':'Customer is blocked and cannot proceed',
+  'external_support_recommended':'Customer needs non-Intuit support to resolve',
+  'known_issue':'Known issue; fix is pending elsewhere',
+  'product_limitation':'Product bug or limitation; no on-call fix possible',
+  'system_crash_agent':'Agent-side technical failure prevented engagement',
+  'technical_investigation':'More investigation needed beyond this contact',
+  'agent_stopped_responding':'Agent disengaged before resolving — non-conversation',
+  'no_agent_utterance':'Agent never spoke or typed — non-conversation',
+  'no_clear_evidence':'Transcript lacks evidence of customer confirmation',
+  'feature_not_available':'Customer needs a feature that does not exist in the product',
+  'no_clear_resolution':'Steps unclear; customer could not confirm outcome',
+  'screenshare_error':'Screen-share tool failed, blocking real engagement',
+  'system_crash_customer':'Customer-side technical failure prevented engagement',
+  'wait_external_process':'Waiting on external action (IRS, bank, etc.)',
+  'customer_dissatisfied':'Customer expressed dissatisfaction with the resolution',
+  'customer_refuses_steps':'Customer declined the recommended steps',
+  'channel_switch_to_call':'Chat ended before resolving; customer told to call',
+  'customer_confused':'Customer expressed confusion about the outcome',
+  'billing_issue':'Billing-related issue requiring backend action',
+  'other':'Catch-all when none of the predefined categories match',
+  'form_unavailable':'Required tax form or document not yet available'
+};
 
 (function(){
-  var el=document.getElementById('wfChart'); if(!el) return;
-  var d=buildWFDatasets();
-  wfInst=new Chart(el,{
-    type:'bar',
-    data:{labels:d.labels,datasets:[{
-      data:d.floats,backgroundColor:d.colors,borderColor:d.borders,
-      borderWidth:1,borderRadius:2,borderSkipped:false
-    }]},
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      plugins:{
-        legend:{display:false},
-        tooltip:{callbacks:{
-          title:function(i){return BARS[i[0].dataIndex].l.replace(/\n/g,' ');},
-          label:function(c){
-            var b=BARS[c.dataIndex], v=b.top-b.bot;
-            if(b.type==='total')    return '184,555 total scored contacts (100%)';
-            if(b.type==='resolved') return '87,477 resolved · 47.4% FRS';
-            return v.toLocaleString()+' unresolved · '+(b.pct||0)+'% of scored'+
-              (b.type==='bucket'?' · Bucket '+b.bk+' total':
-               b.type==='mOther'?' · remaining tags in Bucket '+b.bk:' · Bucket '+b.bk+' marker');
-          }
-        }}
-      },
-      scales:{
-        x:{ticks:{autoSkip:false,maxRotation:60,minRotation:45,
-          font:function(ctx){
-            var b=BARS[ctx.index];
-            return{size:9,weight:b&&(b.type==='bucket'||b.type==='total'||b.type==='resolved')?'bold':'normal'};
-          },
-          color:function(ctx){
-            var b=BARS[ctx.index]; if(!b) return '#73726c';
-            if(b.type==='total') return '#1a1a1a';
-            if(b.type==='resolved') return '#2D7D46';
-            if(b.type==='bucket') return b.bk==='A'?'#8B1A1A':b.bk==='B'?'#1A3A6B':'#7B6000';
-            return '#73726c';
-          }},grid:{display:false}},
-        y:{min:0,max:210000,
-          ticks:{callback:function(v){return v===0?'0':(v/1000).toFixed(0)+'k';},
-            font:{size:10},color:'#73726c',maxTicksLimit:8},
-          grid:{color:'rgba(115,114,108,0.07)'}}
-      }
-    },
-    plugins:[{
-      id:'wfDeco',
-      afterDatasetsDraw:function(chart){
-        var ctx2=chart.ctx, meta=chart.getDatasetMeta(0), yS=chart.scales.y;
-        // % labels inside bars
-        ctx2.save(); ctx2.textAlign='center'; ctx2.textBaseline='middle';
-        BARS.forEach(function(b,i){
-          var bar=meta.data[i]; if(!bar) return;
-          var barH=yS.getPixelForValue(b.bot)-yS.getPixelForValue(b.top);
-          var midY=(yS.getPixelForValue(b.bot)+yS.getPixelForValue(b.top))/2;
-          if(b.type==='total'||b.type==='resolved'||b.type==='bucket'){
-            if(barH<18) return;
-            ctx2.font='bold '+(b.type==='bucket'?10:12)+'px system-ui';
-            ctx2.fillStyle='#fff';
-            ctx2.fillText((b.pct||100)+'%',bar.x,midY);
-          } else if((b.type==='marker'||b.type==='mOther')&&b.pct>=1.5){
-            if(barH<14) return;
-            ctx2.font='9px system-ui';
-            ctx2.fillStyle='rgba(255,255,255,0.85)';
-            ctx2.fillText(b.pct+'%',bar.x,midY);
-          }
-        });
-        ctx2.restore();
-        // Bucket bracket lines at top
-        ctx2.save();
-        var grps=[
-          {si:1,ei:7, label:'← Bucket A: 15.1pp →',color:'#8B1A1A'},
-          {si:8,ei:14,label:'← Bucket B: 36.3pp →',color:'#1A3A6B'},
-          {si:15,ei:19,label:'← C →',color:'#7B6000'},
-        ];
-        grps.forEach(function(g){
-          var b0=meta.data[g.si],bE=meta.data[g.ei]; if(!b0||!bE) return;
-          var x1=b0.x-b0.width/2+2, x2=bE.x+bE.width/2-2, y=chart.chartArea.top+6;
-          ctx2.strokeStyle=g.color; ctx2.lineWidth=1.5;
-          ctx2.fillStyle=g.color; ctx2.font='bold 10px system-ui'; ctx2.textAlign='center';
-          ctx2.beginPath(); ctx2.moveTo(x1,y+10); ctx2.lineTo(x1,y); ctx2.lineTo(x2,y); ctx2.lineTo(x2,y+10); ctx2.stroke();
-          ctx2.fillText(g.label,(x1+x2)/2,y-4);
-        });
-        ctx2.restore();
-      }
-    }]
-  });
-  // Legend
-  var box=document.getElementById('wfLegend'); if(!box) return;
-  [{c:'#1a1a1a',l:'Total scored (100%)'},{c:'#8B1A1A',l:'Bucket A (15.1pp)'},{c:'#CD5C5C',l:'A markers'},
-   {c:'#1A3A6B',l:'Bucket B (36.3pp)'},{c:'#2952A3',l:'B markers'},{c:'#7B6000',l:'Bucket C (1.0pp)'},
-   {c:'#B8960C',l:'C markers'},{c:'#2D7D46',l:'Resolved (47.4%)'}
-  ].forEach(function(it){
-    var sp=document.createElement('span');
-    sp.innerHTML='<span class="dot" style="background:'+it.c+'"></span>'+it.l;
-    box.appendChild(sp);
+  var tb=document.getElementById('rmBody'); if(!tb) return;
+  var sorted=DR.slice().sort(function(a,b){return b.v-a.v;});
+  sorted.forEach(function(d){
+    var tr=document.createElement('tr');
+    if(d.nc) tr.style.opacity='0.6';
+    var bkColor=d.bk==='A'?'#8B1A1A':d.bk==='B'?'#1A3A6B':d.bk==='C'?'#7B6000':'#444';
+    var pb=d.ceil>=3?'#e8e6f8':d.ceil>=1?'#f4f2fb':'#f0efe9';
+    var pc=d.ceil>=3?'#26215C':d.ceil>=1?'#534AB7':'#73726c';
+    var row=[];
+    row.push('<td><span style="font-family:monospace;font-size:10px;font-weight:600;color:'+bkColor+'">'+(d.nc?'⚠ ':'')+d.t+'</span></td>');
+    row.push('<td><span class="bdg" style="background:'+(BKG[d.bk]||'#f0efe9')+';color:'+(BKC[d.bk]||'#888')+'">'+d.bk+'</span></td>');
+    row.push('<td style="font-weight:600">'+d.v.toLocaleString()+'</td>');
+    row.push('<td style="color:'+(d.frs<15?'#993C1D':d.frs<30?'#854F0B':'#0F6E56')+';font-weight:600">'+d.frs+'%</td>');
+    row.push('<td>'+d.ctrl+'</td>');
+    row.push('<td>'+(d.ceil>0?'<span class="pill" style="background:'+pb+';color:'+pc+'">+'+d.ceil.toFixed(2)+'pp</span>':'—')+'</td>');
+    row.push('<td style="font-size:10px;color:#73726c;line-height:1.5">'+(WHY[d.t]||'—')+'</td>');
+    tr.innerHTML=row.join('');
+    tb.appendChild(tr);
   });
 })();
 
-// Partner filter
-function onPartnerChange(){
-  var sel=document.getElementById('partnerSel');
-  var banner=document.getElementById('partnerBanner');
-  if(sel.value==='ALL'){
-    banner.style.display='none';
-  } else {
-    var pPcts={FOUNDEVER:39.3,CONCENTRIX:36.3,TELEPERFORMANCE:7.6,ALORICA:6.5,INTUIT:5.5,'WORKING SOLUTIONS':3.6,'KMK VENTURES':1.3};
-    var pct=pPcts[sel.value]||0;
-    banner.style.display='block';
-    banner.innerHTML='⚠ <strong>'+sel.value+'</strong> = '+pct+'% of total unresolved ('+Math.round(96600*pct/100).toLocaleString()+' contacts). Partner cross-tab data pending — waterfall shows overall proportional estimate. Request partner × bucket breakdown from analyst for exact figures.';
-  }
-}
-
-// ─── DRIVER TABLE ─────────────────────────────────────────────────────────────
-var DRIVERS=[
-  {tag:'transfer_recommended',        bk:'B',addr:'AGENT/PROCESS', v:21529,p:22.3,cum:22.3,fi:11.7,act:'Transfer protocols & warm-handoff quality'},
-  {tag:'intuit_process_pending',       bk:'B',addr:'AGENT/PROCESS', v:14174,p:14.7,cum:37.0,fi:7.7, act:'Process closure & async follow-up'},
-  {tag:'escalation_required',          bk:'B',addr:'AGENT/PROCESS', v:8581, p:8.9, cum:45.9,fi:4.6, act:'Escalation path clarity & SME availability'},
-  {tag:'customer_stopped_responding',  bk:'A',addr:'CUSTOMER-SIDE', v:5688, p:5.9, cum:51.8,fi:3.1, act:'Proactive re-engagement before drop'},
-  {tag:'no_customer_utterance',        bk:'A',addr:'CUSTOMER-SIDE', v:5368, p:5.6, cum:57.4,fi:2.9, act:'IVR / queue experience review'},
-  {tag:'contact_ended_unexpectedly',   bk:'A',addr:'CUSTOMER-SIDE', v:4349, p:4.5, cum:61.9,fi:2.4, act:'Connection stability & callback triggers'},
-  {tag:'misrouted_contact',            bk:'A',addr:'AGENT/PROCESS', v:4315, p:4.5, cum:66.4,fi:2.3, act:'Routing logic & queue mapping fixes'},
-  {tag:'policy_restriction',           bk:'B',addr:'AGENT/PROCESS', v:4124, p:4.3, cum:70.7,fi:2.2, act:'Policy exception review & agent guidance'},
-  {tag:'automated_process',            bk:'B',addr:'AGENT/PROCESS', v:3743, p:3.9, cum:74.6,fi:2.0, act:'Async confirmation & process status comms'},
-  {tag:'voice_mail_or_system_msg',     bk:'A',addr:'SYSTEM/ARTIFACT',v:3459,p:3.6,cum:78.2, fi:1.9, act:'Outbound retry logic & voicemail handling'},
-  {tag:'customer_cannot_continue',     bk:'B',addr:'CUSTOMER-SIDE', v:3445, p:3.6, cum:81.8,fi:1.9, act:'Accessibility & step simplification'},
-  {tag:'known_issue',                  bk:'B',addr:'AGENT/PROCESS', v:3119, p:3.2, cum:85.0,fi:1.7, act:'Known-issue flagging & proactive comms'},
-  {tag:'external_support_recommended', bk:'B',addr:'AGENT/PROCESS', v:2944, p:3.0, cum:88.0,fi:1.6, act:'Partner referral quality & warm handoff'},
-  {tag:'product_limitation',           bk:'B',addr:'AGENT/PROCESS', v:2527, p:2.6, cum:90.6,fi:1.4, act:'Product feedback loop to engineering'},
-  {tag:'system_crash_agent',           bk:'A',addr:'SYSTEM/ARTIFACT',v:1387,p:1.4,cum:92.0, fi:0.8, act:'Agent tooling stability & crash recovery'},
-  {tag:'technical_investigation',      bk:'B',addr:'AGENT/PROCESS', v:1302, p:1.3, cum:93.3,fi:0.7, act:'Investigation SLA & case management'},
-  {tag:'agent_stopped_responding',     bk:'A',addr:'AGENT/PROCESS', v:1121, p:1.2, cum:94.5,fi:0.6, act:'Ghost contact detection & QA flags'},
-  {tag:'no_agent_utterance',           bk:'A',addr:'AGENT/PROCESS', v:917,  p:0.9, cum:95.4,fi:0.5, act:'Ghost contact detection & monitoring'},
-  {tag:'no_clear_evidence',            bk:'C',addr:'SYSTEM/ARTIFACT',v:652, p:0.7, cum:96.1,fi:0.4, act:'Transcript quality & recording completeness'},
-  {tag:'feature_not_available',        bk:'B',addr:'AGENT/PROCESS', v:569,  p:0.6, cum:96.7,fi:0.3, act:'Roadmap communication to frontline'},
-  {tag:'system_crash_customer',        bk:'A',addr:'SYSTEM/ARTIFACT',v:527, p:0.5, cum:97.2,fi:0.3, act:'Customer-side app stability'},
-  {tag:'wait_external_process',        bk:'B',addr:'AGENT/PROCESS', v:511,  p:0.5, cum:97.7,fi:0.3, act:'External dependency tracking & ETA comms'},
-  {tag:'no_clear_resolution',          bk:'C',addr:'SYSTEM/ARTIFACT',v:507, p:0.5, cum:98.2,fi:0.3, act:'Closing script & confirmation prompts'},
-  {tag:'screenshare_error',            bk:'A',addr:'SYSTEM/ARTIFACT',v:491, p:0.5, cum:98.7,fi:0.3, act:'Screenshare tooling reliability'},
-  {tag:'customer_dissatisfied',        bk:'C',addr:'CUSTOMER-SIDE', v:397,  p:0.4, cum:99.1,fi:0.2, act:'De-escalation & empathy coaching'},
-  {tag:'customer_refuses_steps',       bk:'B',addr:'CUSTOMER-SIDE', v:331,  p:0.3, cum:99.4,fi:0.2, act:'Objection handling & alternative paths'},
-  {tag:'customer_confused',            bk:'C',addr:'CUSTOMER-SIDE', v:240,  p:0.2, cum:99.6,fi:0.1, act:'Plain-language communication coaching'},
-  {tag:'channel_switch_to_call',       bk:'A',addr:'AGENT/PROCESS', v:232,  p:0.2, cum:99.8,fi:0.1, act:'Chat-first resolution capability'},
-  {tag:'billing_issue',                bk:'B',addr:'AGENT/PROCESS', v:41,   p:0.0, cum:99.8,fi:0.0, act:'Billing team integration & authority'},
-  {tag:'other',                        bk:'OTHER',addr:'SYSTEM/ARTIFACT',v:9,p:0.0,cum:99.8,fi:0.0,act:'Review and re-tag'},
-  {tag:'form_unavailable',             bk:'B',addr:'AGENT/PROCESS', v:1,    p:0.0, cum:99.8,fi:0.0, act:'Form availability comms to agents'},
-];
-var BG={A:'#fce8df',B:'#e8e6f8',C:'#d9f2e8',OTHER:'#f0efe9'};
-var FG={A:'#712B13',B:'#26215C',C:'#04342C',OTHER:'#888'};
-var BC2={A:'#D85A30',B:'#534AB7',C:'#0F6E56',OTHER:'#888'};
-var AC={'AGENT/PROCESS':'#D85A30','CUSTOMER-SIDE':'#185FA5','SYSTEM/ARTIFACT':'#888780'};
-
-var curFilter='ALL', curSort=DRIVERS.slice(), sortDir=-1, sortCol=7;
-function renderDrivers(data){
-  var tbody=document.getElementById('dtBody'); tbody.innerHTML='';
-  var maxV=Math.max.apply(null,data.map(function(d){return d.v;}));
-  data.forEach(function(d){
-    var show=curFilter==='ALL'||curFilter===d.bk;
-    var tr=document.createElement('tr');
-    tr.style.display=show?'':'none';
-    if(show&&curFilter!=='ALL') tr.classList.add('hl-'+d.bk.toLowerCase());
-    var bw=Math.round(d.v/maxV*100);
-    var pillBg=d.fi>=5?'#fce8df':d.fi>=2?'#e8e6f8':'#f5f5f3';
-    var pillFg=d.fi>=5?'#712B13':d.fi>=2?'#26215C':'#73726c';
-    tr.innerHTML=
-      '<td style="font-family:monospace;font-size:10px;white-space:nowrap">'+d.tag+'</td>'+
-      '<td><span class="badge" style="background:'+(BG[d.bk]||'#f0efe9')+';color:'+(FG[d.bk]||'#888')+'">'+d.bk+'</span></td>'+
-      '<td style="font-size:10px;color:'+(AC[d.addr]||'#888')+'">'+d.addr+'</td>'+
-      '<td style="font-weight:600">'+d.v.toLocaleString()+'</td>'+
-      '<td>'+d.p+'%</td>'+
-      '<td><div class="bbar-bg"><div class="bbar-fill" style="width:'+bw+'%;background:'+(BC2[d.bk]||'#888')+';opacity:.75"></div></div></td>'+
-      '<td style="color:#73726c">'+d.cum+'%</td>'+
-      '<td><span class="pill" style="background:'+pillBg+';color:'+pillFg+'">+'+d.fi+'pp</span></td>'+
-      '<td style="font-size:10px;max-width:220px">'+d.act+'</td>';
-    tbody.appendChild(tr);
-  });
-}
-function filterBucket(bk){
-  curFilter=bk;
-  document.querySelectorAll('.ftab').forEach(function(t){t.classList.remove('active');});
-  document.getElementById('f'+bk)&&document.getElementById('f'+bk).classList.add('active');
-  if(bk==='ALL') document.getElementById('fAll').classList.add('active');
-  ['A','B','C'].forEach(function(x){
-    var el=document.getElementById('card'+x);
-    if(el) el.classList.toggle('selected',x===bk);
-  });
-  renderDrivers(curSort);
-}
-function sortD(col){
-  var keys=['tag','bk','addr','v','p','','cum','fi'];
-  var k=keys[col]; if(!k) return;
-  sortDir=(sortCol===col)?sortDir*-1:(col<3?1:-1); sortCol=col;
-  curSort=DRIVERS.slice().sort(function(a,b){
-    var av=a[k],bv=b[k];
-    return typeof av==='number'?sortDir*(bv-av):sortDir*String(av).localeCompare(String(bv));
-  });
-  renderDrivers(curSort);
-}
-sortD(7); // default: sort by FRS impact
-
-// ─── SECTION NAV ────────────────────────────────────────────────────────
-function showSection(id, btn) {
-  document.querySelectorAll('.section').forEach(function(s){ s.classList.remove('visible'); });
-  document.getElementById('sec-'+id).classList.add('visible');
-  document.querySelectorAll('.navbtn').forEach(function(b){ b.classList.remove('active'); });
-  btn.classList.add('active');
-}
 </script>
 </body>
 </html>
