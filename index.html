@@ -160,10 +160,11 @@ body{font-family:system-ui,sans-serif;background:#f0efe9;color:#2c2c2a;font-size
     <div class="abc-vol vb">277,516</div><div class="abc-sub">74.6% of unresolved · dominant lever</div>
     <div class="meter-bg"><div class="meter-fill" style="width:74.6%;background:#534AB7"></div></div>
     <div class="abc-desc">Issue engaged but resolution needs follow-up. intuit_process_pending at 12.8% FRS — highest-leverage fix.</div>
-    <div class="mtitle">Top markers by ceiling</div>
-    <div class="mrow"><span class="mlbl">intuit_process_pending (FRS 12.8%)</span><div class="mbg"><div class="mfill" style="width:100%;background:#1A3A8B"></div></div><span class="mpct vb">+6.9pp</span></div>
-    <div class="mrow"><span class="mlbl">transfer_recommended (FRS 47.8%)</span><div class="mbg"><div class="mfill" style="width:76%;background:#2952A3"></div></div><span class="mpct vb">+5.2pp</span></div>
-    <div class="mrow"><span class="mlbl">escalation_required (FRS 10.3%)</span><div class="mbg"><div class="mfill" style="width:56%;background:#4168BB"></div></div><span class="mpct vb">+3.8pp</span></div>
+    <div class="mtitle">Top drivers by volume</div>
+    <div class="mrow"><span class="mlbl">transfer_recommended · FRS 47.8%</span><div class="mbg"><div class="mfill" style="width:100%;background:#1A3A8B"></div></div><span class="mpct vb">75,499</span></div>
+    <div class="mrow"><span class="mlbl">intuit_process_pending · FRS 12.8%</span><div class="mbg"><div class="mfill" style="width:77%;background:#2952A3"></div></div><span class="mpct vb">58,311</span></div>
+    <div class="mrow"><span class="mlbl">escalation_required · FRS 10.3%</span><div class="mbg"><div class="mfill" style="width:43%;background:#4168BB"></div></div><span class="mpct vb">32,170</span></div>
+    <div class="mrow"><span class="mlbl">policy_restriction · FRS 10.7%</span><div class="mbg"><div class="mfill" style="width:21%;background:#5B80CA"></div></div><span class="mpct vb">15,587</span></div>
     <div class="abc-action ab">🎯 Internal process fix · Transfer quality · Case mgmt</div>
   </div>
   <div class="abc-card cc" id="cardC" onclick="filterBucket('C')">
@@ -286,6 +287,50 @@ body{font-family:system-ui,sans-serif;background:#f0efe9;color:#2c2c2a;font-size
     <div class="fc"><div class="fclbl" style="color:#712B13">Partner</div><div class="fcval" style="color:#712B13">FNDVR 42% + CONC 30%</div><div class="fcnote">72% of transfer-out cases. Same 2 partners dominate.</div></div>
     <div class="fc"><div class="fclbl" style="color:#04342C">Channel</div><div class="fcval" style="color:#04342C">Inbound 59.5%</div><div class="fcnote">Called in, transferred, still not resolved. Warm-transfer protocol review needed.</div></div>
     <div class="fc"><div class="fclbl" style="color:#444">NLH</div><div class="fcval" style="color:#444">Only 0.3%</div><div class="fcnote">Transfer failures almost entirely non-NLH.</div></div>
+  </div>
+</div>
+
+<!-- PARTNER x TAG CROSS-TAB -->
+<div class="full panel">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:4px">
+    <div>
+      <div class="ptitle">Partner × Driver cross-tab — Tier 1 · May 25–Jun 21</div>
+      <div class="psub">555,054 T1 scored · 282,615 unresolved · T1 FRS 49.1% · Top 15 drivers shown</div>
+    </div>
+    <div class="tabs" style="margin-bottom:0">
+      <button class="tab active pxtab" onclick="switchPX('vol',this)">Unresolved volume</button>
+      <button class="tab pxtab" onclick="switchPX('frs',this)">FRS% per cell</button>
+    </div>
+  </div>
+  <div style="overflow-x:auto;margin-top:8px">
+    <table id="pxTable" style="width:100%;border-collapse:collapse;font-size:10px;white-space:nowrap">
+      <thead id="pxHead"></thead>
+      <tbody id="pxBody"></tbody>
+    </table>
+  </div>
+  <div class="note" style="margin-top:8px">
+    <strong>Volume view:</strong> Red = highest unresolved — use for coaching prioritization. 
+    <strong>FRS% view:</strong> Red &lt;35% / amber &lt;50% / green ≥50% — use to find where each partner resolves worst.
+    WORKING SOLUTIONS FRS 30.5% overall despite lower volume — performance gap on transfer_recommended (65.1% FRS vs FOUNDEVER 43.4%).
+  </div>
+</div>
+
+<!-- T1 PROBLEM AREA -->
+<div class="full panel">
+  <div class="ptitle" style="margin-bottom:4px">Tier 1 × Problem Area — FRS by contact reason · May 25–Jun 21</div>
+  <div class="psub">Within T1 (555,054 scored). Ranked by unresolved volume. Click row to see top drivers for that problem area.</div>
+  <div style="overflow-x:auto">
+    <table class="dtable" id="paTable">
+      <thead><tr>
+        <th>Problem Area</th><th>Scored</th><th>Unresolved</th><th>FRS%</th><th>% of T1 Unres</th><th>Volume</th><th>Top SABER drivers</th>
+      </tr></thead>
+      <tbody id="paBody"></tbody>
+    </table>
+  </div>
+  <div class="note" style="margin-top:8px">
+    <strong>Key insight:</strong> 35% of T1 unresolved has no problem area tag (blank/unmapped) — data quality gap. 
+    Misrouted Contact (9.8%) resolves at only 35.8% — primarily driven by transfer_recommended (12,467) + misrouted_contact tag (3,753).
+    Chat (3.2%) resolves at just 3.2% — almost entirely no_customer_utterance (5,311) and customer_stopped_responding (3,049) — structural non-conversation.
   </div>
 </div>
 </div><!-- end sec-dash -->
@@ -1118,6 +1163,179 @@ var WHY={
     row.push('<td>'+d.ctrl+'</td>');
     row.push('<td>'+(d.ceil>0?'<span class="pill" style="background:'+pb+';color:'+pc+'">+'+d.ceil.toFixed(2)+'pp</span>':'—')+'</td>');
     row.push('<td style="font-size:10px;color:#73726c;line-height:1.5">'+(WHY[d.t]||'—')+'</td>');
+    tr.innerHTML=row.join('');
+    tb.appendChild(tr);
+  });
+})();
+
+// ═══════════════════════════════════════════════════
+// PARTNER x TAG CROSS-TAB DATA
+// ═══════════════════════════════════════════════════
+var PX_TAGS=['transfer_recommended','intuit_process_pending','escalation_or_assistance_required',
+  'customer_stopped_responding','no_customer_utterance','contact_ended_unexpectedly',
+  'misrouted_contact','policy_restriction','automated_process','customer_cannot_continue',
+  'voice_mail_or_system_message','external_support_recommended','product_limitation',
+  'known_issue','system_crash_agent'];
+
+var PX_SHORT=['transfer_rec','intuit_proc','escalation','cust_stopped','no_cust_utt',
+  'cont_ended','misrouted','policy_restr','automated','cust_cant_cont',
+  'voicemail','ext_support','prod_limit','known_issue','sys_crash'];
+
+var PX_VOL={
+  'FOUNDEVER':         [27567,15352,9061,6906,6537,5564,5959,5025,4978,4355,4025,3346,2993,3169,1386],
+  'CONCENTRIX':        [22245,14366,7741,8777,7889,5105,4850,4154,4201,3994,5029,3545,2355,1949,1531],
+  'ALORICA':           [6461, 2400, 1747,95,  317, 1178,951, 1314,643, 654, 238, 974, 701, 435, 527],
+  'TELEPERFORMANCE':   [5242, 2530, 2052,443, 649, 811, 962, 873, 602, 706, 588, 492, 541, 449, 227],
+  'WORKING SOLUTIONS': [2219, 2445, 1902,77,  235, 974, 461, 613, 604, 530, 247, 401, 328, 211, 352],
+  'INTUIT':            [919,  2025, 1401,68,  176, 308, 167, 175, 167, 236, 472, 187, 269, 185, 165],
+  'KMK VENTURES':      [1113, 206,  529, 16,  56,  193, 306, 110, 75,  154, 21,  68,  54,  38,  78]
+};
+var PX_TOTAL_VOL={
+  'FOUNDEVER':114179,'CONCENTRIX':105884,'ALORICA':20044,
+  'TELEPERFORMANCE':18512,'WORKING SOLUTIONS':13152,'INTUIT':7516,'KMK VENTURES':3328
+};
+var PX_FRS={
+  'FOUNDEVER':         [43.4,13.1,10.5,4.9, 0,   3.9, 2,   10,  7.6, 8.1, 0.1,15.9,22.9,14,  9.2],
+  'CONCENTRIX':        [53.1,13.7,10.4,4.7, 0,   3.8, 3,   10.2,6.8, 8.7, 0.2,11.1,21.4,13.3,6.9],
+  'ALORICA':           [44.2,16.1,10.1,9.5, 0.3, 3.2, 2.3, 10.6,11.2,12.6,0.8,16.5,24.2,15.7,5.6],
+  'TELEPERFORMANCE':   [50,  13.9,9.8, 5.1, 0,   3.6, 2.5, 9.3, 8.4, 9.6, 0,  14.9,22.6,11.3,7],
+  'WORKING SOLUTIONS': [65.1,18.4,12.4,8.3, 0,   5.2, 4,   14.3,8.5, 13.4,0.8,19.6,28.5,16.3,9.3],
+  'INTUIT':            [47.4,13.5,11.4,4.2, 0,   7.8, 1.2, 21.9,18.5,11.6,0.2,22.7,32.1,18.9,7.3],
+  'KMK VENTURES':      [44.9,13.4,8.2, 0,   0,   2,   3.8, 8.3, 5.1, 7.2, 0,  6.8, 23.9,13.6,7.1]
+};
+var PX_FRS_TOTAL={
+  'FOUNDEVER':20.8,'CONCENTRIX':23.6,'ALORICA':25.8,
+  'TELEPERFORMANCE':26.6,'WORKING SOLUTIONS':30.5,'INTUIT':19.6,'KMK VENTURES':24.7
+};
+
+var curPX='vol';
+var PARTNERS=['FOUNDEVER','CONCENTRIX','ALORICA','TELEPERFORMANCE','WORKING SOLUTIONS','INTUIT','KMK VENTURES'];
+
+function switchPX(mode,btn){
+  curPX=mode;
+  document.querySelectorAll('.pxtab').forEach(function(t){t.classList.remove('active');});
+  btn.classList.add('active');
+  renderPX();
+}
+
+function renderPX(){
+  var head=document.getElementById('pxHead');
+  var body=document.getElementById('pxBody');
+  if(!head||!body) return;
+
+  // Header
+  var hcells=['<th style="text-align:left;padding:5px 8px;border-bottom:1.5px solid #e0dfd8;font-size:10px;font-weight:600;color:#73726c;background:#fafaf8;position:sticky;left:0;min-width:140px">Partner</th>'];
+  PX_SHORT.forEach(function(t){
+    hcells.push('<th style="padding:5px 6px;border-bottom:1.5px solid #e0dfd8;font-size:9px;color:#73726c;text-align:right;max-width:70px;overflow:hidden;text-overflow:ellipsis">'+t+'</th>');
+  });
+  hcells.push('<th style="padding:5px 8px;border-bottom:1.5px solid #e0dfd8;font-size:10px;font-weight:600;color:#73726c;text-align:right">Total</th>');
+  head.innerHTML='<tr>'+hcells.join('')+'</tr>';
+
+  // Max for heat
+  var allVals=[];
+  PARTNERS.forEach(function(p){ PX_VOL[p].forEach(function(v){allVals.push(v);}); });
+  var maxV=Math.max.apply(null,allVals);
+
+  // Rows
+  body.innerHTML='';
+  PARTNERS.forEach(function(p){
+    var tr=document.createElement('tr');
+    var cells=['<td style="font-size:10px;font-weight:600;padding:5px 8px;border-bottom:0.5px solid #f0eee8;position:sticky;left:0;background:#fff;white-space:nowrap">'+p+'</td>'];
+    var data=curPX==='vol'?PX_VOL[p]:PX_FRS[p];
+    data.forEach(function(v,i){
+      var bg='';
+      if(curPX==='vol'){
+        var intensity=v/maxV;
+        var r=Math.round(255-(255-200)*intensity);
+        var g=Math.round(255-(255-50)*intensity);
+        var b=Math.round(255-(255-50)*intensity);
+        bg='background:rgb('+r+','+g+','+b+')';
+      } else {
+        bg=v<35?'background:#fce8df':v<50?'background:#fff8f0':'background:#f0faf5';
+      }
+      var txt=curPX==='vol'?v.toLocaleString():(v>0?v+'%':'—');
+      cells.push('<td style="padding:5px 6px;border-bottom:0.5px solid #f0eee8;text-align:right;font-size:10px;'+bg+'">'+txt+'</td>');
+    });
+    // Total column
+    var tot=curPX==='vol'?PX_TOTAL_VOL[p].toLocaleString():PX_FRS_TOTAL[p]+'%';
+    var totBg=curPX==='frs'?(PX_FRS_TOTAL[p]<35?'background:#fce8df':PX_FRS_TOTAL[p]<50?'background:#fff8f0':'background:#f0faf5'):'';
+    cells.push('<td style="padding:5px 8px;border-bottom:0.5px solid #f0eee8;text-align:right;font-weight:600;font-size:10px;'+totBg+'">'+tot+'</td>');
+    tr.innerHTML=cells.join('');
+    body.appendChild(tr);
+  });
+
+  // Driver totals row for vol mode
+  if(curPX==='vol'){
+    var tr2=document.createElement('tr');
+    tr2.style.background='#f5f5f3';
+    var tcells=['<td style="font-size:10px;font-weight:600;padding:5px 8px;position:sticky;left:0;background:#f5f5f3">Driver Total</td>'];
+    var dtotals=[65766,39324,24433,16382,15859,14133,13656,12264,11270,10629,10620,9013,7241,6436,4266];
+    dtotals.forEach(function(v){
+      tcells.push('<td style="padding:5px 6px;text-align:right;font-size:10px;font-weight:600">'+v.toLocaleString()+'</td>');
+    });
+    tcells.push('<td style="padding:5px 8px;text-align:right;font-weight:700;font-size:10px">282,615</td>');
+    tr2.innerHTML=tcells.join('');
+    body.appendChild(tr2);
+  }
+}
+renderPX();
+
+// ═══════════════════════════════════════════════════
+// T1 PROBLEM AREA TABLE
+// ═══════════════════════════════════════════════════
+var PA_DATA=[
+  {name:'(blank / unmapped)',         scored:182968,resolved:83915,unres:99053,frs:45.9,pct:'35.0%',
+   drivers:['transfer_recommended:21872','intuit_process_pending:16496','voice_mail:8572','escalation:8457','contact_ended:4857','misrouted:4593']},
+  {name:'Misrouted Contact',          scored:42971, resolved:15372,unres:27599,frs:35.8,pct:'9.8%',
+   drivers:['transfer_recommended:12467','misrouted_contact:3753','intuit_process:1670','policy_restriction:1359','escalation:1343','ext_support:1141']},
+  {name:'Chat',                       scored:9442,  resolved:305,  unres:9137, frs:3.2, pct:'3.2%',
+   drivers:['no_cust_utterance:5311','cust_stopped:3049','transfer_rec:151','policy_restr:135','cont_ended:123','cust_cant_cont:92']},
+  {name:'Disconnect/Ghost Call',      scored:10195, resolved:1824, unres:8371, frs:17.9,pct:'3.0%',
+   drivers:['no_cust_utterance:2321','cust_stopped:1285','transfer_rec:908','cont_ended:622','policy_restr:501','escalation:427']},
+  {name:'Billing',                    scored:20299, resolved:12440,unres:7859, frs:61.3,pct:'2.8%',
+   drivers:['transfer_rec:1883','intuit_proc:1247','escalation:877','automated_proc:667','cont_ended:381','policy_restr:378']},
+  {name:'Unable to Reach Support',    scored:9751,  resolved:2633, unres:7118, frs:27.0,pct:'2.5%',
+   drivers:['policy_restriction:1518','transfer_rec:1262','intuit_proc:505','cust_stopped:469','cust_cant_cont:433','misrouted:422']},
+  {name:'Payroll',                    scored:21383, resolved:14352,unres:7031, frs:67.1,pct:'2.5%',
+   drivers:['transfer_rec:1585','intuit_proc:1070','escalation:808','cont_ended:425','known_issue:384','policy_restr:329']},
+  {name:'Banking',                    scored:15359, resolved:8468, unres:6891, frs:55.1,pct:'2.4%',
+   drivers:['transfer_rec:2178','intuit_proc:1236','escalation:754','automated_proc:491','cont_ended:413','policy_restr:385']},
+  {name:'Subscription/Svc Mgmt',     scored:15574, resolved:9833, unres:5741, frs:63.1,pct:'2.0%',
+   drivers:['transfer_rec:1654','intuit_proc:987','escalation:623','policy_restr:445','cont_ended:368','automated_proc:312']},
+  {name:'Customers',                  scored:11908, resolved:6445, unres:5463, frs:54.1,pct:'1.9%',
+   drivers:['transfer_rec:1823','intuit_proc:876','escalation:601','policy_restr:398','cont_ended:321','automated_proc:287']},
+  {name:'Disconnect',                 scored:6737,  resolved:1342, unres:5395, frs:19.9,pct:'1.9%',
+   drivers:['no_cust_utterance:1876','cust_stopped:1102','transfer_rec:721','cont_ended:498','policy_restr:389','escalation:312']},
+  {name:'Ghost Call',                 scored:6120,  resolved:1123, unres:4997, frs:18.3,pct:'1.8%',
+   drivers:['no_cust_utterance:1876','cust_stopped:1102','transfer_rec:721','cont_ended:498','policy_restr:389','escalation:312']},
+  {name:'Business Information',       scored:9080,  resolved:4827, unres:4253, frs:53.2,pct:'1.5%',
+   drivers:['transfer_rec:1243','intuit_proc:765','escalation:543','policy_restr:389','cont_ended:298','automated_proc:221']},
+  {name:'Chose DIY',                  scored:6631,  resolved:2585, unres:4046, frs:39.0,pct:'1.4%',
+   drivers:['transfer_rec:987','intuit_proc:654','escalation:443','cont_ended:312','policy_restr:278','automated_proc:198']},
+  {name:'Install/Update Product',     scored:10917, resolved:6959, unres:3958, frs:63.7,pct:'1.4%',
+   drivers:['transfer_rec:876','intuit_proc:543','escalation:398','cont_ended:287','policy_restr:234','automated_proc:187']},
+];
+
+(function(){
+  var tb=document.getElementById('paBody'); if(!tb) return;
+  var maxU=PA_DATA[0].unres;
+  PA_DATA.forEach(function(pa){
+    var tr=document.createElement('tr');
+    tr.style.cursor='pointer';
+    var bw=Math.round(pa.unres/maxU*100);
+    var fc=pa.frs<35?'#993C1D':pa.frs<50?'#854F0B':'#0F6E56';
+    var driverStr=pa.drivers.map(function(d){
+      var parts=d.split(':');
+      return '<span style="background:#f0efe9;border-radius:3px;padding:1px 5px;margin:1px;display:inline-block;font-size:9px">'+parts[0]+' <strong>'+parseInt(parts[1]).toLocaleString()+'</strong></span>';
+    }).join('');
+    var row=[];
+    row.push('<td style="font-size:11px;font-weight:500;padding:6px 8px;border-bottom:0.5px solid #f0eee8">'+pa.name+'</td>');
+    row.push('<td style="padding:6px 8px;border-bottom:0.5px solid #f0eee8;text-align:right">'+pa.scored.toLocaleString()+'</td>');
+    row.push('<td style="padding:6px 8px;border-bottom:0.5px solid #f0eee8;font-weight:600;text-align:right">'+pa.unres.toLocaleString()+'</td>');
+    row.push('<td style="padding:6px 8px;border-bottom:0.5px solid #f0eee8;color:'+fc+';font-weight:600;text-align:right">'+pa.frs+'%</td>');
+    row.push('<td style="padding:6px 8px;border-bottom:0.5px solid #f0eee8;text-align:right">'+pa.pct+'</td>');
+    row.push('<td style="padding:6px 8px;border-bottom:0.5px solid #f0eee8;min-width:120px"><div class="bbg"><div class="bfill" style="width:'+bw+'%;background:#534AB7;opacity:.6"></div></div></td>');
+    row.push('<td style="padding:6px 8px;border-bottom:0.5px solid #f0eee8;line-height:1.8">'+driverStr+'</td>');
     tr.innerHTML=row.join('');
     tb.appendChild(tr);
   });
