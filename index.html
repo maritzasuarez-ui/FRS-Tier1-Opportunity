@@ -421,7 +421,15 @@ body{font-family:system-ui,sans-serif;background:#f0efe9;color:#2c2c2a;font-size
 </div>
 <div class="sec">All Friction Tasks — reference table</div>
 <div class="panel" style="overflow-x:auto">
-  <table class="tag-table"><thead><tr><th>Friction task</th><th>Layer</th><th>Bucket</th><th style="text-align:right">Contacts</th><th style="text-align:right">FRS%</th><th>What it means</th><th>Owner</th></tr></thead>
+  <table class="tag-table" id="rubricTable"><thead><tr>
+  <th onclick="sortRubric('name')" style="cursor:pointer;user-select:none">Friction task <span id="sort-name">⇅</span></th>
+  <th onclick="sortRubric('layer')" style="cursor:pointer;user-select:none">Layer <span id="sort-layer">⇅</span></th>
+  <th onclick="sortRubric('abc')" style="cursor:pointer;user-select:none">Bucket <span id="sort-abc">⇅</span></th>
+  <th onclick="sortRubric('unres')" style="cursor:pointer;user-select:none;text-align:right">Unresolved <span id="sort-unres">⇅</span></th>
+  <th onclick="sortRubric('frs')" style="cursor:pointer;user-select:none;text-align:right">FRS% <span id="sort-frs">⇅</span></th>
+  <th>What it means</th>
+  <th>Owner</th>
+</tr></thead>
   <tbody id="rubricTB"></tbody></table>
 </div>
 </div><!-- end tab-rubric -->
@@ -458,7 +466,7 @@ body{font-family:system-ui,sans-serif;background:#f0efe9;color:#2c2c2a;font-size
       <div class="msec active" id="ms-details">
         <div class="fgrid">
           <div><label class="flabel">Initiative name *</label><input class="fin" id="mName" placeholder="e.g. Routing Quality Kaizen"></div>
-          <div><label class="flabel">Type</label><select class="fsel" id="mType"><option>Kaizen</option><option>A3</option><option>DMAIC</option><option>Structured Problem Solving</option><option>Engineering Fix</option><option>Process Change</option><option>Quick Win</option></select></div>
+          <div><label class="flabel">Type</label><select class="fsel" id="mType"><option>Kaizen</option><option>RCA</option><option>Structured Problem Solving</option><option>Engineering Fix</option><option>Process Change</option><option>Quick Win</option></select></div>
           <div><label class="flabel">Friction layer *</label>
             <select class="fsel" id="mLayer" onchange="autoCtrl()">
               <option value="Routing & Handoff Gaps">Routing &amp; Handoff Gaps</option>
@@ -844,7 +852,16 @@ var TASK_ACTIONS={
 };
 function buildRubricTable(){
   var tb=document.getElementById('rubricTB'); if(!tb)return; tb.innerHTML='';
-  TASKS.slice().sort(function(a,b){return b.unres-a.unres;}).forEach(function(t){
+  var sorted=TASKS.slice().sort(function(a,b){
+    var av,bv;
+    if(rubricSortCol==='name'){av=a.name;bv=b.name;return rubricSortDir*(av<bv?-1:av>bv?1:0);}
+    if(rubricSortCol==='layer'){av=a.layer;bv=b.layer;return rubricSortDir*(av<bv?-1:av>bv?1:0);}
+    if(rubricSortCol==='abc'){av=a.abc;bv=b.abc;return rubricSortDir*(av<bv?-1:av>bv?1:0);}
+    if(rubricSortCol==='unres'){return rubricSortDir*(a.unres-b.unres);}
+    if(rubricSortCol==='frs'){return rubricSortDir*(a.frs-b.frs);}
+    return b.unres-a.unres;
+  });
+  sorted.forEach(function(t){
     var lc=LAYER_COLORS[t.layer]||'#888';
     var frsColor=t.frs<20?'#C04000':t.frs<47?'#854F0B':'#0F6E56';
     var tr=document.createElement('tr');
@@ -1059,6 +1076,27 @@ function renderCorrTable(){
 }
 function applyData(){
   var msg=document.getElementById('dataMsg');if(msg)msg.textContent='Data feed will update charts when weekly data is provided in CSV format.';
+}
+
+
+// ═══ RUBRIC TABLE SORT ═══
+var rubricSortCol='unres', rubricSortDir=1; // 1=asc, -1=desc
+
+function sortRubric(col){
+  if(rubricSortCol===col){
+    rubricSortDir *= -1; // toggle direction
+  } else {
+    rubricSortCol=col;
+    rubricSortDir = col==='name'||col==='layer'||col==='abc' ? 1 : -1; // text asc, numbers desc by default
+  }
+  // Update sort indicators
+  ['name','layer','abc','unres','frs'].forEach(function(c){
+    var el=document.getElementById('sort-'+c);
+    if(!el)return;
+    el.textContent = c===rubricSortCol ? (rubricSortDir===1?'↑':'↓') : '⇅';
+    el.style.color = c===rubricSortCol ? '#1a1a2e' : '#aaa';
+  });
+  buildRubricTable();
 }
 
 window.onload=function(){
