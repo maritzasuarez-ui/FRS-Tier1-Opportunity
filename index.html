@@ -3,1343 +3,1075 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FRS Tier 1 Opportunity Visualization</title>
+<title>Unresolved Issues — FRS Problem Visualization</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:system-ui,sans-serif;background:#f0efe9;color:#2c2c2a;font-size:13px;}
-.page{max-width:1400px;margin:0 auto;padding:20px;}
-.topnav{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
-.navbtn{padding:7px 18px;font-size:12px;font-weight:500;border:0.5px solid #d3d1c7;border-radius:7px;cursor:pointer;background:#fff;color:#73726c;}
-.navbtn.active{background:#2c2c2a;color:#fff;border-color:#2c2c2a;}
-.section{display:none;}.section.visible{display:block;}
-.hdr{background:#2c2c2a;color:#fff;border-radius:10px;padding:18px 24px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-.hdr h1{font-size:18px;font-weight:600;}
-.hdr .meta{font-size:11px;color:#B4B2A9;margin-top:3px;}
-.hdr .fml{font-size:11px;color:#d3d1c7;background:rgba(255,255,255,0.08);border-radius:6px;padding:8px 14px;line-height:1.9;margin-top:10px;}
-.hero{text-align:right;}.hero .num{font-size:36px;font-weight:700;color:#5DCAA5;}
-.hero .lbl{font-size:10px;color:#B4B2A9;}.hero .trend{font-size:11px;color:#F0997B;margin-top:3px;}
-.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:14px;}
-.kpi{background:#fff;border-radius:8px;padding:10px 14px;border:0.5px solid #e0dfd8;}
-.klbl{font-size:10px;color:#73726c;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;}
-.kval{font-size:20px;font-weight:600;}
-.panel{background:#fff;border-radius:10px;padding:18px;border:0.5px solid #e0dfd8;}
-.ptitle{font-size:13px;font-weight:600;margin-bottom:3px;}
-.psub{font-size:11px;color:#73726c;margin-bottom:12px;}
-.full{margin-bottom:14px;}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
-.tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;}
-.tab{padding:4px 11px;font-size:11px;border:0.5px solid #d3d1c7;border-radius:5px;cursor:pointer;background:#fff;color:#73726c;}
-.tab.active{background:#2c2c2a;color:#fff;border-color:#2c2c2a;}
-.legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:10px;color:#73726c;}
-.legend span{display:flex;align-items:center;gap:3px;}
-.dot{width:9px;height:9px;border-radius:2px;display:inline-block;flex-shrink:0;}
-.note{font-size:10px;color:#5F5E5A;background:#f1efe8;border-radius:5px;padding:7px 10px;line-height:1.6;margin-top:8px;}
-.warn{font-size:10px;color:#633806;background:#FAEEDA;border-radius:5px;padding:7px 10px;line-height:1.6;margin-top:8px;border:0.5px solid #EF9F27;}
-.abc-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px;}
-.abc-card{border-radius:10px;padding:14px 16px;border:1.5px solid;cursor:pointer;transition:transform .12s;}
-.abc-card:hover{transform:translateY(-2px);}
-.abc-card.selected{box-shadow:0 0 0 2.5px #2c2c2a;}
-.abc-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
-.abc-badge{font-size:10px;font-weight:700;text-transform:uppercase;padding:3px 8px;border-radius:4px;}
-.lift-box{text-align:right;}.lift-num{font-size:20px;font-weight:700;}
-.lift-lbl{font-size:9px;opacity:.65;margin-top:1px;}
-.abc-vol{font-size:20px;font-weight:700;}
-.abc-sub{font-size:11px;opacity:.65;margin-bottom:6px;}
-.meter-bg{background:rgba(0,0,0,.1);border-radius:3px;height:5px;margin-bottom:8px;}
-.meter-fill{height:5px;border-radius:3px;}
-.abc-desc{font-size:11px;line-height:1.6;opacity:.85;margin-bottom:8px;}
-.mtitle{font-size:9px;font-weight:600;text-transform:uppercase;opacity:.55;margin-bottom:5px;border-top:0.5px solid rgba(0,0,0,.1);padding-top:8px;}
-.mrow{display:flex;align-items:center;gap:5px;margin-bottom:3px;}
-.mbg{flex:1;background:rgba(0,0,0,.08);border-radius:2px;height:5px;}
-.mfill{height:5px;border-radius:2px;}
-.mlbl{font-size:9px;min-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.75;}
-.mpct{font-size:9px;font-weight:600;min-width:36px;text-align:right;}
-.abc-action{font-size:10px;font-weight:500;padding:5px 10px;border-radius:4px;display:inline-block;margin-top:6px;}
-.ca{background:#fff8f5;border-color:#E8806A;}.ba{background:#fce8df;color:#712B13;}.va{color:#993C1D;}.la{color:#D85A30;}.aa{background:#fce8df;color:#712B13;}
-.cb{background:#f4f2fb;border-color:#7269CC;}.bb{background:#e8e6f8;color:#26215C;}.vb{color:#534AB7;}.lb{color:#534AB7;}.ab{background:#e8e6f8;color:#26215C;}
-.cc{background:#f0faf5;border-color:#44B88A;}.bc{background:#d9f2e8;color:#04342C;}.vc{color:#0F6E56;}.lc{color:#0F6E56;}.ac{background:#d9f2e8;color:#04342C;}
-.dtable{width:100%;border-collapse:collapse;font-size:11px;}
-.dtable th{text-align:left;padding:6px 8px;border-bottom:1px solid #e0dfd8;color:#73726c;font-size:10px;text-transform:uppercase;letter-spacing:.4px;cursor:pointer;white-space:nowrap;}
-.dtable td{padding:5px 8px;border-bottom:0.5px solid #f0eee8;vertical-align:middle;}
-.dtable tr:hover td{background:#fafaf8;}
-.dtable tr.nc td{opacity:.5;}
-.bbg{background:#f0eee8;border-radius:3px;height:6px;min-width:60px;}
-.bfill{height:6px;border-radius:3px;}
-.bdg{display:inline-block;padding:2px 6px;border-radius:3px;font-size:10px;font-weight:600;}
-.pill{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;}
-.sv4{background:#e8e6f8;color:#26215C;}.sest{background:#f1efe8;color:#5F5E5A;}
-.xfer{background:#fff5f3;border-radius:10px;padding:18px;border:1px solid #F0997B;margin-bottom:14px;}
-.fgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;}
-.fc{background:#fff;border-radius:7px;padding:10px 12px;border:0.5px solid #e0dfd8;}
-.fclbl{font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
-.fcval{font-size:16px;font-weight:700;margin-bottom:2px;}
-.fcnote{font-size:10px;color:#73726c;line-height:1.5;}
-.trend-grid{display:grid;grid-template-columns:3fr 2fr;gap:16px;}
-.tkpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;}
-.tkpi{background:#f5f5f3;border-radius:6px;padding:8px 12px;}
-.tklbl{font-size:10px;color:#73726c;margin-bottom:2px;}
-.tkval{font-size:16px;font-weight:600;}
-.dn{color:#993C1D;}.up{color:#0F6E56;}
-.rubric-row{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:0;align-items:stretch;margin-bottom:20px;}
-.rcard{border-radius:10px;padding:20px;border:2px solid;}
-.rand{display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#73726c;padding:0 10px;min-width:44px;}
-.rcirc{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff;margin:0 auto 12px;}
-.rq{font-size:14px;font-weight:600;text-align:center;margin-bottom:12px;}
-.rpass{margin-bottom:8px;padding:8px 10px;border-radius:6px;font-size:11px;line-height:1.6;background:#d9f2e8;}
-.rfail{padding:8px 10px;border-radius:6px;font-size:11px;line-height:1.6;background:#fce8df;}
-.pbd{display:inline-block;background:#d9f2e8;color:#04342C;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;margin-bottom:4px;}
-.fbd{display:inline-block;background:#fce8df;color:#712B13;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;margin-bottom:4px;}
-.ra{background:#EEF6FF;border-color:#5BA3E8;}
-.rb{background:#FFF8EE;border-color:#D4A843;}
-.rc{background:#F3EEFF;border-color:#9B7FD4;}
-.ttable{width:100%;border-collapse:collapse;font-size:11px;}
-.ttable th{text-align:left;padding:7px 10px;border-bottom:1.5px solid #e0dfd8;font-size:10px;text-transform:uppercase;color:#73726c;font-weight:600;}
-.ttable td{padding:6px 10px;border-bottom:0.5px solid #f0eee8;vertical-align:top;line-height:1.5;}
-.ttable tr:hover td{background:#fafaf8;}
-.tmono{font-family:monospace;font-size:10px;font-weight:600;}
+.page{max-width:1500px;margin:0 auto;padding:16px;}
+
+.top-nav{display:flex;background:#1a1a2e;border-radius:10px 10px 0 0;overflow:hidden;margin-bottom:0;}
+.top-tab{padding:12px 24px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;color:#a0a0c0;border-bottom:3px solid transparent;transition:all .15s;}
+.top-tab:hover{color:#fff;}
+.top-tab.active{color:#fff;border-bottom-color:#5DCAA5;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+.sticky-bar{position:sticky;top:0;z-index:100;background:#fff;border:0.5px solid #e0dfd8;border-radius:0 0 8px 8px;padding:8px 14px;margin-bottom:14px;display:flex;align-items:center;flex-wrap:wrap;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,.08);}
+.fg{display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.flbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#73726c;white-space:nowrap;}
+.fbtn{padding:3px 9px;font-size:10px;border:1px solid #d3d1c7;border-radius:4px;cursor:pointer;background:#fff;color:#73726c;transition:all .12s;user-select:none;}
+.fbtn:hover{background:#f5f5f3;}
+.fbtn.on{background:#E8F0FE;color:#1a1a2e;border-color:#4A6CF7;font-weight:700;}
+.sep{width:1px;height:18px;background:#e0dfd8;flex-shrink:0;}
+.fbadge{font-size:9px;color:#73726c;background:#f5f5f3;border-radius:3px;padding:2px 8px;margin-left:auto;}
+
+.hdr{background:#1a1a2e;color:#fff;border-radius:10px;padding:12px 20px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.hdr h1{font-size:15px;font-weight:600;}
+.hdr .sub{font-size:10px;color:#a0a0c0;margin-top:2px;}
+
+.sec{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#73726c;margin:0 0 8px 2px;display:flex;align-items:center;gap:6px;}
+.sec::after{content:'';flex:1;height:1px;background:#e0dfd8;}
+
+/* ABC BUCKET CARDS */
+.abc-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.abc-card{border-radius:10px;padding:16px 18px;border:0.5px solid #e0dfd8;border-top:5px solid;}
+.abc-card.A{background:#FFF8F5;border-top-color:#C04000;}
+.abc-card.B{background:#F5F8FF;border-top-color:#2255AA;}
+.abc-card.C{background:#F5FBF7;border-top-color:#107050;}
+.abc-badge{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;border-radius:3px;display:inline-block;margin-bottom:8px;}
+.abc-label{font-size:13px;font-weight:700;margin-bottom:2px;}
+.abc-vol{font-size:28px;font-weight:800;line-height:1;margin:4px 0;}
+.abc-pct{font-size:11px;font-weight:500;margin-bottom:8px;}
+.abc-desc{font-size:10px;line-height:1.7;margin-bottom:10px;}
+.abc-markers{margin-top:6px;}
+.abc-marker-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin-bottom:5px;}
+.mbar-row{display:flex;align-items:center;gap:6px;margin-bottom:4px;}
+.mbar-name{font-size:9px;width:160px;flex-shrink:0;color:#2c2c2a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mbar-bg{flex:1;height:5px;background:#e0dfd8;border-radius:3px;}
+.mbar-fill{height:5px;border-radius:3px;}
+.mbar-val{font-size:9px;color:#73726c;min-width:40px;text-align:right;}
+.abc-action{font-size:9px;margin-top:8px;padding:4px 8px;border-radius:4px;font-weight:600;}
+
+/* MACRO THEME BOXES */
+.themes-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:14px;}
+.tc{background:#fff;border-radius:9px;padding:11px 12px;border:2px solid #e0dfd8;cursor:pointer;transition:all .15s;border-top:4px solid;}
+.tc:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.1);}
+.tc.sel{box-shadow:0 0 0 2.5px #2c2c2a;transform:translateY(-2px);}
+.tc-name{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px;}
+.tc-vol{font-size:19px;font-weight:700;line-height:1.1;}
+.tc-frs{font-size:9px;margin:2px 0;}
+.tc-pill{font-size:8px;font-weight:700;padding:1px 5px;border-radius:3px;display:inline-block;margin-bottom:3px;}
+.tc-bar-bg{height:3px;background:#f0efe9;border-radius:2px;margin-top:5px;}
+.tc-bar-fill{height:3px;border-radius:2px;}
+
+/* PARETO GRID */
+.pareto-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px;}
+.cpanel{background:#fff;border-radius:10px;padding:14px 16px;border:0.5px solid #e0dfd8;}
+.ct{font-size:12px;font-weight:600;margin-bottom:1px;}
+.cs{font-size:10px;color:#73726c;margin-bottom:8px;}
+.note{font-size:10px;color:#5F5E5A;background:#f1efe8;border-radius:5px;padding:6px 10px;line-height:1.6;margin-top:6px;}
+
+/* TAG DETAIL */
+.tag-table{width:100%;border-collapse:collapse;font-size:11px;}
+.tag-table th{text-align:left;padding:6px 10px;border-bottom:1.5px solid #e0dfd8;font-size:9px;text-transform:uppercase;letter-spacing:.4px;color:#73726c;background:#fafaf8;white-space:nowrap;}
+.tag-table td{padding:5px 10px;border-bottom:0.5px solid #f0eee8;vertical-align:middle;}
+.tag-table tr:hover td{background:#fafaf8;}
+.frs-bar-bg{height:4px;background:#f0eee8;border-radius:2px;margin-top:2px;width:80px;}
+.frs-bar-fill{height:4px;border-radius:2px;}
+
+.legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;font-size:9px;color:#73726c;}
+.legend span{display:flex;align-items:center;gap:4px;}
+.dot{width:8px;height:8px;border-radius:2px;display:inline-block;flex-shrink:0;}
+.panel{background:#fff;border-radius:10px;padding:14px 16px;border:0.5px solid #e0dfd8;margin-bottom:12px;}
+
+/* PROBLEM SOLVING */
+.ps-hdr{background:linear-gradient(135deg,#1a1a2e,#2d2d5e);color:#fff;border-radius:10px;padding:14px 20px;margin-bottom:12px;}
+.gp-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px;}
+.gkpi{background:#fff;border-radius:8px;padding:9px 12px;border:0.5px solid #e0dfd8;}
+.gklbl{font-size:9px;text-transform:uppercase;letter-spacing:.4px;color:#73726c;margin-bottom:2px;}
+.gkval{font-size:18px;font-weight:700;}
+.gksub{font-size:9px;color:#73726c;margin-top:2px;}
+.ps-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+.psf{padding:3px 9px;font-size:10px;border:1px solid #d3d1c7;border-radius:4px;cursor:pointer;background:#fff;color:#73726c;}
+.psf.on{background:#1a1a2e;color:#fff;border-color:#1a1a2e;}
+.add-btn{padding:6px 14px;font-size:11px;font-weight:600;background:#0F6E56;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-left:auto;}
+.kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+.kcol{background:#f5f5f3;border-radius:9px;padding:10px;}
+.kcol-hdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#73726c;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;}
+.kcnt{font-size:9px;background:#e0dfd8;border-radius:10px;padding:1px 7px;}
+.kcard{background:#fff;border-radius:7px;padding:10px 12px;margin-bottom:8px;border:0.5px solid #e0dfd8;border-left:3px solid;cursor:pointer;transition:box-shadow .12s;}
+.kcard:hover{box-shadow:0 2px 10px rgba(0,0,0,.10);}
+.kcard-title{font-size:11px;font-weight:600;margin-bottom:4px;}
+.kcard-meta{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:4px;}
+.ktag{font-size:8px;padding:1px 6px;border-radius:3px;font-weight:600;}
+.kcard-lift{font-size:9px;color:#73726c;margin-top:3px;}
+.kprog-bg{background:#f0eee8;border-radius:3px;height:4px;margin-top:4px;}
+.kprog-fill{height:4px;border-radius:3px;background:#0F6E56;}
+.corr-table{width:100%;border-collapse:collapse;font-size:11px;}
+.corr-table th{text-align:left;padding:7px 10px;border-bottom:1.5px solid #e0dfd8;font-size:9px;text-transform:uppercase;letter-spacing:.4px;color:#73726c;background:#fafaf8;white-space:nowrap;}
+.corr-table td{padding:6px 10px;border-bottom:0.5px solid #f0eee8;vertical-align:middle;}
+.corr-table tr:hover td{background:#fafaf8;}
+
+/* MODAL */
+.overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;}
+.overlay.open{display:flex;}
+.modal{background:#fff;border-radius:12px;width:700px;max-height:88vh;overflow-y:auto;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.modal-hdr{padding:18px 22px 12px;border-bottom:0.5px solid #e0dfd8;position:sticky;top:0;background:#fff;z-index:1;}
+.modal-hdr h3{font-size:14px;font-weight:700;}
+.mclose{position:absolute;top:14px;right:16px;font-size:18px;cursor:pointer;color:#73726c;background:none;border:none;}
+.modal-body{padding:16px 22px 20px;}
+.mtabs{display:flex;gap:0;border-bottom:1px solid #e0dfd8;margin-bottom:14px;}
+.mtab{padding:6px 14px;font-size:11px;cursor:pointer;border:none;background:transparent;color:#73726c;border-bottom:2px solid transparent;margin-bottom:-1px;font-weight:500;}
+.mtab.active{color:#1a1a2e;border-bottom-color:#1a1a2e;font-weight:700;}
+.msec{display:none;}
+.msec.active{display:block;}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.full{grid-column:1/-1;}
+.flabel{font-size:10px;font-weight:600;color:#73726c;margin-bottom:3px;display:block;}
+.fin,.fsel,.ftxt{width:100%;padding:7px 10px;font-size:11px;border:0.5px solid #d3d1c7;border-radius:5px;background:#fafaf8;font-family:inherit;color:#2c2c2a;}
+.ftxt{height:65px;resize:vertical;}
+.msave{padding:8px 18px;background:#1a1a2e;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;margin-top:10px;}
+.mdel{padding:8px 18px;background:#fce8df;color:#993C1D;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;margin-top:10px;margin-left:8px;}
+.log-entry{background:#f5f5f3;border-radius:6px;padding:8px 12px;margin-bottom:6px;font-size:10px;border-left:3px solid #d3d1c7;}
+.log-date{font-size:9px;color:#73726c;margin-bottom:2px;}
+.log-form{display:flex;gap:8px;margin-top:8px;}
+.log-input{flex:1;padding:6px 10px;font-size:11px;border:0.5px solid #d3d1c7;border-radius:5px;background:#fafaf8;font-family:inherit;}
+.log-btn{padding:6px 12px;font-size:10px;font-weight:600;background:#534AB7;color:#fff;border:none;border-radius:5px;cursor:pointer;}
+.prog-row{display:flex;align-items:center;gap:10px;margin-top:4px;}
+.prog-slider{flex:1;accent-color:#0F6E56;}
+
+/* RUBRIC TAB */
+.rub-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+.rub-card{background:#fff;border-radius:10px;padding:14px 16px;border:0.5px solid #e0dfd8;border-top:4px solid;}
+.rub-title{font-size:12px;font-weight:700;margin-bottom:6px;}
+.rub-body{font-size:10px;color:#444;line-height:1.7;}
 </style>
 </head>
 <body>
 <div class="page">
-<div class="topnav">
-  <button class="navbtn active" onclick="showSec('dash',this)">📊 Dashboard</button>
-  <button class="navbtn" onclick="showSec('sizing',this)">🎯 Opportunity sizing</button>
-  <button class="navbtn" onclick="showSec('readme',this)">📖 Rubric & tag reference</button>
+
+<div class="top-nav">
+  <button class="top-tab active" onclick="switchMain('viz',this)">📊 FRS Problem Visualization</button>
+  <button class="top-tab" onclick="switchMain('ps',this)">🔧 Problem Solving Board</button>
+  <button class="top-tab" onclick="switchMain('rubric',this)">📖 Definitions & Rubric</button>
+  <button class="top-tab" onclick="switchMain('data',this)">📥 Data Feed</button>
 </div>
 
-<!-- ═══════════════════ DASHBOARD ═══════════════════ -->
-<div id="sec-dash" class="section visible">
+<!-- GLOBAL STICKY FILTERS -->
+<div class="sticky-bar">
+  <div class="fg">
+    <div class="flbl">Layer</div>
+    <button class="fbtn on lbtn" id="fAll" onclick="toggleLayer('ALL',this)">All</button>
+    <span style="font-size:9px;color:#C04000;font-weight:700;margin:0 2px">A:</span>
+    <button class="fbtn lbtn" id="fl-Low-Signal / Data Quality" style="border-left:3px solid #C04000" onclick="toggleLayer('Low-Signal / Data Quality',this)">Low-Signal</button>
+    <button class="fbtn lbtn" id="fl-Customer-Side Factors" style="border-left:3px solid #E05020" onclick="toggleLayer('Customer-Side Factors',this)">Customer-Side</button>
+    <span style="font-size:9px;color:#2255AA;font-weight:700;margin:0 2px">B:</span>
+    <button class="fbtn lbtn" id="fl-Routing & Handoff Gaps" style="border-left:3px solid #1a3a6e" onclick="toggleLayer('Routing & Handoff Gaps',this)">R&H Gaps</button>
+    <button class="fbtn lbtn" id="fl-Process & Dependency Bottlenecks" style="border-left:3px solid #2255AA" onclick="toggleLayer('Process & Dependency Bottlenecks',this)">Process & Dep</button>
+    <button class="fbtn lbtn" id="fl-Product & Tool Limitations" style="border-left:3px solid #4A90D9" onclick="toggleLayer('Product & Tool Limitations',this)">Product & Tool</button>
+    <span style="font-size:9px;color:#107050;font-weight:700;margin:0 2px">C:</span>
+    <button class="fbtn lbtn" id="fl-Expert Related" style="border-left:3px solid #107050" onclick="toggleLayer('Expert Related',this)">Expert Related</button>
+  </div>
+  <div class="sep"></div>
+  <div class="fg">
+    <div class="flbl">Bucket</div>
+    <button class="fbtn on abcbtn" id="fABC-ALL" onclick="toggleABC('ALL',this)">All</button>
+    <button class="fbtn abcbtn" style="border-left:3px solid #C04000" onclick="toggleABC('A',this)">A — Issue not addressed</button>
+    <button class="fbtn abcbtn" style="border-left:3px solid #2255AA" onclick="toggleABC('B',this)">B — Still pending</button>
+    <button class="fbtn abcbtn" style="border-left:3px solid #107050" onclick="toggleABC('C',this)">C — Did not confirm</button>
+  </div>
+  <div class="sep"></div>
+  <div class="fg">
+    <div class="flbl">Partner</div>
+    <button class="fbtn on pbtn" id="fpAll" onclick="togglePartner('ALL',this)">All</button>
+    <button class="fbtn pbtn" onclick="togglePartner('FOUNDEVER',this)">FOUNDEVER</button>
+    <button class="fbtn pbtn" onclick="togglePartner('CONCENTRIX',this)">CONCENTRIX</button>
+    <button class="fbtn pbtn" onclick="togglePartner('ALORICA',this)">ALORICA</button>
+    <button class="fbtn pbtn" onclick="togglePartner('TELEPERFORMANCE',this)">TELEPERF</button>
+    <button class="fbtn pbtn" onclick="togglePartner('WORKING SOLUTIONS',this)">WRK SOLN</button>
+    <button class="fbtn pbtn" onclick="togglePartner('INTUIT',this)">INTUIT</button>
+    <button class="fbtn pbtn" onclick="togglePartner('KMK VENTURES',this)">KMK</button>
+  </div>
+  <div class="sep"></div>
+  <div class="fg">
+    <div class="flbl">Week</div>
+    <button class="fbtn on wbtn" id="fwAll" onclick="toggleWeek('ALL',this)">All (Jun 1-24)</button>
+    <button class="fbtn wbtn" onclick="toggleWeek('wk22',this)">wk22 Jun 1-7</button>
+    <button class="fbtn wbtn" onclick="toggleWeek('wk23',this)">wk23 Jun 8-14</button>
+    <button class="fbtn wbtn" onclick="toggleWeek('wk24',this)">wk24 Jun 15-21</button>
+    <button class="fbtn wbtn" onclick="toggleWeek('wk25',this)">wk25 Jun 22-24</button>
+  </div>
+  <div class="fbadge" id="filterBadge">No filters · 255,558 contacts</div>
+</div>
+
+<!-- ══ TAB 1: VIZ ══ -->
+<div id="tab-viz" class="tab-panel active">
+
 <div class="hdr">
-  <div>
-    <h1>FRS Tier 1 Opportunity Visualization</h1>
-    <div class="meta">May 25–Jun 21 2026 · 372,148 unresolved · GBSG SABER-scored · A∧B∧C rubric</div>
-    <div class="fml"><strong>FRS%</strong> = Resolved ÷ Total scored &nbsp;·&nbsp; Data-backed Controllable % from v4 applied &nbsp;·&nbsp; Recoverable ceiling: <span style="color:#5DCAA5;font-weight:600">+24.2pp</span> &nbsp;·&nbsp; Non-conversation floor: <span style="color:#F0997B">71,872 contacts cannot be resolved by initiatives</span></div>
+  <div><h1>📊 FRS Problem Visualization — Friction Analysis</h1>
+  <div class="sub">255,558 unresolved contacts · 6 Intuit macro themes · Primary tag data (Jun 1–Jun 24) · ABC rubric applied</div></div>
+  <div style="display:flex;gap:16px;align-items:center">
+    <div style="text-align:right"><div style="font-size:22px;font-weight:700;color:#E8806A" id="heroVol">255,558</div><div style="font-size:9px;color:#a0a0c0">Total friction contacts</div></div>
+    <div style="text-align:right"><div style="font-size:22px;font-weight:700;color:#5DCAA5" id="heroFRS">47.0%</div><div style="font-size:9px;color:#a0a0c0">Weighted avg FRS</div></div>
+    <div style="text-align:right"><div style="font-size:22px;font-weight:700;color:#993C1D">79%</div><div style="font-size:9px;color:#a0a0c0">Goal · gap shown per bucket</div></div>
   </div>
-  <div class="hero"><div class="num">48.4%</div><div class="lbl">Baseline FRS · 720,617 scored</div><div class="trend">▲ Goal 79% · gap = 30.6pp</div></div>
-</div>
-<div class="kpis">
-  <div class="kpi"><div class="klbl">Total scored</div><div class="kval">720,617</div></div>
-  <div class="kpi"><div class="klbl">Resolved</div><div class="kval" style="color:#0F6E56">348,469</div></div>
-  <div class="kpi"><div class="klbl">Unresolved</div><div class="kval" style="color:#993C1D">372,148</div></div>
-  <div class="kpi"><div class="klbl">Recoverable ceiling</div><div class="kval" style="color:#534AB7">+24.2pp</div></div>
-  <div class="kpi"><div class="klbl">Non-conv floor</div><div class="kval" style="color:#854F0B">71,872</div></div>
-  <div class="kpi"><div class="klbl">Goal gap</div><div class="kval" style="color:#993C1D">−30.6pp</div></div>
 </div>
 
-<!-- WEEK FILTER -->
-<div style="background:#fff;border-radius:10px;padding:12px 18px;border:0.5px solid #e0dfd8;margin-bottom:14px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-  <div style="font-size:12px;font-weight:600;color:#2c2c2a">📅 Week filter:</div>
-  <div class="tabs" style="margin-bottom:0">
-    <button class="tab active wktab" onclick="setWeek(-1,this)">All 4 weeks (May 25–Jun 21)</button>
-    <button class="tab wktab" onclick="setWeek(0,this)">wk 05-25</button>
-    <button class="tab wktab" onclick="setWeek(1,this)">wk 06-01 ▲ peak unresolved</button>
-    <button class="tab wktab" onclick="setWeek(2,this)">wk 06-08</button>
-    <button class="tab wktab" onclick="setWeek(3,this)">wk 06-15</button>
+<!-- SECTION 1: ABC RUBRIC CARDS -->
+
+<!-- WoW + DAILY CHARTS -->
+<div class="sec">① FRS Performance — week over week trend and daily signal</div>
+<div style="display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-bottom:14px">
+  <div class="panel" style="margin-bottom:0">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <div><div style="font-size:12px;font-weight:600">FRS% week over week — wk20 → wk25</div>
+      <div style="font-size:10px;color:#73726c">4 straight weeks declining from 52.0% peak (wk21) · Jun 1–Jun 24 latest</div></div>
+      <div style="display:flex;gap:5px">
+        <button class="fbtn on ttab" id="tbFRS" onclick="switchTrend('frs',this)">FRS%</button>
+        <button class="fbtn ttab" id="tbVol" onclick="switchTrend('vol',this)">Volume</button>
+      </div>
+    </div>
+    <div style="position:relative;height:160px"><canvas id="trendChart"></canvas></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;font-size:9px;color:#73726c">
+      <span><span class="dot" style="background:#1a1a2e"></span>Overall FRS%</span>
+      <span><span class="dot" style="background:#534AB7"></span>Tier 1 FRS%</span>
+    </div>
   </div>
-  <div id="wkBanner" style="font-size:11px;color:#73726c;margin-left:auto"></div>
+  <div class="panel" style="margin-bottom:0">
+    <div style="font-size:12px;font-weight:600;margin-bottom:2px">Daily FRS% — recent weeks</div>
+    <div style="font-size:10px;color:#73726c;margin-bottom:6px">Mon–Fri operational signal</div>
+    <div style="position:relative;height:160px"><canvas id="dailyChart"></canvas></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;font-size:9px;color:#73726c">
+      <span><span class="dot" style="background:#1a1a2e"></span>Overall</span>
+      <span><span class="dot" style="background:#E8806A"></span>Tier 1</span>
+    </div>
+  </div>
 </div>
 
-<!-- ABC CARDS -->
+<div class="sec">② ABC Resolution Rubric — the three root reasons FRS falls below 100%</div>
 <div class="abc-row">
-  <div class="abc-card ca" id="cardA" onclick="filterBucket('A')">
-    <div class="abc-hdr"><span class="abc-badge ba">Bucket A · 11 tags</span><div class="lift-box"><div class="lift-num la">+4.2pp</div><div class="lift-lbl">Data-backed ceiling</div></div></div>
-    <div style="font-size:13px;font-weight:600;margin-bottom:2px">Issue not addressed</div>
-    <div class="abc-vol va">92,836</div><div class="abc-sub">24.9% of unresolved</div>
-    <div class="meter-bg"><div class="meter-fill" style="width:24.9%;background:#D85A30"></div></div>
-    <div class="abc-desc">Contact ended before meaningful engagement. Non-conversation tags = 71,872 structural floor.</div>
-    <div class="mtitle">Top markers</div>
-    <div class="mrow"><span class="mlbl">customer_stopped_responding</span><div class="mbg"><div class="mfill" style="width:100%;background:#C0392B"></div></div><span class="mpct va">21,301</span></div>
-    <div class="mrow"><span class="mlbl">contact_ended_unexpectedly</span><div class="mbg"><div class="mfill" style="width:82%;background:#D97070"></div></div><span class="mpct va">17,402</span></div>
-    <div class="mrow"><span class="mlbl">misrouted_contact</span><div class="mbg"><div class="mfill" style="width:75%;background:#E08888"></div></div><span class="mpct va">15,976</span></div>
-    <div class="abc-action aa">🎯 Routing · Drop reduction · Channel workstream</div>
+  <!-- BUCKET A -->
+  <div class="abc-card A" style="border-top-color:#C04000">
+    <span class="abc-badge" style="background:#C04000;color:#fff">BUCKET A · 11 TAGS</span>
+    <div class="abc-label" style="color:#C04000">Issue not addressed</div>
+    <div class="abc-vol" style="color:#C04000" id="abc-A-vol">64,783</div>
+    <div class="abc-pct" style="color:#C04000" id="abc-A-pct">25.4% of contacts · Low-Signal + Customer-Side · Avg scored FRS: ~23%</div>
+    <div class="abc-desc">Contact ended before meaningful engagement. The customer's issue was never reached — call dropped, misrouted, or customer disengaged before the agent could help. <strong>Cannot be coached away.</strong> Requires IVR redesign, routing fix, channel workstream.</div>
+    <div class="abc-markers">
+      <div class="abc-marker-lbl" style="color:#C04000">Top primary tags</div>
+      <div class="mbar-row"><span class="mbar-name">customer_stopped_responding</span><div class="mbar-bg"><div class="mbar-fill" style="width:100%;background:#C04000"></div></div><span class="mbar-val">20,817</span></div>
+      <div class="mbar-row"><span class="mbar-name">customer_action_required</span><div class="mbar-bg"><div class="mbar-fill" style="width:83%;background:#C04000"></div></div><span class="mbar-val">17,269</span></div>
+      <div class="mbar-row"><span class="mbar-name">no_customer_utterance</span><div class="mbar-bg"><div class="mbar-fill" style="width:94%;background:#C04000"></div></div><span class="mbar-val">19,471</span></div>
+    </div>
+    <div class="abc-action" style="background:#fce8df;color:#993C1D">🚦 Routing · Drop reduction · Channel workstream</div>
   </div>
-  <div class="abc-card cb" id="cardB" onclick="filterBucket('B')">
-    <div class="abc-hdr"><span class="abc-badge bb">Bucket B · 16 tags</span><div class="lift-box"><div class="lift-num lb">+19.5pp</div><div class="lift-lbl">Data-backed ceiling</div></div></div>
-    <div style="font-size:13px;font-weight:600;margin-bottom:2px">Something still pending</div>
-    <div class="abc-vol vb">277,516</div><div class="abc-sub">74.6% of unresolved · dominant lever</div>
-    <div class="meter-bg"><div class="meter-fill" style="width:74.6%;background:#534AB7"></div></div>
-    <div class="abc-desc">Issue engaged but resolution needs follow-up. intuit_process_pending at 12.8% FRS — highest-leverage fix.</div>
-    <div class="mtitle">Top drivers by volume</div>
-    <div class="mrow"><span class="mlbl">transfer_recommended · FRS 47.8%</span><div class="mbg"><div class="mfill" style="width:100%;background:#1A3A8B"></div></div><span class="mpct vb">75,499</span></div>
-    <div class="mrow"><span class="mlbl">intuit_process_pending · FRS 12.8%</span><div class="mbg"><div class="mfill" style="width:77%;background:#2952A3"></div></div><span class="mpct vb">58,311</span></div>
-    <div class="mrow"><span class="mlbl">escalation_required · FRS 10.3%</span><div class="mbg"><div class="mfill" style="width:43%;background:#4168BB"></div></div><span class="mpct vb">32,170</span></div>
-    <div class="mrow"><span class="mlbl">policy_restriction · FRS 10.7%</span><div class="mbg"><div class="mfill" style="width:21%;background:#5B80CA"></div></div><span class="mpct vb">15,587</span></div>
-    <div class="abc-action ab">🎯 Internal process fix · Transfer quality · Case mgmt</div>
+  <!-- BUCKET B -->
+  <div class="abc-card B">
+    <span class="abc-badge" style="background:#2255AA;color:#fff">BUCKET B · 16 TAGS</span>
+    <div class="abc-label" style="color:#2255AA">Something still pending</div>
+    <div class="abc-vol" style="color:#2255AA" id="abc-B-vol">182,402</div>
+    <div class="abc-pct" style="color:#2255AA" id="abc-B-pct">71.4% of contacts · Routing+Process+Product · dominant lever · Avg scored FRS: ~24%</div>
+    <div class="abc-desc">Issue engaged but resolution needs follow-up. Product failure, pending process, fund holds, or system restrictions mean the contact cannot close as resolved this session. <strong>Product and ops fix — not coaching.</strong></div>
+    <div class="abc-markers">
+      <div class="abc-marker-lbl" style="color:#2255AA">Top primary tags by volume</div>
+      <div class="mbar-row"><span class="mbar-name">transfer_recommended</span><div class="mbar-bg"><div class="mbar-fill" style="width:100%;background:#2255AA"></div></div><span class="mbar-val">100,782</span></div>
+      <div class="mbar-row"><span class="mbar-name">intuit_process_pending</span><div class="mbar-bg"><div class="mbar-fill" style="width:36%;background:#2255AA"></div></div><span class="mbar-val">35,804</span></div>
+      <div class="mbar-row"><span class="mbar-name">escalation_or_assistance_required</span><div class="mbar-bg"><div class="mbar-fill" style="width:26%;background:#2255AA"></div></div><span class="mbar-val">26,604</span></div>
+    </div>
+    <div class="abc-action" style="background:#e8f0fe;color:#1a4aa0">🔵 Product fix · Internal process fix · Transfer quality · Case mgmt</div>
   </div>
-  <div class="abc-card cc" id="cardC" onclick="filterBucket('C')">
-    <div class="abc-hdr"><span class="abc-badge bc">Bucket C · 4 tags</span><div class="lift-box"><div class="lift-num lc">+0.3pp</div><div class="lift-lbl">Data-backed ceiling</div></div></div>
-    <div style="font-size:13px;font-weight:600;margin-bottom:2px">Customer didn't confirm</div>
-    <div class="abc-vol vc">6,449</div><div class="abc-sub">1.7% of unresolved</div>
-    <div class="meter-bg"><div class="meter-fill" style="width:1.7%;background:#0F6E56"></div></div>
-    <div class="abc-desc">Steps taken but customer expressed confusion or transcript lacked confirmation.</div>
-    <div class="mtitle">All markers</div>
-    <div class="mrow"><span class="mlbl">no_clear_evidence</span><div class="mbg"><div class="mfill" style="width:100%;background:#1D9E75"></div></div><span class="mpct vc">2,527</span></div>
-    <div class="mrow"><span class="mlbl">no_clear_resolution</span><div class="mbg"><div class="mfill" style="width:80%;background:#3DB88A"></div></div><span class="mpct vc">2,032</span></div>
-    <div class="mrow"><span class="mlbl">customer_dissatisfied</span><div class="mbg"><div class="mfill" style="width:62%;background:#5DCAA5"></div></div><span class="mpct vc">1,579</span></div>
-    <div class="mrow"><span class="mlbl">customer_confused</span><div class="mbg"><div class="mfill" style="width:33%;background:#9FE1CB"></div></div><span class="mpct vc">839</span></div>
-    <div class="abc-action ac">🎯 Closing technique · Clarity · Confirmation</div>
+  <!-- BUCKET C -->
+  <div class="abc-card C">
+    <span class="abc-badge" style="background:#107050;color:#fff">BUCKET C · 4 TAGS</span>
+    <div class="abc-label" style="color:#107050">Customer did not confirm</div>
+    <div class="abc-vol" style="color:#107050" id="abc-C-vol">8,373</div>
+    <div class="abc-pct" style="color:#107050" id="abc-C-pct">3.3% of contacts · Expert Related · Avg FRS 8.3%</div>
+    <div class="abc-desc">Steps taken but customer expressed confusion or the transcript lacked confirmation. The expert resolved or attempted to resolve, but clarity and closing technique fell short. <strong>Most directly coachable.</strong></div>
+    <div class="abc-markers">
+      <div class="abc-marker-lbl" style="color:#107050">Top primary tags</div>
+      <div class="mbar-row"><span class="mbar-name">agent_stopped_responding</span><div class="mbar-bg"><div class="mbar-fill" style="width:100%;background:#107050"></div></div><span class="mbar-val">2,968</span></div>
+      <div class="mbar-row"><span class="mbar-name">no_clear_resolution</span><div class="mbar-bg"><div class="mbar-fill" style="width:45%;background:#107050"></div></div><span class="mbar-val">1,322</span></div>
+      <div class="mbar-row"><span class="mbar-name">customer_dissatisfied</span><div class="mbar-bg"><div class="mbar-fill" style="width:38%;background:#107050"></div></div><span class="mbar-val">1,121</span></div>
+    </div>
+    <div class="abc-action" style="background:#f0faf5;color:#0a5540">🟢 Closing technique · Clarity · Confirmation coaching</div>
   </div>
 </div>
 
-<!-- WATERFALL + TREND -->
-<div class="two-col">
-  <div class="panel">
-    <div class="ptitle">FRS waterfall — Total scored → Unresolved → Resolved</div>
-    <div class="psub">Total scored (100%) steps down through unresolved. Resolved anchored at bottom.</div>
-    <div class="tabs">
-      <button class="tab active" onclick="switchWF('abc',this)">A / B / C</button>
-      <button class="tab" onclick="switchWF('drivers',this)">Top drivers</button>
-      <button class="tab" onclick="switchWF('problem',this)">Problem area</button>
-      <button class="tab" onclick="switchWF('tier',this)">By tier</button>
-      <button class="tab" onclick="switchWF('partner',this)">By partner</button>
-    </div>
-    <div style="position:relative;height:320px"><canvas id="wfChart"></canvas></div>
-    <div id="wfLeg" class="legend"></div>
-    <div class="note">Hover bars for detail. Resolved (green) = 48.4% FRS. Bucket A/B/C brackets shown on A/B/C tab only.</div>
+<!-- SECTION 2: MACRO THEME BOXES -->
+<div class="sec">③ Root Cause Macro Themes — click to filter all Pareto charts</div>
+<div class="themes-grid" id="themeBoxes"></div>
+
+<!-- SECTION 3: 3 PARETOS -->
+<div class="sec">④ Pareto Analysis — three lenses on the same data</div>
+<div class="pareto-grid">
+  <div class="cpanel">
+    <div class="ct">Pareto 1 — Friction layer volume + FRS%</div>
+    <div class="cs">Bars = unresolved contacts per layer · Orange line = FRS% for that layer · ABC colored</div>
+    <div style="position:relative;height:320px"><canvas id="p1Chart"></canvas></div>
+    <div id="p1leg" class="legend"></div>
+    <div class="note">Read both: a layer with <strong>high volume AND low FRS%</strong> = biggest opportunity. On-Contact has only 16K contacts but just 37.4% FRS — every contact there is more broken than average.</div>
   </div>
-  <div class="panel">
-    <div class="ptitle">📉 WoW FRS trend — May 25 → Jun 21</div>
-    <div class="psub">4-week trend by driver</div>
-    <div class="tabs">
-      <button class="tab active ttab" onclick="switchTrend('overall',this)">Overall FRS</button>
-      <button class="tab ttab" onclick="switchTrend('drivers',this)">Top drivers FRS%</button>
-      <button class="tab ttab" onclick="switchTrend('volume',this)">Unresolved volume</button>
-    </div>
-    <div class="trend-grid">
-      <div>
-        <div style="position:relative;height:220px"><canvas id="trendChart"></canvas></div>
-        <div id="trendLeg" class="legend"></div>
-      </div>
-      <div>
-        <div style="font-size:11px;font-weight:500;margin-bottom:6px">Daily FRS — Jun 14–21</div>
-        <div style="position:relative;height:196px"><canvas id="dailyChart"></canvas></div>
-        <div class="note">Weekend days = low volume · Read Mon–Fri</div>
-      </div>
-    </div>
-    <div class="note" style="margin-top:8px"><strong>Signal:</strong> transfer_recommended FRS declining weekly: 50.8% → 44.9%. intuit_process_pending stable at ~12.8% — high volume, very low resolution.</div>
+  <div class="cpanel">
+    <div class="ct">Pareto 2 — By friction task (marker)</div>
+    <div class="cs" id="p2sub">Top 15 tasks by volume · bars = contacts · line = FRS% · ABC colored</div>
+    <div style="position:relative;height:320px"><canvas id="p2Chart"></canvas></div>
+    <div id="p2leg" class="legend"></div>
+    <div class="note" id="p2note">Fund holds (Risk · 29.8% FRS) and Routing failures (On-Contact · 32.6% FRS) are the lowest FRS tasks with material volume — highest friction priority.</div>
+  </div>
+  <div class="cpanel">
+    <div class="ct">Pareto 3 — Friction points (specific issues)</div>
+    <div class="cs">Top 15 specific friction issues from file · volume + FRS% · ABC colored</div>
+    <div style="position:relative;height:320px"><canvas id="p3Chart"></canvas></div>
+    <div id="p3leg" class="legend"></div>
+    <div class="note">These are the <strong>actual customer pain points</strong> — the specific things that fail. Disconnections (22.6% FRS), Misrouting (29.0% FRS), and Fund holds (26.2% FRS) are the worst-resolving with highest volume.</div>
   </div>
 </div>
 
-<!-- DRIVER TABLE -->
-<div class="full panel">
-  <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap">
-    <div class="ptitle">All primary_tag drivers — real data · May 25–Jun 21</div>
-    <div class="tabs" style="margin-left:auto;margin-bottom:0">
-      <button class="tab ftab active" id="fAll" onclick="filterBucket('ALL')">All</button>
-      <button class="tab ftab" id="fA" onclick="filterBucket('A')" style="border-color:#E8806A;color:#712B13">Bucket A</button>
-      <button class="tab ftab" id="fB" onclick="filterBucket('B')" style="border-color:#7269CC;color:#26215C">Bucket B</button>
-      <button class="tab ftab" id="fC" onclick="filterBucket('C')" style="border-color:#44B88A;color:#04342C">Bucket C</button>
-    </div>
-  </div>
-  <div class="psub">Controllable % from v4 (data-backed) or estimated. Ceiling = (unresolved ÷ scored) × Ctrl%. Click headers to sort.</div>
-  <div style="overflow-x:auto">
-    <table class="dtable">
-      <thead><tr>
-        <th onclick="sortD(0)">Tag ↕</th><th onclick="sortD(1)">Bucket ↕</th>
-        <th onclick="sortD(2)">Initiative ↕</th><th onclick="sortD(3)">Unresolved ↕</th>
-        <th onclick="sortD(4)">FRS% ↕</th><th>Volume</th>
-        <th onclick="sortD(6)">Ctrl% ↕</th><th onclick="sortD(8)">Ceiling ↕</th><th>Action</th>
-      </tr></thead>
-      <tbody id="dtBody"></tbody>
-    </table>
-  </div>
-  <div class="warn">⚠ Orange rows = non-conversation (abandon/voicemail/dead-air). These resolve at ~0–5% FRS — structural floor, not fixable by coaching or process. Need a separate channel workstream.</div>
-</div>
-
-<!-- WHAT NEEDS TO HAPPEN -->
-<div class="full panel" id="actionPanel">
-  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:4px">
-    <div>
-      <div class="ptitle">🎯 What needs to happen — unresolved action plan</div>
-      <div class="psub">Top drivers ranked by impact · what initiative addresses it · specific action required</div>
-    </div>
-    <div id="wkActionLabel" style="font-size:11px;color:#73726c;background:#f5f5f3;border-radius:5px;padding:4px 10px">All 4 weeks</div>
-  </div>
-  <div style="overflow-x:auto">
-    <table class="dtable" id="actionTable">
-      <thead><tr>
-        <th>Driver (primary_tag)</th>
-        <th>Bucket</th>
-        <th>Unresolved ↕</th>
-        <th>FRS%</th>
-        <th>WoW trend</th>
-        <th>Initiative</th>
-        <th>Ctrl%</th>
-        <th>Ceiling</th>
-        <th>What needs to happen</th>
-      </tr></thead>
-      <tbody id="actionBody"></tbody>
-    </table>
-  </div>
-  <div class="note" style="margin-top:8px">
-    <strong>Reading this:</strong> WoW trend = change in unresolved volume from wk 05-25 to wk 06-15 (↑ = getting worse, ↓ = improving). 
-    Ceiling = max FRS lift if Controllable% is fully addressed. Focus on high volume + low FRS% + rising trend.
-  </div>
-</div>
-
-<!-- TRANSFER -->
-<div class="xfer">
-  <div style="font-size:13px;font-weight:600;color:#712B13;margin-bottom:3px">📍 Transfer lens — transfer_recommended resolves at 47.8% vs 73.5% for GOOD transfers (v4 Lens B)</div>
-  <div style="font-size:11px;color:#993C1D;margin-bottom:10px">75,499 unresolved · Ctrl 50% (v4) · Ceiling +5.2pp · BAD+ADVISED resolve at ~1% — routing quality is the lever</div>
-  <div class="fgrid">
-    <div class="fc"><div class="fclbl" style="color:#0C447C">Tier</div><div class="fcval" style="color:#0C447C">Tier 1 = 90.3%</div><div class="fcnote">17,454 contacts. More concentrated than overall (77%). T1 transferring out and still failing.</div></div>
-    <div class="fc"><div class="fclbl" style="color:#712B13">Partner</div><div class="fcval" style="color:#712B13">FNDVR 42% + CONC 30%</div><div class="fcnote">72% of transfer-out cases. Same 2 partners dominate.</div></div>
-    <div class="fc"><div class="fclbl" style="color:#04342C">Channel</div><div class="fcval" style="color:#04342C">Inbound 59.5%</div><div class="fcnote">Called in, transferred, still not resolved. Warm-transfer protocol review needed.</div></div>
-    <div class="fc"><div class="fclbl" style="color:#444">NLH</div><div class="fcval" style="color:#444">Only 0.3%</div><div class="fcnote">Transfer failures almost entirely non-NLH.</div></div>
-  </div>
-</div>
-
-<!-- PARTNER x TAG CROSS-TAB -->
-<div class="full panel">
-  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:4px">
-    <div>
-      <div class="ptitle">Partner × Driver cross-tab — Tier 1 · May 25–Jun 21</div>
-      <div class="psub">555,054 T1 scored · 282,615 unresolved · T1 FRS 49.1% · Top 15 drivers shown</div>
-    </div>
-    <div class="tabs" style="margin-bottom:0">
-      <button class="tab active pxtab" onclick="switchPX('vol',this)">Unresolved volume</button>
-      <button class="tab pxtab" onclick="switchPX('frs',this)">FRS% per cell</button>
-    </div>
-  </div>
-  <div style="overflow-x:auto;margin-top:8px">
-    <table id="pxTable" style="width:100%;border-collapse:collapse;font-size:10px;white-space:nowrap">
-      <thead id="pxHead"></thead>
-      <tbody id="pxBody"></tbody>
-    </table>
-  </div>
-  <div class="note" style="margin-top:8px">
-    <strong>Volume view:</strong> Red = highest unresolved — use for coaching prioritization. 
-    <strong>FRS% view:</strong> Red &lt;35% / amber &lt;50% / green ≥50% — use to find where each partner resolves worst.
-    WORKING SOLUTIONS FRS 30.5% overall despite lower volume — performance gap on transfer_recommended (65.1% FRS vs FOUNDEVER 43.4%).
-  </div>
-</div>
-
-<!-- T1 PROBLEM AREA -->
-<div class="full panel">
-  <div class="ptitle" style="margin-bottom:4px">Tier 1 × Problem Area — FRS by contact reason · May 25–Jun 21</div>
-  <div class="psub">Within T1 (555,054 scored). Ranked by unresolved volume. Click row to see top drivers for that problem area.</div>
-  <div style="overflow-x:auto">
-    <table class="dtable" id="paTable">
-      <thead><tr>
-        <th>Problem Area</th><th>Scored</th><th>Unresolved</th><th>FRS%</th><th>% of T1 Unres</th><th>Volume</th><th>Top SABER drivers</th>
-      </tr></thead>
-      <tbody id="paBody"></tbody>
-    </table>
-  </div>
-  <div class="note" style="margin-top:8px">
-    <strong>Key insight:</strong> 35% of T1 unresolved has no problem area tag (blank/unmapped) — data quality gap. 
-    Misrouted Contact (9.8%) resolves at only 35.8% — primarily driven by transfer_recommended (12,467) + misrouted_contact tag (3,753).
-    Chat (3.2%) resolves at just 3.2% — almost entirely no_customer_utterance (5,311) and customer_stopped_responding (3,049) — structural non-conversation.
-  </div>
-</div>
-</div><!-- end sec-dash -->
-
-<!-- ═══════════════════ OPPORTUNITY SIZING ═══════════════════ -->
-<div id="sec-sizing" class="section">
-<div class="hdr">
-  <div><h1>FRS Opportunity Sizing — v4 Tag Lens</h1><div class="meta">10 fixable tags · data-backed Controllable % · effectiveness % = judgment dial</div></div>
-  <div class="hero"><div class="num" style="color:#EF9F27">+13.7pp</div><div class="lbl">Tag lens ceiling (100% eff)</div><div class="trend" style="color:#5DCAA5">v4 Tag lens lift: +11.1pp</div></div>
-</div>
-<div class="kpis">
-  <div class="kpi"><div class="klbl">Baseline FRS</div><div class="kval">48.4%</div></div>
-  <div class="kpi"><div class="klbl">Tag lens ceiling</div><div class="kval" style="color:#534AB7">+13.7pp</div></div>
-  <div class="kpi"><div class="klbl">Tag lens lift (v4)</div><div class="kval" style="color:#EF9F27">+11.1pp</div></div>
-  <div class="kpi"><div class="klbl">+ Transfer lens</div><div class="kval" style="color:#185FA5">+5.1pp</div></div>
-  <div class="kpi"><div class="klbl">+ Quartile + Intent</div><div class="kval" style="color:#0F6E56">+3.6pp</div></div>
-  <div class="kpi"><div class="klbl">Total projected (v4)</div><div class="kval" style="color:#5DCAA5">69.3%</div></div>
-</div>
-<div class="full panel">
-  <div class="ptitle" style="margin-bottom:4px">Foundation — 10 fixable tags (share × Controllable % = recoverable ceiling)</div>
-  <div class="psub">v4 data-backed controllable %. Ceiling = tag's share of contacts × Ctrl%. Total ceiling ~13.7pp.</div>
-  <table class="ttable">
-    <thead><tr><th>Tag (V2)</th><th>Share of contacts</th><th>Controllable % (v4)</th><th>Ceiling (pp)</th><th>Root-cause group</th><th>Initiative</th></tr></thead>
-    <tbody id="v4Body"></tbody>
+<!-- SECTION 4: TAG DETAIL TABLE -->
+<div class="sec">⑤ Friction Task Detail — all markers with FRS%, volume, and bucket</div>
+<div class="panel" style="overflow-x:auto">
+  <table class="tag-table">
+    <thead><tr>
+      <th>Friction task / marker</th><th>Layer</th><th>Bucket</th>
+      <th style="text-align:right">Contacts</th><th style="text-align:right">FRS%</th>
+      <th>FRS bar</th><th>FRS vs 52% avg</th><th>Action</th>
+    </tr></thead>
+    <tbody id="tagTableBody"></tbody>
   </table>
-  <div style="margin-top:10px;padding:10px 12px;background:#f4f2fb;border-radius:6px;font-size:11px;color:#26215C;border:0.5px solid #7269CC">
-    <strong>v4 Tag lens total: +13.7pp ceiling · +11.1pp lift at v4 effectiveness %</strong> · escalation_or_assistance_required leads at +5.2pp ceiling (86% Ctrl) · Shared tags split sequentially — no double-counting · IEP Migration is an enabler, not a bar
-  </div>
-  <div class="warn" style="margin-top:8px">⚠ Scenario model — not a forecast. Ceiling is data-backed. Effectiveness % is an unvalidated judgment dial. Do not quote projected FRS without stakeholder alignment.</div>
 </div>
 
-<!-- SIMULATOR -->
-<div class="full panel">
-  <div class="ptitle" style="margin-bottom:4px">🎛 Initiative simulator — adjust effectiveness % per initiative</div>
-  <div class="psub">Ceiling = data-backed Ctrl% from v4. Effectiveness = your judgment dial. Defaults loaded from v4 Tag lens.</div>
-  <div id="initSliders" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px"></div>
-  <div style="display:flex;align-items:center;gap:16px;margin-top:16px;flex-wrap:wrap">
-    <div style="background:#2c2c2a;color:#fff;border-radius:8px;padding:14px 18px;text-align:center;min-width:140px">
-      <div style="font-size:30px;font-weight:700;color:#5DCAA5" id="simFRS">48.4%</div>
-      <div style="font-size:10px;color:#B4B2A9;margin-top:2px">Simulated FRS</div>
-      <div style="font-size:12px;color:#9FE1CB;margin-top:4px" id="simLift">Move sliders ↑</div>
-    </div>
-    <div style="flex:1;min-width:200px">
-      <div style="font-size:11px;color:#73726c;margin-bottom:6px">FRS progress toward 79% goal</div>
-      <div style="height:28px;border-radius:5px;overflow:hidden;background:#f0eee8;position:relative">
-        <div id="simBar" style="height:100%;background:#1D9E75;transition:width .3s;width:48.4%"></div>
-        <div style="position:absolute;left:0;top:0;height:100%;display:flex;align-items:center;padding:0 8px;font-size:11px;font-weight:600;color:#fff" id="simBarLbl">48.4%</div>
-        <div style="position:absolute;right:0;top:0;width:1.5px;height:100%;background:#993C1D;opacity:.6"></div>
-      </div>
-      <div style="display:flex;gap:16px;margin-top:8px;font-size:11px;color:#73726c;flex-wrap:wrap">
-        <span>Residual to 79%: <strong id="simResidual" style="color:#993C1D">30.6pp</strong></span>
-        <span>Tag lens lift: <strong id="simLiftPts" style="color:#0F6E56">+0.0pp</strong></span>
-      </div>
-    </div>
-  </div>
-  <div class="warn" style="margin-top:10px">⚠ Scenario — not a forecast. Ceiling is data-backed. Effectiveness % is an unvalidated judgment dial.</div>
-</div>
-</div><!-- end sec-sizing -->
+</div><!-- end tab-viz -->
 
-<!-- ═══════════════════ READ ME ═══════════════════ -->
-<div id="sec-readme" class="section">
-<div class="hdr" style="margin-bottom:20px">
-  <div><h1>FRS A∧B∧C Rubric — Tag Reference</h1><div class="meta">A contact resolves only when ALL THREE criteria pass simultaneously</div></div>
-  <div style="font-size:28px;font-weight:700;color:#5DCAA5">A ∧ B ∧ C</div>
+<!-- ══ TAB 2: PROBLEM SOLVING ══ -->
+<div id="tab-ps" class="tab-panel">
+<div class="ps-hdr">
+  <h2 style="font-size:15px;font-weight:700;margin-bottom:3px">🔧 Problem Solving Board</h2>
+  <p style="font-size:10px;color:#a0a0c0;line-height:1.6">Assign Kaizens, A3s, and structured problem solving to friction layers · Track phase and progress · Log updates · Waterfall shows projected FRS impact · All data saved in browser</p>
 </div>
-<div class="panel" style="margin-bottom:16px">
-  <div class="ptitle" style="margin-bottom:16px">The three-criteria rubric</div>
-  <div class="rubric-row">
-    <div class="rcard ra">
-      <div class="rcirc" style="background:#5BA3E8">A</div>
-      <div class="rq">Was the issue addressed?</div>
-      <div class="rpass"><span class="pbd">PASS ✓</span><br>Expert engaged and provided guidance or a solution.</div>
-      <div class="rfail"><span class="fbd">FAIL ✗</span><br>Issue acknowledged but not addressed, or call ended before expert could engage.</div>
-    </div>
-    <div class="rand">AND</div>
-    <div class="rcard rb">
-      <div class="rcirc" style="background:#D4A843">B</div>
-      <div class="rq">Is anything still pending?</div>
-      <div class="rpass"><span class="pbd">PASS ✓</span><br>No open dependencies — no pending Intuit action, customer action, or external process.</div>
-      <div class="rfail"><span class="fbd">FAIL ✗</span><br>A blocker remains: follow-up needed, transfer required, or customer must still act.</div>
-    </div>
-    <div class="rand">AND</div>
-    <div class="rcard rc">
-      <div class="rcirc" style="background:#9B7FD4">C</div>
-      <div class="rq">Did the customer understand the outcome?</div>
-      <div class="rpass"><span class="pbd">PASS ✓</span><br>Customer confirmed understanding — acknowledged next steps or resolution.</div>
-      <div class="rfail"><span class="fbd">FAIL ✗</span><br>No confirmation. Customer ended the call confused or without clarity.</div>
-    </div>
-  </div>
-</div>
-<div class="panel" style="margin-bottom:16px">
-  <div class="ptitle" style="margin-bottom:10px">Methodology notes</div>
-  <div style="background:#fff;border-radius:8px;padding:14px 18px;border:0.5px solid #e0dfd8;font-size:11px;line-height:1.8">
-    <strong>Primary tag by priority hierarchy.</strong> A contact failing both B and C gets one tag — whichever ranks highest in V2 hierarchy.<br><br>
-    <strong>Judgment calls.</strong> <code>customer_refuses_steps</code> is B (path forward existed). <code>transfer_recommended</code> is B (contact didn't close) but can be overlay-credited for good transfers.<br><br>
-    <strong>Overlay-credited tags.</strong> <code>customer_action_required</code>, <code>multi_issue_flag_partial_res</code>, <code>good_transfer_recommended</code> can be Resolved via overlay even though they fail B.<br><br>
-    <strong>32 V2 tags total.</strong> 11 A-FAIL + 16 B-FAIL + 4 C-FAIL + 1 Other.
-  </div>
+<div class="sec">FRS Waterfall — projected impact of active initiatives</div>
+<div class="gp-kpis">
+  <div class="gkpi" style="border-left:3px solid #1a1a2e"><div class="gklbl">Current FRS</div><div class="gkval" style="color:#1a1a2e">47.0%</div><div class="gksub">Baseline · wk25</div></div>
+  <div class="gkpi" style="border-left:3px solid #0F6E56"><div class="gklbl">Projected lift</div><div class="gkval" style="color:#0F6E56" id="gpLift">+0.0pp</div><div class="gksub">Active initiatives</div></div>
+  <div class="gkpi" style="border-left:3px solid #534AB7"><div class="gklbl">Projected FRS</div><div class="gkval" style="color:#534AB7" id="gpFRS">47.0%</div><div class="gksub">After all complete</div></div>
+  <div class="gkpi" style="border-left:3px solid #E8806A"><div class="gklbl">To be fulfilled by other teams</div><div class="gkval" style="color:#E8806A" id="gpGap">32.0pp</div><div class="gksub">Gap beyond your initiatives</div></div>
+  <div class="gkpi" style="border-left:3px solid #D62728"><div class="gklbl">Active initiatives</div><div class="gkval" style="color:#D62728" id="gpCnt">0</div></div>
 </div>
 <div class="panel">
-  <div class="ptitle" style="margin-bottom:4px">All 31 active tags — real data May 25–Jun 21</div>
-  <div class="psub">Sorted by unresolved volume. Non-conversation tags in orange.</div>
-  <table class="ttable"><thead><tr><th>Tag</th><th>Bucket</th><th>Unresolved</th><th>FRS%</th><th>Ctrl%</th><th>Ceiling</th><th>Why it lands here</th></tr></thead>
-  <tbody id="rmBody"></tbody></table>
+  <div style="font-size:12px;font-weight:600;margin-bottom:6px">Initiative FRS Waterfall — 47.0% → projected → to be fulfilled by other teams → 79% goal</div>
+  <div style="position:relative;height:260px"><canvas id="gpChart"></canvas></div>
+  <div id="gpLeg" class="legend"></div>
+  <div class="note">Each bar = one initiative projected FRS lift. "To be fulfilled by other teams" = the residual gap that requires actions from Engineering, Product, Channel Strategy, and other workstreams beyond this team.</div>
 </div>
-</div><!-- end sec-readme -->
+<div class="sec">Active Initiatives — Kanban Board</div>
+<div class="ps-controls">
+  <div class="fg" style="flex-wrap:wrap;gap:5px">
+    <button class="psf on" onclick="filterPS('ALL',this)">All layers</button>
+    <button class="psf" style="border-left:3px solid #D62728" onclick="filterPS('Routing & Handoff Gaps',this)">R&H Gaps</button>
+    <button class="psf" style="border-left:3px solid #1F77B4" onclick="filterPS('Process & Dependency Bottlenecks',this)">Process & Dep</button>
+    <button class="psf" style="border-left:3px solid #9467BD" onclick="filterPS('Low-Signal / Data Quality',this)">Low-Signal</button>
+    <button class="psf" style="border-left:3px solid #FF7F0E" onclick="filterPS('Customer-Side Factors',this)">Customer-Side</button>
+    <button class="psf" style="border-left:3px solid #E8806A" onclick="filterPS('Product & Tool Limitations',this)">Product & Tool</button>
+    <button class="psf" style="border-left:3px solid #2CA02C" onclick="filterPS('Expert Related',this)">Expert Related</button>
+  </div>
+  <button class="add-btn" onclick="openModal()">+ New initiative</button>
+</div>
+<div class="kanban">
+  <div class="kcol"><div class="kcol-hdr">Define <span class="kcnt" id="cnt0">0</span></div><div id="col0"></div></div>
+  <div class="kcol"><div class="kcol-hdr" style="color:#534AB7">Measure <span class="kcnt" id="cnt1">0</span></div><div id="col1"></div></div>
+  <div class="kcol"><div class="kcol-hdr" style="color:#D85A30">Analyze &amp; Improve <span class="kcnt" id="cnt2">0</span></div><div id="col2"></div></div>
+  <div class="kcol"><div class="kcol-hdr" style="color:#0F6E56">Control / Sustain <span class="kcnt" id="cnt3">0</span></div><div id="col3"></div></div>
+</div>
+<div class="sec">Initiative ↔ FRS Correlation</div>
+<div class="panel">
+  <table class="corr-table">
+    <thead><tr><th>Initiative</th><th>Type</th><th>Layer</th><th>Friction addressed</th><th>Partner(s)</th><th>Owner</th><th>Phase</th><th>Progress</th><th>Proj. lift</th><th>Target date</th><th>Actions</th></tr></thead>
+    <tbody id="corrTB"></tbody>
+  </table>
+  <div id="corrEmpty" class="note" style="margin-top:8px">No initiatives yet. Click "+ New initiative" above.</div>
+</div>
+</div><!-- end tab-ps -->
+
+<!-- ══ TAB 3: RUBRIC ══ -->
+<div id="tab-rubric" class="tab-panel">
+<div class="hdr"><div><h1>📖 Definitions & Rubric — Friction Layer Reference</h1><div class="sub">A∧B∧C rubric · 6 friction layers · All friction tasks with FRS% and action owner</div></div></div>
+<div class="sec">A∧B∧C Resolution Rubric</div>
+<div class="rub-cards">
+  <div class="rub-card" style="border-top-color:#C04000">
+    <div class="rub-title" style="color:#C04000">BUCKET A — Issue not addressed</div>
+    <div class="rub-body">Contact ended before meaningful engagement. The customer issue was never reached — they abandoned, call dropped, misrouted, or connection failed before the agent could help.<br><br><strong>Cannot be coached away.</strong> Requires IVR redesign, callback triggers, routing logic fix, channel workstream.<br><br><em>Key friction tasks:</em> Routing/misrouting · Dropped call/connection · Agent system/tools</div>
+  </div>
+  <div class="rub-card" style="border-top-color:#2255AA">
+    <div class="rub-title" style="color:#2255AA">BUCKET B — Something still pending</div>
+    <div class="rub-body">Issue engaged but resolution needs follow-up. Product failure, pending process, fund holds, system restrictions, or policy blocks mean the contact cannot close as resolved this session.<br><br><strong>Dominant lever — 86.3% of friction contacts.</strong> Product and ops fix, not coaching.<br><br><em>Key friction tasks:</em> Payroll &amp; tax · Billing · Identity &amp; RBAC · Desktop · Fund holds · Account holds</div>
+  </div>
+  <div class="rub-card" style="border-top-color:#107050">
+    <div class="rub-title" style="color:#107050">BUCKET C — Customer did not confirm</div>
+    <div class="rub-body">Steps taken but customer expressed confusion or transcript lacked confirmation. Expert resolved or attempted to resolve, but clarity or closing technique fell short.<br><br><strong>Most directly coachable.</strong> 5.1% of contacts — smallest lever but immediate response to coaching.<br><br><em>Key friction tasks:</em> Expert knowledge/accuracy · Tax automation confusion</div>
+  </div>
+</div>
+<div class="sec">Root Cause Macro Themes — official Intuit verbiage</div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">
+  <div style="background:#fff;border-radius:8px;padding:12px;border:0.5px solid #e0dfd8;border-left:4px solid #D62728"><div style="font-size:10px;font-weight:700;color:#D62728">Routing &amp; Handoff Gaps (Bucket B)</div><div style="font-size:10px;color:#73726c;margin-top:3px">97,251 contacts · FRS 19.2% · Customer was recommended or transferred to connect to other team/PoC for support — currently not resolved within current expert.<br><em>Tags: misrouted_contact · transfer_recommended · escalation_or_assistance_required · channel_switch_to_call</em></div></div>
+  <div style="background:#fff;border-radius:8px;padding:12px;border:0.5px solid #e0dfd8;border-left:4px solid #E8806A"><div style="font-size:10px;font-weight:700;color:#E8806A">Product &amp; Tool Limitations (Bucket B)</div><div style="font-size:10px;color:#73726c;margin-top:3px">22,620 contacts · FRS 16.8% · The product, tooling, or a system failure prevented the expert from resolving the issue — no amount of agent effort could overcome it.<br><em>Tags: product_limitation · feature_not_available · form_unavailable · known_issue · billing_issue · screenshare_error · system_crash_agent · system_crash_customer</em></div></div>
+  <div style="background:#fff;border-radius:8px;padding:12px;border:0.5px solid #e0dfd8;border-left:4px solid #1F77B4"><div style="font-size:10px;font-weight:700;color:#1F77B4">Process &amp; Dependency Bottlenecks (Bucket B)</div><div style="font-size:10px;color:#73726c;margin-top:3px">62,531 contacts · FRS 12.5% · Resolution blocked by an internal process, external party, or policy constraint — the issue cannot close on this contact.<br><em>Tags: intuit_process_pending · automated_process · technical_investigation · wait_external_process · external_support_recommended · policy_restriction</em></div></div>
+  <div style="background:#fff;border-radius:8px;padding:12px;border:0.5px solid #e0dfd8;border-left:4px solid #FF7F0E"><div style="font-size:10px;font-weight:700;color:#FF7F0E">Customer-Side Factors (Bucket A)</div><div style="font-size:10px;color:#73726c;margin-top:3px">29,456 contacts · FRS 6.3% · Customer behavior or circumstances limited what the expert could accomplish — the customer disengaged, refused steps, or needs to act offline.<br><em>Tags: customer_stopped_responding · customer_action_required · customer_cannot_continue · customer_refuses_steps</em></div></div>
+  <div style="background:#fff;border-radius:8px;padding:12px;border:0.5px solid #e0dfd8;border-left:4px solid #9467BD"><div style="font-size:10px;font-weight:700;color:#9467BD">Low-Signal / Data Quality (Bucket A)</div><div style="font-size:10px;color:#73726c;margin-top:3px">35,327 contacts · FRS 2.1% · Transcript was too short, fragmented, or lacked meaningful interaction for a reliable root cause assessment — not a true pain point.<br><em>Tags: voice_mail_or_system_message · no_customer_utterance · no_clear_evidence · contact_ended_unexpectedly · other</em></div></div>
+  <div style="background:#fff;border-radius:8px;padding:12px;border:0.5px solid #e0dfd8;border-left:4px solid #2CA02C"><div style="font-size:10px;font-weight:700;color:#2CA02C">Expert Related (Bucket C)</div><div style="font-size:10px;color:#73726c;margin-top:3px">8,373 contacts · FRS 10.8% · These could be more driven by experts, likely more directly coachable.<br><em>Tags: agent_stopped_responding · customer_dissatisfied · customer_confused · no_clear_resolution · no_agent_utterance</em></div></div>
+</div>
+<div class="sec">All Friction Tasks — reference table</div>
+<div class="panel" style="overflow-x:auto">
+  <table class="tag-table"><thead><tr><th>Friction task</th><th>Layer</th><th>Bucket</th><th style="text-align:right">Contacts</th><th style="text-align:right">FRS%</th><th>What it means</th><th>Owner</th></tr></thead>
+  <tbody id="rubricTB"></tbody></table>
+</div>
+</div><!-- end tab-rubric -->
+
+<!-- ══ TAB 4: DATA FEED ══ -->
+<div id="tab-data" class="tab-panel">
+<div class="hdr"><div><h1>📥 Data Feed — Upload new weekly friction data</h1><div class="sub">Paste CSV to update all charts · Current data: friction file (Jun 1–Jun 24, 2026)</div></div></div>
+<div class="panel">
+  <div style="font-size:12px;font-weight:600;margin-bottom:8px">Paste new friction summary CSV</div>
+  <div style="font-size:10px;color:#73726c;margin-bottom:8px">Expected columns: <code style="background:#f0efe9;padding:1px 5px;border-radius:3px">friction_layer, friction_task, contacts, frs</code></div>
+  <textarea id="pasteData" style="width:100%;height:120px;font-family:monospace;font-size:11px;padding:10px;border:0.5px solid #d3d1c7;border-radius:6px;background:#fafaf8;resize:vertical" placeholder="friction_layer,friction_task,contacts,frs&#10;Product,Payroll &amp; tax,31215,57.8&#10;..."></textarea>
+  <div style="display:flex;gap:10px;align-items:center;margin-top:8px">
+    <button onclick="applyData()" style="padding:8px 16px;background:#0F6E56;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer">Apply to dashboard</button>
+    <span id="dataMsg" style="font-size:11px;color:#73726c"></span>
+  </div>
+</div>
+</div><!-- end tab-data -->
+
 </div><!-- end page -->
 
+<!-- MODAL -->
+<div class="overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-hdr">
+      <h3 id="mTitle">New Initiative</h3>
+      <button class="mclose" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="mtabs">
+        <button class="mtab active" onclick="switchMTab('details',this)">Details</button>
+        <button class="mtab" onclick="switchMTab('analysis',this)">Problem Analysis</button>
+        <button class="mtab" onclick="switchMTab('updates',this)">Updates Log</button>
+      </div>
+      <div class="msec active" id="ms-details">
+        <div class="fgrid">
+          <div><label class="flabel">Initiative name *</label><input class="fin" id="mName" placeholder="e.g. Routing Quality Kaizen"></div>
+          <div><label class="flabel">Type</label><select class="fsel" id="mType"><option>Kaizen</option><option>A3</option><option>DMAIC</option><option>Structured Problem Solving</option><option>Engineering Fix</option><option>Process Change</option><option>Quick Win</option></select></div>
+          <div><label class="flabel">Friction layer *</label>
+            <select class="fsel" id="mLayer" onchange="autoCtrl()">
+              <option value="Routing & Handoff Gaps">Routing &amp; Handoff Gaps</option>
+              <option value="Process & Dependency Bottlenecks">Process &amp; Dependency Bottlenecks</option>
+              <option value="Low-Signal / Data Quality">Low-Signal / Data Quality</option>
+              <option value="Customer-Side Factors">Customer-Side Factors</option>
+              <option value="Product & Tool Limitations">Product &amp; Tool Limitations</option>
+              <option value="Expert Related">Expert Related</option>
+            </select></div>
+          <div><label class="flabel">Phase</label>
+            <select class="fsel" id="mPhase"><option value="0">Define</option><option value="1">Measure</option><option value="2">Analyze &amp; Improve</option><option value="3">Control / Sustain</option></select></div>
+          <div><label class="flabel">Friction tasks addressed</label><input class="fin" id="mTasks" placeholder="e.g. Routing / misrouting, Dropped call"></div>
+          <div><label class="flabel">Partner(s)</label><input class="fin" id="mPartners" placeholder="e.g. FOUNDEVER or All"></div>
+          <div><label class="flabel">Owner</label><input class="fin" id="mOwner"></div>
+          <div><label class="flabel">Target date</label><input class="fin" type="date" id="mDate"></div>
+          <div><label class="flabel">Effectiveness % (how much ceiling you expect to achieve)</label><input class="fin" type="number" id="mEff" min="0" max="100" value="60"></div>
+          <div><label class="flabel">Status</label><select class="fsel" id="mStatus"><option value="active">Active</option><option value="paused">Paused</option><option value="blocked">Blocked</option><option value="complete">Complete</option></select></div>
+          <div class="full"><label class="flabel">Progress <span id="progLbl" style="color:#0F6E56;font-weight:700">0%</span></label>
+            <div class="prog-row"><input type="range" class="prog-slider" id="mProg" min="0" max="100" value="0" oninput="document.getElementById('progLbl').textContent=this.value+'%'"></div></div>
+        </div>
+      </div>
+      <div class="msec" id="ms-analysis">
+        <div class="fgrid">
+          <div class="full"><label class="flabel">Problem statement</label><textarea class="ftxt" id="mProblem" placeholder="What is the specific problem? What data shows it?"></textarea></div>
+          <div class="full"><label class="flabel">Root cause (verified)</label><textarea class="ftxt" id="mRoot" placeholder="Why is this happening?"></textarea></div>
+          <div class="full"><label class="flabel">Countermeasure / action</label><textarea class="ftxt" id="mAction" placeholder="What specific action will be taken?"></textarea></div>
+          <div class="full"><label class="flabel">Success metric / target</label><textarea class="ftxt" style="height:50px" id="mMetric" placeholder="e.g. Reduce Routing/misrouting contacts by 30% within 6 weeks"></textarea></div>
+        </div>
+      </div>
+      <div class="msec" id="ms-updates">
+        <div style="font-size:11px;color:#73726c;margin-bottom:8px">Log weekly progress, blockers, or decisions.</div>
+        <div id="logDisplay"></div>
+        <div class="log-form"><input class="log-input" id="logInput" placeholder="Add update, decision, or blocker..."><button class="log-btn" onclick="addLog()">+ Log</button></div>
+      </div>
+      <button class="msave" onclick="saveInit()">Save initiative</button>
+      <button class="mdel" id="mDel" style="display:none" onclick="delInit()">Delete</button>
+      <input type="hidden" id="mId">
+    </div>
+  </div>
+</div>
+
 <script>
-// ═══════════════════════════════════════════════════
-// ALL DATA
-// ═══════════════════════════════════════════════════
-var S=720617, RES=348469, UNR=372148, BASE=48.4;
 
-var DR=[
-  {t:'transfer_recommended',             bk:'B',v:75499,frs:47.8,ctrl:'50%',ceil:5.24,init:'Routing (E2E)',nc:false},
-  {t:'intuit_process_pending',           bk:'B',v:58311,frs:12.8,ctrl:'85%',ceil:6.88,init:'Internal Process Fix',nc:false},
-  {t:'escalation_or_assistance_required',bk:'B',v:32170,frs:10.3,ctrl:'86%',ceil:3.84,init:'Case Management',nc:false},
-  {t:'no_customer_utterance',            bk:'A',v:22427,frs:0.0, ctrl:'0%', ceil:0,   init:'Non-conversation',nc:true},
-  {t:'customer_stopped_responding',      bk:'A',v:21301,frs:5.3, ctrl:'0%', ceil:0,   init:'Non-conversation',nc:true},
-  {t:'voice_mail_or_system_message',     bk:'A',v:17508,frs:0.1, ctrl:'0%', ceil:0,   init:'Non-conversation',nc:true},
-  {t:'contact_ended_unexpectedly',       bk:'A',v:17402,frs:3.9, ctrl:'24%',ceil:0.58,init:'Defect Management',nc:false},
-  {t:'misrouted_contact',                bk:'A',v:15976,frs:2.5, ctrl:'66%',ceil:1.46,init:'Routing (E2E)',nc:false},
-  {t:'policy_restriction',              bk:'B',v:15587,frs:10.7,ctrl:'70%',ceil:1.51,init:'Policy Review',nc:false},
-  {t:'automated_process',              bk:'B',v:15044,frs:7.5, ctrl:'14%',ceil:0.29,init:'Internal Process Fix',nc:false},
-  {t:'customer_cannot_continue',       bk:'B',v:13421,frs:9.0, ctrl:'35%',ceil:0.65,init:'Defect Management',nc:false},
-  {t:'external_support_recommended',   bk:'B',v:11439,frs:14.7,ctrl:'30%',ceil:0.48,init:'Escalation Path',nc:false},
-  {t:'known_issue',                    bk:'B',v:10160,frs:13.4,ctrl:'65%',ceil:0.92,init:'Knowledge Mgmt',nc:false},
-  {t:'product_limitation',             bk:'B',v:9889, frs:22.9,ctrl:'57%',ceil:0.80,init:'Defect Management',nc:false},
-  {t:'system_crash_agent',             bk:'A',v:5251, frs:7.8, ctrl:'45%',ceil:0.33,init:'Agent Tooling',nc:false},
-  {t:'technical_investigation',        bk:'B',v:5173, frs:12.8,ctrl:'60%',ceil:0.43,init:'Agent Tooling',nc:false},
-  {t:'agent_stopped_responding',       bk:'A',v:4279, frs:6.5, ctrl:'0%', ceil:0,   init:'Non-conversation',nc:true},
-  {t:'no_agent_utterance',             bk:'A',v:3830, frs:0.1, ctrl:'0%', ceil:0,   init:'Non-conversation',nc:true},
-  {t:'no_clear_evidence',              bk:'C',v:2527, frs:0.1, ctrl:'1%', ceil:0.00,init:'Expert AI Co-Pilot',nc:true},
-  {t:'feature_not_available',          bk:'B',v:2193, frs:35.7,ctrl:'55%',ceil:0.17,init:'Knowledge Mgmt',nc:false},
-  {t:'no_clear_resolution',            bk:'C',v:2032, frs:16.8,ctrl:'50%',ceil:0.14,init:'Expert AI Co-Pilot',nc:false},
-  {t:'screenshare_error',              bk:'A',v:2004, frs:12.5,ctrl:'70%',ceil:0.19,init:'Agent Tooling',nc:false},
-  {t:'system_crash_customer',          bk:'A',v:1982, frs:10.1,ctrl:'45%',ceil:0.12,init:'Defect Management',nc:false},
-  {t:'wait_external_process',          bk:'B',v:1937, frs:10.3,ctrl:'30%',ceil:0.08,init:'Internal Process Fix',nc:false},
-  {t:'customer_dissatisfied',          bk:'C',v:1579, frs:12.5,ctrl:'30%',ceil:0.07,init:'Expert AI Co-Pilot',nc:false},
-  {t:'customer_refuses_steps',         bk:'B',v:1257, frs:8.9, ctrl:'0%', ceil:0,   init:'—',nc:false},
-  {t:'channel_switch_to_call',         bk:'A',v:861,  frs:4.1, ctrl:'0%', ceil:0,   init:'Non-conversation',nc:true},
-  {t:'customer_confused',              bk:'C',v:839,  frs:17.2,ctrl:'50%',ceil:0.06,init:'Expert AI Co-Pilot',nc:false},
-  {t:'billing_issue',                  bk:'B',v:222,  frs:22.6,ctrl:'0%', ceil:0,   init:'—',nc:false},
-  {t:'other',                          bk:'OTHER',v:42,frs:6.7,ctrl:'0%',ceil:0,   init:'—',nc:false},
-  {t:'form_unavailable',               bk:'B',v:6,    frs:25.0,ctrl:'0%', ceil:0,   init:'—',nc:false},
+'use strict';
+
+// ═══ COLORS ═══
+var ABC={A:'#C04000',B:'#2255AA',C:'#107050'};
+var LAYER_COLORS={
+  'Low-Signal / Data Quality':'#C04000',
+  'Customer-Side Factors':'#E05020',
+  'Routing & Handoff Gaps':'#1a3a6e',
+  'Process & Dependency Bottlenecks':'#2255AA',
+  'Product & Tool Limitations':'#4A90D9',
+  'Expert Related':'#107050'
+};
+var BASE_FRS=47.0, TARGET=79.0;
+
+// ═══ LAYER DATA (scored=total contacts, resolved=FRS=100, unres=FRS=0, frs=%) ═══
+var LAYERS=[
+  {name:'Low-Signal / Data Quality',       short:'LS',  scored:35814, resolved:487,   unres:35327,frs:1.4, abc:'A',color:'#C04000'},
+  {name:'Customer-Side Factors',           short:'CSF', scored:48801, resolved:19345, unres:29456,frs:39.6,abc:'A',color:'#E05020'},
+  {name:'Routing & Handoff Gaps',          short:'R&H', scored:140344,resolved:43093, unres:97251,frs:30.7,abc:'B',color:'#1a3a6e'},
+  {name:'Process & Dependency Bottlenecks',short:'P&D', scored:71613, resolved:9082,  unres:62531,frs:12.7,abc:'B',color:'#2255AA'},
+  {name:'Product & Tool Limitations',      short:'PTL', scored:27378, resolved:4758,  unres:22620,frs:17.4,abc:'B',color:'#4A90D9'},
+  {name:'Expert Related',                  short:'EXP', scored:9131,  resolved:758,   unres:8373, frs:8.3, abc:'C',color:'#107050'},
+];
+var TOTAL_SCORED=482251, TOTAL_UNRES=255558;
+
+// ═══ ALL 31 PRIMARY TAGS (Pareto 2) ═══
+var TASKS=[
+  {name:'transfer_recommended',              scored:100782,unres:60798,frs:39.7,layer:'Routing & Handoff Gaps',abc:'B'},
+  {name:'intuit_process_pending',            scored:35804, unres:30717,frs:14.2,layer:'Process & Dependency Bottlenecks',abc:'B'},
+  {name:'customer_stopped_responding',       scored:20817, unres:19718,frs:5.3, layer:'Customer-Side Factors',abc:'A'},
+  {name:'no_customer_utterance',             scored:19471, unres:19470,frs:0.0, layer:'Low-Signal / Data Quality',abc:'A'},
+  {name:'escalation_or_assistance_required', scored:26604, unres:23801,frs:10.5,layer:'Routing & Handoff Gaps',abc:'B'},
+  {name:'customer_action_required',          scored:17269, unres:0,    frs:100.0,layer:'Customer-Side Factors',abc:'A'},
+  {name:'contact_ended_unexpectedly',        scored:12528, unres:12054,frs:3.8, layer:'Low-Signal / Data Quality',abc:'A'},
+  {name:'policy_restriction',                scored:12391, unres:11124,frs:10.2,layer:'Process & Dependency Bottlenecks',abc:'B'},
+  {name:'misrouted_contact',                 scored:12253, unres:11974,frs:2.3, layer:'Routing & Handoff Gaps',abc:'B'},
+  {name:'automated_process',                 scored:10061, unres:9239, frs:8.2, layer:'Process & Dependency Bottlenecks',abc:'B'},
+  {name:'customer_cannot_continue',          scored:9817,  unres:8930, frs:9.0, layer:'Customer-Side Factors',abc:'A'},
+  {name:'external_support_recommended',      scored:9816,  unres:8412, frs:14.3,layer:'Process & Dependency Bottlenecks',abc:'B'},
+  {name:'known_issue',                       scored:9020,  unres:7846, frs:13.0,layer:'Product & Tool Limitations',abc:'B'},
+  {name:'product_limitation',                scored:8842,  unres:6830, frs:22.8,layer:'Product & Tool Limitations',abc:'B'},
+  {name:'system_crash_agent',                scored:3511,  unres:3236, frs:7.8, layer:'Product & Tool Limitations',abc:'B'},
+  {name:'agent_stopped_responding',          scored:3185,  unres:2968, frs:6.8, layer:'Expert Related',abc:'C'},
+  {name:'feature_not_available',             scored:2608,  unres:1722, frs:34.0,layer:'Product & Tool Limitations',abc:'B'},
+  {name:'voice_mail_or_system_message',      scored:2524,  unres:2516, frs:0.3, layer:'Low-Signal / Data Quality',abc:'A'},
+  {name:'no_agent_utterance',                scored:2350,  unres:2349, frs:0.0, layer:'Expert Related',abc:'C'},
+  {name:'technical_investigation',           scored:2287,  unres:1927, frs:15.7,layer:'Process & Dependency Bottlenecks',abc:'B'},
+  {name:'screenshare_error',                 scored:1746,  unres:1526, frs:12.6,layer:'Product & Tool Limitations',abc:'B'},
+  {name:'no_clear_resolution',               scored:1593,  unres:1322, frs:17.0,layer:'Expert Related',abc:'C'},
+  {name:'system_crash_customer',             scored:1446,  unres:1302, frs:10.0,layer:'Product & Tool Limitations',abc:'B'},
+  {name:'customer_dissatisfied',             scored:1266,  unres:1121, frs:11.5,layer:'Expert Related',abc:'C'},
+  {name:'no_clear_evidence',                 scored:1258,  unres:1258, frs:0.0, layer:'Low-Signal / Data Quality',abc:'A'},
+  {name:'wait_external_process',             scored:1254,  unres:1112, frs:11.3,layer:'Process & Dependency Bottlenecks',abc:'B'},
+  {name:'customer_refuses_steps',            scored:898,   unres:808,  frs:10.0,layer:'Customer-Side Factors',abc:'A'},
+  {name:'customer_confused',                 scored:737,   unres:613,  frs:16.8,layer:'Expert Related',abc:'C'},
+  {name:'channel_switch_to_call',            scored:705,   unres:678,  frs:3.8, layer:'Routing & Handoff Gaps',abc:'B'},
+  {name:'billing_issue',                     scored:199,   unres:154,  frs:22.6,layer:'Product & Tool Limitations',abc:'B'},
+  {name:'form_unavailable',                  scored:6,     unres:4,    frs:33.3,layer:'Product & Tool Limitations',abc:'B'},
 ];
 
-var V4=[
-  {t:'contact_ended_unexpectedly',        sh:10.7,ctrl:24.0,ceil:2.6,grp:'Termination',      init:'Defect Mgmt'},
-  {t:'escalation_or_assistance_required', sh:6.0, ctrl:86.0,ceil:5.2,grp:'Routing & Handoff',init:'Case Mgmt'},
-  {t:'product_limitation',               sh:3.0, ctrl:58.0,ceil:1.7,grp:'Product & Tool',   init:'Defect Mgmt'},
-  {t:'multi_issue_flag_no_res',          sh:2.4, ctrl:75.1,ceil:1.8,grp:'Multi-issue',       init:'Expert AI Co-Pilot'},
-  {t:'misrouted_contact',               sh:2.3, ctrl:65.8,ceil:1.5,grp:'Routing & Handoff', init:'Routing E2E'},
-  {t:'system_crash',                    sh:1.0, ctrl:45.1,ceil:0.5,grp:'Product & Tool',    init:'Defect Mgmt'},
-  {t:'customer_confused',               sh:0.6, ctrl:46.1,ceil:0.3,grp:'Customer-side',     init:'Knowledge Mgmt'},
-  {t:'no_clear_evidence',               sh:0.5, ctrl:1.1, ceil:0.0,grp:'Low-signal',        init:'Expert AI Co-Pilot'},
-  {t:'no_clear_resolution',             sh:0.4, ctrl:50.7,ceil:0.2,grp:'Low-signal',        init:'Expert AI Co-Pilot'},
-  {t:'automated_process',              sh:0.2, ctrl:13.7,ceil:0.0,grp:'Process',            init:'Internal Process Fix'},
+// ═══ FRICTION ISSUES (Pareto 3 — from friction file) ═══
+var ISSUES=[
+  {name:'Support call/chat disconnections',     contacts:695,frs:22.6,layer:'Low-Signal / Data Quality',abc:'A'},
+  {name:'Desktop-to-Online migration friction', contacts:684,frs:53.8,layer:'Product & Tool Limitations',abc:'B'},
+  {name:'Tax automation vs manual confusion',   contacts:570,frs:60.5,layer:'Expert Related',abc:'C'},
+  {name:'Account login credential verification',contacts:548,frs:48.3,layer:'Product & Tool Limitations',abc:'B'},
+  {name:'Payments funds placed on hold',        contacts:506,frs:26.2,layer:'Process & Dependency Bottlenecks',abc:'B'},
+  {name:'Account login and auth failures',      contacts:494,frs:52.2,layer:'Product & Tool Limitations',abc:'B'},
+  {name:'Login auth and account access failure',contacts:493,frs:40.1,layer:'Product & Tool Limitations',abc:'B'},
+  {name:'Payroll tax calc failures post-update',contacts:475,frs:69.3,layer:'Product & Tool Limitations',abc:'B'},
+  {name:'Systematic customer misrouting',       contacts:474,frs:29.0,layer:'Routing & Handoff Gaps',abc:'B'},
+  {name:'Direct deposit routing failure',       contacts:425,frs:52.0,layer:'Product & Tool Limitations',abc:'B'},
+  {name:'Account login failure w/ auth error',  contacts:415,frs:41.8,layer:'Product & Tool Limitations',abc:'B'},
+  {name:'Payroll ecosystem architecture unclear',contacts:412,frs:59.3,layer:'Process & Dependency Bottlenecks',abc:'B'},
+  {name:'Payment deposits not appearing',       contacts:406,frs:36.8,layer:'Product & Tool Limitations',abc:'B'},
+  {name:'QBDT-to-QBO migration failures',       contacts:381,frs:49.0,layer:'Product & Tool Limitations',abc:'B'},
+  {name:'Payroll account holds blocking payroll',contacts:344,frs:31.1,layer:'Process & Dependency Bottlenecks',abc:'B'},
 ];
 
-var WK_LABELS=['wk 05-25','wk 06-01','wk 06-08','wk 06-15'];
-var WK_SCORED= [170302,193115,177403,179444];
-var WK_RES=    [83448, 92309, 85508, 86851];
-var WK_UNR=    [86854,100806, 91895, 92593];
-var WK_FRS=    [49.0,  47.8,  48.2,  48.4];
+// ═══ TREND DATA (Jun 1-24) ═══
+var WK=['wk20\n10-16 May','wk21\n17-23 May','wk22\n24-30 May','wk23\n31May-6Jun','wk24\n7-13 Jun','wk25\n14-20 Jun'];
+var WK_FRS=[51.3,52.0,49.2,48.3,47.5,47.0];
+var WK_T1=[52.1,53.0,51.2,49.5,49.0,49.5];
+var WK_U=[100114,92727,90333,105649,96375,96625];
+var WK_T1U=[77559,70970,67381,82911,75573,72065];
+var DLBL=['1-Jun','2-Jun','3-Jun','4-Jun','5-Jun','8-Jun','9-Jun','10-Jun','11-Jun','12-Jun','15-Jun','16-Jun','17-Jun','18-Jun','19-Jun','22-Jun','23-Jun','24-Jun'];
+var DFRS=[47.2,47.8,48.8,49.3,48.9,47.6,47.3,48.3,47.6,49.3,45.3,46.9,46.7,45.7,49.0,46.5,47.1,48.2];
+var DT1=[48.4,49.4,49.8,50.2,49.9,48.3,48.9,49.1,50.0,49.2,48.5,49.3,48.6,51.0,50.7,47.8,48.5,49.1];
 
-var WK_VOL={
-  'transfer_recommended':             [16804,20175,19535,18985],
-  'intuit_process_pending':           [14740,15798,13911,13862],
-  'escalation_or_assistance_required':[6885, 8713, 8337, 8235],
-  'no_customer_utterance':            [4999, 6492, 5118, 5818],
-  'customer_stopped_responding':      [4515, 5741, 5516, 5529],
-  'voice_mail_or_system_message':     [5018, 4685, 3380, 4425],
-  'contact_ended_unexpectedly':       [4165, 4736, 4276, 4225],
-  'misrouted_contact':                [3551, 4112, 4219, 4094],
-  'policy_restriction':               [3697, 4256, 3935, 3699],
-  'automated_process':                [3749, 4247, 3684, 3364],
-  'customer_cannot_continue':         [3284, 3631, 3287, 3219],
-  'external_support_recommended':     [2747, 3133, 2738, 2821],
-  'known_issue':                      [1853, 2764, 2532, 3011],
-  'product_limitation':               [2239, 2715, 2435, 2500],
-  'system_crash_agent':               [1327, 1353, 1357, 1214],
-  'technical_investigation':          [1211, 1358, 1316, 1288],
-  'agent_stopped_responding':         [984,  1106, 1103, 1086],
-  'no_agent_utterance':               [951,  1089,  922,  868],
-  'no_clear_evidence':                [559,   740,  626,  602],
-  'feature_not_available':            [505,   591,  558,  539],
-  'no_clear_resolution':              [470,   569,  504,  489],
-  'screenshare_error':                [488,   546,  463,  507],
-  'system_crash_customer':            [533,   483,  495,  471],
-  'wait_external_process':            [472,   497,  448,  520],
-  'customer_dissatisfied':            [351,   428,  372,  428],
-  'customer_refuses_steps':           [305,   324,  318,  310],
-  'channel_switch_to_call':           [199,   208,  224,  230],
-  'customer_confused':                [184,   231,  224,  200],
-  'billing_issue':                    [59,     66,   53,   44],
-  'other':                            [9,      15,    8,   10],
-  'form_unavailable':                 [1,       4,    1,    0]
-};
-var WK_FRS_DR={
-  'transfer_recommended':             [50.8,49.1,46.1,44.9],
-  'intuit_process_pending':           [12.7,13.3,12.9,12.3],
-  'escalation_or_assistance_required':[10.3,10.7,10.1,10.2],
-  'no_customer_utterance':            [0.0, 0.0, 0.0, 0.0],
-  'customer_stopped_responding':      [5.0, 5.6, 4.9, 5.4],
-  'voice_mail_or_system_message':     [0.1, 0.1, 0.2, 0.0],
-  'contact_ended_unexpectedly':       [4.0, 4.0, 3.8, 3.8],
-  'misrouted_contact':                [2.7, 3.0, 2.1, 2.5],
-  'policy_restriction':               [10.6,10.8,10.3,11.1],
-  'automated_process':                [7.5, 7.3, 8.0, 7.4],
-  'customer_cannot_continue':         [9.2, 9.5, 9.1, 8.1],
-  'external_support_recommended':     [13.9,14.4,15.1,15.5],
-  'known_issue':                      [13.4,13.5,14.2,12.5],
-  'product_limitation':               [22.8,23.6,22.6,22.6],
-  'system_crash_agent':               [7.4, 8.0, 7.6, 8.0],
-  'technical_investigation':          [12.8,12.7,13.0,12.6],
-  'agent_stopped_responding':         [7.3, 5.9, 5.4, 7.4],
-  'no_agent_utterance':               [0.1, 0.2, 0.1, 0.1],
-  'no_clear_evidence':                [0.0, 0.1, 0.2, 0.0],
-  'feature_not_available':            [35.0,36.7,34.7,36.1],
-  'no_clear_resolution':              [16.4,19.1,13.8,17.5],
-  'screenshare_error':                [11.9,11.5,13.9,12.6],
-  'system_crash_customer':            [10.3,11.5, 9.8, 8.7],
-  'wait_external_process':            [8.5,11.9,10.0,10.5],
-  'customer_dissatisfied':            [14.6,11.4,14.1,10.3],
-  'customer_refuses_steps':           [8.1,10.0, 9.9, 7.5],
-  'channel_switch_to_call':           [5.7, 3.7, 3.0, 4.2],
-  'customer_confused':                [20.7,16.9,14.2,17.4],
-  'billing_issue':                    [25.3,21.4,17.2,26.7],
-  'other':                            [0.0, 6.2,11.1, 9.1],
-  'form_unavailable':                 [0.0, 0.0,50.0,100.0]
-};
+// ═══ STATE ═══
+var fLayer='ALL', fABC='ALL', fPartner='ALL', fWeek='ALL';
+var curTrend='frs';
+var tInst=null, dInst=null, p1I=null, p2I=null, p3I=null, gpI=null;
+var initiatives=[], editId=null, curPSF='ALL';
+var PHASES=['Define','Measure','Analyze & Improve','Control / Sustain'];
+var PHASE_COLORS=['#73726c','#534AB7','#D85A30','#0F6E56'];
 
-var ACTIONS={
-  'transfer_recommended':'Fix routing quality — reduce BAD/ADVISED transfers. Warm-handoff protocol, right-queue-first-time.',
-  'intuit_process_pending':'Close the async loop — build post-contact confirmation so customers know their Intuit process completed.',
-  'escalation_or_assistance_required':'Reduce need to escalate — equip T1 with in-contact SME guidance and auto-ID tools.',
-  'no_customer_utterance':'IVR/queue redesign — reduce hold times. Channel workstream needed, not coaching.',
-  'customer_stopped_responding':'Proactive check-in before customer disengages. Channel workstream + IVR.',
-  'voice_mail_or_system_message':'Outbound callback strategy. Non-conversation floor — channel workstream.',
-  'contact_ended_unexpectedly':'Connection stability + callback triggers for drops. Defect Management.',
-  'misrouted_contact':'Fix routing logic — correct queue mapping, intent capture. Routing E2E initiative.',
-  'policy_restriction':'Policy exception review. Agent guidance for policy navigation.',
-  'automated_process':'Notify customer when automated process completes. Internal Process Fix.',
-  'customer_cannot_continue':'Simplify steps, reduce complexity. Accessibility review.',
-  'external_support_recommended':'Improve referral quality — warm handoff not cold redirect.',
-  'known_issue':'Proactive notification to customers about known issues before they call.',
-  'product_limitation':'Workaround documentation via Knowledge Mgmt. Defect mgmt for bug escalation.',
-  'system_crash_agent':'Agent tooling stability — fix crash at source. Defect Management.',
-  'technical_investigation':'Set investigation SLA, communicate timeline. Case Management.',
-  'agent_stopped_responding':'QA flag for no-agent-response. Agent accountability + monitoring.',
-  'no_agent_utterance':'Ghost contact detection. QA + monitoring.',
-  'no_clear_evidence':'Transcript quality / recording completeness. May be tooling issue.',
-  'feature_not_available':'Roadmap communication to agents and customers. Knowledge Mgmt.',
-  'no_clear_resolution':'Closing script coaching — agent states resolution clearly before ending.',
-  'screenshare_error':'Screenshare tooling fix. Agent Tooling initiative.',
-  'system_crash_customer':'App stability fix at source. Defect Management.',
-  'wait_external_process':'External dependency tracking — set ETA, follow up when complete.',
-  'customer_dissatisfied':'De-escalation + closing coaching. Expert AI Co-Pilot real-time guidance.',
-  'customer_refuses_steps':'Objection handling coaching — alternative path scripting.',
-  'channel_switch_to_call':'Chat-first resolution capability — reduce chat-to-call deflection.',
-  'customer_confused':'Plain-language communication coaching. Expert AI Co-Pilot.',
-  'billing_issue':'Billing team integration — warm transfer to billing.',
-  'other':'Review and re-tag. Data quality initiative.',
-  'form_unavailable':'Proactive notification when form becomes available.'
-};
-
-var BKG={A:'#fce8df',B:'#e8e6f8',C:'#d9f2e8',OTHER:'#f0efe9'};
-var BKC={A:'#712B13',B:'#26215C',C:'#04342C',OTHER:'#888'};
-var BKF={A:'#D85A30',B:'#534AB7',C:'#0F6E56',OTHER:'#888'};
-
-// ═══════════════════════════════════════════════════
-// NAV
-// ═══════════════════════════════════════════════════
-function showSec(id,btn){
-  document.querySelectorAll('.section').forEach(function(s){s.classList.remove('visible');});
-  document.getElementById('sec-'+id).classList.add('visible');
-  document.querySelectorAll('.navbtn').forEach(function(b){b.classList.remove('active');});
+// ═══ MAIN TAB ═══
+function switchMain(id,btn){
+  document.querySelectorAll('.top-tab').forEach(function(t){t.classList.remove('active');});
+  document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
   btn.classList.add('active');
+  document.getElementById('tab-'+id).classList.add('active');
+  if(id==='ps'){renderGP();renderKanban();}
 }
 
-// ═══════════════════════════════════════════════════
-// WEEK FILTER
-// ═══════════════════════════════════════════════════
-var curWeek=-1;
-function setWeek(wk,btn){
-  curWeek=wk;
-  document.querySelectorAll('.wktab').forEach(function(t){t.classList.remove('active');});
-  btn.classList.add('active');
-  var banner=document.getElementById('wkBanner');
-  var lbl=document.getElementById('wkActionLabel');
-  if(wk===-1){
-    if(banner) banner.textContent='Showing 4-week totals (May 25 - Jun 21)';
-    if(lbl) lbl.textContent='All 4 weeks';
-    updateKPIs(-1);
+// ═══ FILTERS — all use CSS classes, toggle properly ═══
+function toggleLayer(val,btn){
+  if(val==='ALL'||fLayer===val){
+    fLayer='ALL';
+    document.querySelectorAll('.lbtn').forEach(function(b){b.classList.remove('on');});
+    var fa=document.getElementById('fAll'); if(fa)fa.classList.add('on');
+    document.querySelectorAll('.tc').forEach(function(el){el.classList.remove('sel');});
   } else {
-    if(banner) banner.textContent=WK_LABELS[wk]+' · '+WK_SCORED[wk].toLocaleString()+' scored · '+WK_UNR[wk].toLocaleString()+' unresolved · FRS '+WK_FRS[wk]+'%';
-    if(lbl) lbl.textContent=WK_LABELS[wk];
-    updateKPIs(wk);
+    fLayer=val;
+    document.querySelectorAll('.lbtn').forEach(function(b){b.classList.remove('on');});
+    var fa=document.getElementById('fAll'); if(fa)fa.classList.remove('on');
+    if(btn)btn.classList.add('on');
+    document.querySelectorAll('.tc').forEach(function(el){
+      el.classList.toggle('sel', el.getAttribute('data-name')===val);
+    });
   }
-  renderDT(curSort);
-  renderActionTable(wk);
+  updateBadge(); renderAll();
+}
+function toggleABC(val,btn){
+  if(val==='ALL'||fABC===val){
+    fABC='ALL';
+    document.querySelectorAll('.abcbtn').forEach(function(b){b.classList.remove('on');});
+    var fa=document.getElementById('fABC-ALL'); if(fa)fa.classList.add('on');
+  } else {
+    fABC=val;
+    document.querySelectorAll('.abcbtn').forEach(function(b){b.classList.remove('on');});
+    var fa=document.getElementById('fABC-ALL'); if(fa)fa.classList.remove('on');
+    if(btn)btn.classList.add('on');
+  }
+  updateBadge(); renderAll();
+}
+function togglePartner(val,btn){
+  if(val==='ALL'||fPartner===val){
+    fPartner='ALL';
+    document.querySelectorAll('.pbtn').forEach(function(b){b.classList.remove('on');});
+    var fa=document.getElementById('fpAll'); if(fa)fa.classList.add('on');
+  } else {
+    fPartner=val;
+    document.querySelectorAll('.pbtn').forEach(function(b){b.classList.remove('on');});
+    var fa=document.getElementById('fpAll'); if(fa)fa.classList.remove('on');
+    if(btn)btn.classList.add('on');
+  }
+  updateBadge();
+}
+function toggleWeek(val,btn){
+  if(val==='ALL'||fWeek===val){
+    fWeek='ALL';
+    document.querySelectorAll('.wbtn').forEach(function(b){b.classList.remove('on');});
+    var fa=document.getElementById('fwAll'); if(fa)fa.classList.add('on');
+  } else {
+    fWeek=val;
+    document.querySelectorAll('.wbtn').forEach(function(b){b.classList.remove('on');});
+    var fa=document.getElementById('fwAll'); if(fa)fa.classList.remove('on');
+    if(btn)btn.classList.add('on');
+  }
+  updateBadge();
+}
+function updateBadge(){
+  var parts=[];
+  if(fLayer!=='ALL')parts.push(fLayer);
+  if(fABC!=='ALL')parts.push('Bucket '+fABC);
+  if(fPartner!=='ALL')parts.push(fPartner);
+  if(fWeek!=='ALL')parts.push(fWeek);
+  var b=document.getElementById('filterBadge');
+  if(b)b.textContent=parts.length?'Filters: '+parts.join(' · '):'No filters · 255,558 unresolved contacts';
 }
 
-function updateKPIs(wk){
-  var scored,resolved,unres,frs;
-  if(wk===-1){scored=720617;resolved=348469;unres=372148;frs='48.4';}
-  else{scored=WK_SCORED[wk];resolved=WK_RES[wk];unres=WK_UNR[wk];frs=WK_FRS[wk].toFixed(1);}
-  var kv=document.querySelectorAll('.kval');
-  if(kv.length>=3){kv[0].textContent=scored.toLocaleString();kv[1].textContent=resolved.toLocaleString();kv[2].textContent=unres.toLocaleString();}
-  var hero=document.querySelector('.hero .num');
-  if(hero) hero.textContent=frs+'%';
-}
-
-// ═══════════════════════════════════════════════════
-// DRIVER TABLE
-// ═══════════════════════════════════════════════════
-var curFilter='ALL', curSort=DR.slice(), sDir=-1, sCol=8;
-
-function renderDT(data){
-  var tb=document.getElementById('dtBody'); if(!tb) return;
-  tb.innerHTML='';
-  var mx=0;
-  data.forEach(function(d){var v=curWeek===-1?d.v:(WK_VOL[d.t]?WK_VOL[d.t][curWeek]:0);if(v>mx)mx=v;});
-  data.forEach(function(d){
-    var vol=curWeek===-1?d.v:(WK_VOL[d.t]?WK_VOL[d.t][curWeek]:0);
-    var frs=curWeek===-1?d.frs:(WK_FRS_DR[d.t]?WK_FRS_DR[d.t][curWeek]:d.frs);
-    var show=curFilter==='ALL'||curFilter===d.bk;
-    var tr=document.createElement('tr');
-    tr.style.display=show?'':'none';
-    if(d.nc) tr.classList.add('nc');
-    var bw=mx>0?Math.round(vol/mx*100):0;
-    var pb=d.ceil>=3?'#e8e6f8':d.ceil>=1?'#f4f2fb':'#f0efe9';
-    var pc=d.ceil>=3?'#26215C':d.ceil>=1?'#534AB7':'#73726c';
-    var fc=frs<15?'#993C1D':frs<30?'#854F0B':'#0F6E56';
-    var row=[];
-    row.push('<td style="font-family:monospace;font-size:10px;white-space:nowrap;color:'+(d.nc?'#854F0B':'#2c2c2a')+'">'+(d.nc?'⚠ ':'')+d.t+'</td>');
-    row.push('<td><span class="bdg" style="background:'+(BKG[d.bk]||'#f0efe9')+';color:'+(BKC[d.bk]||'#888')+'">'+d.bk+'</span></td>');
-    row.push('<td style="font-size:10px;color:#73726c">'+d.init+'</td>');
-    row.push('<td style="font-weight:600">'+vol.toLocaleString()+'</td>');
-    row.push('<td style="color:'+fc+';font-weight:600">'+frs+'%</td>');
-    row.push('<td><div class="bbg"><div class="bfill" style="width:'+bw+'%;background:'+(BKF[d.bk]||'#888')+';opacity:.7"></div></div></td>');
-    row.push('<td>'+d.ctrl+'</td>');
-    row.push('<td><span class="pill" style="background:'+pb+';color:'+pc+'">'+(d.ceil>0?'+'+d.ceil.toFixed(1)+'pp':'—')+'</span></td>');
-    row.push('<td style="font-size:10px;max-width:180px">'+d.init+'</td>');
-    tr.innerHTML=row.join('');
-    tb.appendChild(tr);
+// ═══ THEME BOXES ═══
+function buildThemeBoxes(){
+  var c=document.getElementById('themeBoxes'); if(!c)return; c.innerHTML='';
+  LAYERS.forEach(function(l){
+    var maxUnres=Math.max.apply(null,LAYERS.map(function(x){return x.unres;}));
+    var bw=Math.round(l.unres/maxUnres*100);
+    var div=document.createElement('div'); div.className='tc'; div.setAttribute('data-name',l.name);
+    div.style.borderTopColor=l.color;
+    div.innerHTML='<div class="tc-name" style="color:'+l.color+'">'+l.name+'</div>'+
+      '<div class="tc-vol" style="color:'+l.color+'">'+l.unres.toLocaleString()+'</div>'+
+      '<div class="tc-frs" style="color:#73726c">FRS '+l.frs+'%</div>'+
+      '<div><span class="tc-pill" style="background:'+(ABC[l.abc]||'#888')+';color:#fff">Bucket '+l.abc+'</span></div>'+
+      '<div class="tc-bar-bg"><div class="tc-bar-fill" style="width:'+bw+'%;background:'+l.color+'"></div></div>';
+    div.onclick=function(){toggleLayer(l.name,document.getElementById('fl-'+l.name.replace(/[^a-zA-Z]/g,'_')));};
+    c.appendChild(div);
   });
 }
 
-function filterBucket(bk){
-  curFilter=bk;
-  document.querySelectorAll('.ftab').forEach(function(t){t.classList.remove('active');});
-  var el=document.getElementById('f'+bk); if(el) el.classList.add('active');
-  if(bk==='ALL') document.getElementById('fAll').classList.add('active');
-  ['A','B','C'].forEach(function(x){var e=document.getElementById('card'+x);if(e)e.classList.toggle('selected',x===bk);});
-  renderDT(curSort);
+// ═══ FILTERED DATA ═══
+function filteredLayers(){
+  return LAYERS.filter(function(l){
+    return (fLayer==='ALL'||l.name===fLayer)&&(fABC==='ALL'||l.abc===fABC);
+  }).sort(function(a,b){return b.unres-a.unres;});
+}
+function filteredTasks(){
+  return TASKS.filter(function(t){
+    return (fLayer==='ALL'||t.layer===fLayer)&&(fABC==='ALL'||t.abc===fABC);
+  }).sort(function(a,b){return b.unres-a.unres;});
+}
+function filteredIssues(){
+  return ISSUES.filter(function(i){
+    return (fLayer==='ALL'||i.layer===fLayer)&&(fABC==='ALL'||i.abc===fABC);
+  }).sort(function(a,b){return b.contacts-a.contacts;});
 }
 
-function sortD(col){
-  var keys=['t','bk','init','v','frs','','ctrl','','ceil'];
-  var k=keys[col]; if(!k) return;
-  sDir=(sCol===col)?sDir*-1:(col<3?1:-1); sCol=col;
-  curSort=DR.slice().sort(function(a,b){
-    var av=a[k],bv=b[k];
-    return typeof av==='number'?sDir*(bv-av):sDir*String(av).localeCompare(String(bv));
-  });
-  renderDT(curSort);
+// ═══ RENDER ALL ═══
+function renderAll(){
+  var layers=filteredLayers();
+  var tasks=filteredTasks();
+  var issues=filteredIssues();
+  var totalUnres=layers.reduce(function(s,l){return s+l.unres;},0);
+  var h1=document.getElementById('heroVol'); if(h1)h1.textContent=totalUnres.toLocaleString();
+  var h2=document.getElementById('heroFRS'); if(h2)h2.textContent='47.0%';
+  buildP1(layers);
+  buildP2(tasks);
+  buildP3(issues);
+  buildTagTable(tasks);
 }
-sortD(8);
 
-// ═══════════════════════════════════════════════════
-// ACTION TABLE
-// ═══════════════════════════════════════════════════
-function renderActionTable(wk){
-  var tb=document.getElementById('actionBody'); if(!tb) return;
-  tb.innerHTML='';
-  var rows=DR.filter(function(d){return d.v>0;}).map(function(d){
-    var vol=wk===-1?d.v:(WK_VOL[d.t]?WK_VOL[d.t][wk]:0);
-    var frs=wk===-1?d.frs:(WK_FRS_DR[d.t]?WK_FRS_DR[d.t][wk]:d.frs);
-    var wk0=WK_VOL[d.t]?WK_VOL[d.t][0]:0;
-    var wk3=WK_VOL[d.t]?WK_VOL[d.t][3]:0;
-    return {t:d.t,bk:d.bk,vol:vol,frs:frs,trend:wk3-wk0,ctrl:d.ctrl,ceil:d.ceil,init:d.init,nc:d.nc};
-  }).sort(function(a,b){return b.vol-a.vol;});
-  var mx=rows.length>0?rows[0].vol:1;
-  rows.forEach(function(r){
-    if(r.vol===0) return;
-    var tr=document.createElement('tr');
-    if(r.nc) tr.classList.add('nc');
-    var trendStr=r.trend>0?'<span style="color:#993C1D;font-weight:600">↑ +'+r.trend.toLocaleString()+'</span>':r.trend<0?'<span style="color:#0F6E56;font-weight:600">↓ '+r.trend.toLocaleString()+'</span>':'<span style="color:#73726c">→ flat</span>';
-    var bw=Math.round(r.vol/mx*100);
-    var pb=r.ceil>=3?'#e8e6f8':r.ceil>=1?'#f4f2fb':'#f0efe9';
-    var pc=r.ceil>=3?'#26215C':r.ceil>=1?'#534AB7':'#73726c';
-    var fc=r.frs<15?'#993C1D':r.frs<30?'#854F0B':'#0F6E56';
-    var act=ACTIONS[r.t]||'—';
-    var row=[];
-    row.push('<td style="font-family:monospace;font-size:10px;white-space:nowrap;color:'+(r.nc?'#854F0B':'#2c2c2a')+'">'+(r.nc?'⚠ ':'')+r.t+'</td>');
-    row.push('<td><span class="bdg" style="background:'+(BKG[r.bk]||'#f0efe9')+';color:'+(BKC[r.bk]||'#888')+'">'+r.bk+'</span></td>');
-    row.push('<td style="font-weight:600">'+r.vol.toLocaleString()+'<div class="bbg" style="margin-top:2px"><div class="bfill" style="width:'+bw+'%;background:'+(BKF[r.bk]||'#888')+';opacity:.7"></div></div></td>');
-    row.push('<td style="color:'+fc+';font-weight:600">'+r.frs+'%</td>');
-    row.push('<td>'+trendStr+'</td>');
-    row.push('<td style="font-size:10px;color:#73726c;white-space:nowrap">'+r.init+'</td>');
-    row.push('<td>'+r.ctrl+'</td>');
-    row.push('<td><span class="pill" style="background:'+pb+';color:'+pc+'">'+(r.ceil>0?'+'+r.ceil.toFixed(1)+'pp':'—')+'</span></td>');
-    row.push('<td style="font-size:10px;color:#444;max-width:280px;line-height:1.5">'+act+'</td>');
-    tr.innerHTML=row.join('');
-    tb.appendChild(tr);
-  });
-}
-renderActionTable(-1);
-
-// ═══════════════════════════════════════════════════
-// V4 TABLE
-// ═══════════════════════════════════════════════════
-(function(){
-  var tb=document.getElementById('v4Body'); if(!tb) return;
-  V4.forEach(function(t){
-    var tr=document.createElement('tr');
-    var pb=t.ceil>=3?'#e8e6f8':t.ceil>=1?'#f4f2fb':'#f0efe9';
-    var pc=t.ceil>=3?'#26215C':t.ceil>=1?'#534AB7':'#73726c';
-    var row=[];
-    row.push('<td style="font-family:monospace;font-size:10px;color:#1A3A6B">'+t.t+'</td>');
-    row.push('<td>'+t.sh+'%</td>');
-    row.push('<td style="font-weight:600;color:#534AB7">'+t.ctrl+'%</td>');
-    row.push('<td><span class="pill" style="background:'+pb+';color:'+pc+';font-weight:600">'+(t.ceil>0?'+'+t.ceil.toFixed(1)+'pp':'—')+'</span></td>');
-    row.push('<td style="font-size:10px;color:#73726c">'+t.grp+'</td>');
-    row.push('<td style="font-size:10px;color:#73726c">'+t.init+'</td>');
-    tr.innerHTML=row.join('');
-    tb.appendChild(tr);
-  });
-  var tot=document.createElement('tr');
-  tot.style.fontWeight='600';
-  tot.style.borderTop='1.5px solid #e0dfd8';
-  tot.innerHTML='<td colspan="3" style="padding:8px">Total recoverable ceiling</td><td><span class="pill" style="background:#e8e6f8;color:#26215C;font-weight:700">+13.7pp</span></td><td colspan="2"></td>';
-  tb.appendChild(tot);
-})();
-
-// ═══════════════════════════════════════════════════
-// WATERFALL
-// ═══════════════════════════════════════════════════
-var WF={
-  abc:[
-    {l:'Total Scored', bot:0,      top:720617,c:'#1a1a1a',pct:100.0,type:'total',  frs:null},
-    {l:'Bucket A',     bot:627781, top:720617,c:'#8B1A1A',pct:12.9, type:'bucket', frs:null},
-    {l:'cust_stopped', bot:699316, top:720617,c:'#C0392B',pct:3.0,  type:'marker', frs:5.3},
-    {l:'cont_ended',   bot:681914, top:699316,c:'#D97070',pct:2.4,  type:'marker', frs:3.9},
-    {l:'misrouted',    bot:665938, top:681914,c:'#E08888',pct:2.2,  type:'marker', frs:2.5},
-    {l:'Other A tags', bot:627781, top:665938,c:'#F5C0C0',pct:5.3,  type:'mOther', frs:null},
-    {l:'Bucket B',     bot:350265, top:627781,c:'#1A3A6B',pct:38.5, type:'bucket', frs:null},
-    {l:'transfer_rec', bot:552282, top:627781,c:'#1E3F9E',pct:10.5, type:'marker', frs:47.8},
-    {l:'intuit_proc',  bot:493971, top:552282,c:'#2952A3',pct:8.1,  type:'marker', frs:12.8},
-    {l:'escalation',   bot:461801, top:493971,c:'#4168BB',pct:4.5,  type:'marker', frs:10.3},
-    {l:'Other B tags', bot:350265, top:461801,c:'#AABFE8',pct:15.4, type:'mOther', frs:null},
-    {l:'Bucket C',     bot:348469, top:350265,c:'#7B6000',pct:0.2,  type:'bucket', frs:null},
-    {l:'no_clr_ev',    bot:349617, top:350265,c:'#B8960C',pct:0.1,  type:'marker', frs:null},
-    {l:'no_clr_res',   bot:348921, top:349617,c:'#D4B84A',pct:0.1,  type:'marker', frs:null},
-    {l:'cust_conf',    bot:348469, top:348921,c:'#F2E2A0',pct:0.1,  type:'marker', frs:null},
-    {l:'Resolved',     bot:0,      top:348469,c:'#2D7D46',pct:48.4, type:'resolved',frs:null}
-  ],
-  drivers:[
-    {l:'Total Scored',          bot:0,      top:720617,c:'#1a1a1a',pct:100.0,type:'total',  frs:null},
-    {l:'transfer_recommended',  bot:645118, top:720617,c:'#1E3F9E',pct:10.5, type:'bucket', frs:47.8},
-    {l:'intuit_process_pending',bot:586807, top:645118,c:'#2952A3',pct:8.1,  type:'bucket', frs:12.8},
-    {l:'escalation_required',   bot:554637, top:586807,c:'#4168BB',pct:4.5,  type:'bucket', frs:10.3},
-    {l:'no_cust_utterance',     bot:532210, top:554637,c:'#888780',pct:3.1,  type:'bucket', frs:0.0},
-    {l:'cust_stopped',          bot:510909, top:532210,c:'#D97070',pct:3.0,  type:'bucket', frs:5.3},
-    {l:'voicemail',             bot:493401, top:510909,c:'#B4B2A9',pct:2.4,  type:'bucket', frs:0.1},
-    {l:'contact_ended',         bot:475999, top:493401,c:'#E08888',pct:2.4,  type:'bucket', frs:3.9},
-    {l:'misrouted',             bot:460023, top:475999,c:'#5B80CA',pct:2.2,  type:'bucket', frs:2.5},
-    {l:'policy_restriction',    bot:444436, top:460023,c:'#26215C',pct:2.2,  type:'bucket', frs:10.7},
-    {l:'automated_process',     bot:429392, top:444436,c:'#534AB7',pct:2.1,  type:'bucket', frs:7.5},
-    {l:'Other drivers',         bot:348469, top:429392,c:'#888780',pct:11.2, type:'mOther', frs:null},
-    {l:'Resolved',              bot:0,      top:348469,c:'#2D7D46',pct:48.4, type:'resolved',frs:null}
-  ],
-  problem:[
-    {l:'Total Scored',     bot:0,      top:720617,c:'#1a1a1a',pct:100.0,type:'total'},
-    {l:'(none) untagged',  bot:581806, top:720617,c:'#26215C',pct:19.3, type:'bucket'},
-    {l:'Misrouted Contact',bot:553151, top:581806,c:'#534AB7',pct:4.0,  type:'bucket'},
-    {l:'Disc/Ghost Call',  bot:540498, top:553151,c:'#7F77DD',pct:1.8,  type:'bucket'},
-    {l:'Chat',             bot:528961, top:540498,c:'#AFA9EC',pct:1.6,  type:'bucket'},
-    {l:'Banking',          bot:518169, top:528961,c:'#04342C',pct:1.5,  type:'bucket'},
-    {l:'Billing',          bot:508493, top:518169,c:'#0F6E56',pct:1.3,  type:'bucket'},
-    {l:'Unable to Reach',  bot:499189, top:508493,c:'#1D9E75',pct:1.3,  type:'bucket'},
-    {l:'Payroll',          bot:489885, top:499189,c:'#5DCAA5',pct:1.3,  type:'bucket'},
-    {l:'Disconnect',       bot:482070, top:489885,c:'#854F0B',pct:1.1,  type:'bucket'},
-    {l:'Ghost Call',       bot:474999, top:482070,c:'#BA7517',pct:1.0,  type:'bucket'},
-    {l:'Other 200 areas',  bot:348469, top:474999,c:'#888780',pct:17.6, type:'mOther'},
-    {l:'Resolved',         bot:0,      top:348469,c:'#2D7D46',pct:48.4, type:'resolved'}
-  ],
-  tier:[
-    {l:'Total Scored',bot:0,      top:720617,c:'#1a1a1a',pct:100.0,type:'total'},
-    {l:'Tier 1 (77%)',bot:433863, top:720617,c:'#0C447C',pct:39.8, type:'bucket'},
-    {l:'Tier 2 (17%)',bot:370598, top:433863,c:'#185FA5',pct:8.8,  type:'bucket'},
-    {l:'Analyst (4%)',bot:355712, top:370598,c:'#378ADD',pct:2.1,  type:'bucket'},
-    {l:'Tier 3+Other',bot:348469, top:355712,c:'#85B7EB',pct:1.0,  type:'mOther'},
-    {l:'Resolved',    bot:0,      top:348469,c:'#2D7D46',pct:48.4, type:'resolved'}
-  ],
-  partner:[
-    {l:'Total Scored',   bot:0,      top:720617,c:'#1a1a1a',pct:100.0,type:'total'},
-    {l:'FOUNDEVER (39%)',bot:575479, top:720617,c:'#712B13',pct:20.1, type:'bucket'},
-    {l:'CONCENTRIX (36%)',bot:441346,top:575479,c:'#993C1D',pct:18.6, type:'bucket'},
-    {l:'TELEPERF (8%)',  bot:411574, top:441346,c:'#D85A30',pct:4.1,  type:'bucket'},
-    {l:'ALORICA (7%)',   bot:385524, top:411574,c:'#F0997B',pct:3.6,  type:'bucket'},
-    {l:'INTUIT+Other',   bot:348469, top:385524,c:'#e8a882',pct:5.1,  type:'mOther'},
-    {l:'Resolved',       bot:0,      top:348469,c:'#2D7D46',pct:48.4, type:'resolved'}
-  ]
-};
-var curWFKey='abc';
-var wfInst=null;
-
-function buildWFData(key){
-  var segs=WF[key],labels=[],floats=[],colors=[],borders=[];
-  segs.forEach(function(s){
-    labels.push(s.l);
-    floats.push([s.bot,s.top]);
-    colors.push(s.c);
-    borders.push(s.type==='bucket'||s.type==='total'||s.type==='resolved'?'rgba(0,0,0,.25)':'rgba(255,255,255,.15)');
-  });
-  return{labels:labels,floats:floats,colors:colors,borders:borders};
-}
-function buildWFLegend(key){
-  var box=document.getElementById('wfLeg'); if(!box) return;
-  box.innerHTML='';
-  WF[key].forEach(function(s){
-    if(s.type==='marker') return;
-    var sp=document.createElement('span');
-    sp.innerHTML='<span class="dot" style="background:'+s.c+'"></span>'+s.l;
-    box.appendChild(sp);
-  });
-}
-function switchWF(key,btn){
-  curWFKey=key;
-  document.querySelectorAll('.tabs .tab').forEach(function(t){
-    if(t.closest('.panel')===btn.closest('.panel')) t.classList.remove('active');
-  });
-  btn.classList.add('active');
-  var d=buildWFData(key);
-  buildWFLegend(key);
-  wfInst.data.labels=d.labels;
-  wfInst.data.datasets[0].data=d.floats;
-  wfInst.data.datasets[0].backgroundColor=d.colors;
-  wfInst.data.datasets[0].borderColor=d.borders;
-  wfInst._key=key;
-  wfInst.update();
-}
-(function(){
-  var canvas=document.getElementById('wfChart'); if(!canvas) return;
-  var d=buildWFData('abc');
-  buildWFLegend('abc');
-  wfInst=new Chart(canvas,{
+// ═══ SHARED COMBO CHART BUILDER ═══
+function comboChart(canvasId,labels,vols,frsVals,bgColors,bdColors,avgFRS,oldInst){
+  var cv=document.getElementById(canvasId); if(!cv)return null;
+  if(oldInst){oldInst.destroy();}
+  return new Chart(cv,{
     type:'bar',
-    data:{labels:d.labels,datasets:[{data:d.floats,backgroundColor:d.colors,borderColor:d.borders,borderWidth:1,borderRadius:2,borderSkipped:false}]},
-    options:{
-      responsive:true,maintainAspectRatio:false,
+    data:{labels:labels,datasets:[
+      {type:'bar',label:'Unresolved contacts',data:vols,backgroundColor:bgColors,borderColor:bdColors,borderWidth:1.5,borderRadius:4,yAxisID:'y',order:2},
+      {type:'line',label:'FRS%',data:frsVals,borderColor:'#E8806A',backgroundColor:'transparent',
+       pointRadius:4,pointBackgroundColor:frsVals.map(function(v){return v<20?'#C04000':v<47?'#854F0B':'#0F6E56';}),
+       tension:.3,yAxisID:'y2',order:1,borderWidth:2.5}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
       plugins:{legend:{display:false},tooltip:{callbacks:{
-        title:function(i){return WF[curWFKey][i[0].dataIndex].l;},
-        label:function(c){
-          var seg=WF[curWFKey][c.dataIndex]; if(!seg) return '';
-          var v=seg.top-seg.bot;
-          if(seg.type==='total') return '720,617 total scored (100%)';
-          if(seg.type==='resolved') return '348,469 resolved · 48.4% FRS';
-          var line=v.toLocaleString()+' contacts · '+seg.pct+'% of scored';
-          if(seg.frs!=null) line+=' · Tag FRS: '+seg.frs+'%';
-          return line;
+        title:function(i){return labels[i[0].dataIndex];},
+        label:function(ci){
+          if(ci.datasetIndex===0)return 'Unresolved: '+ci.raw.toLocaleString();
+          return 'FRS: '+ci.raw+'% ('+(ci.raw<20?'very low':ci.raw<47?'below avg':'above avg')+')';
         }
       }}},
       scales:{
-        x:{ticks:{autoSkip:false,maxRotation:50,font:{size:9},color:'#73726c'},grid:{display:false}},
-        y:{min:0,max:800000,ticks:{callback:function(v){return v===0?'0':(v/1000).toFixed(0)+'k';},font:{size:10},color:'#73726c',maxTicksLimit:8},grid:{color:'rgba(115,114,108,.07)'}}
+        x:{ticks:{maxRotation:45,font:{size:8},color:'#73726c'},grid:{display:false}},
+        y:{position:'left',title:{display:true,text:'Unresolved contacts',font:{size:8}},
+           ticks:{callback:function(v){return v>=1000?(v/1000).toFixed(0)+'k':v;},font:{size:9}},
+           grid:{color:'rgba(115,114,108,.07)'}},
+        y2:{position:'right',min:0,max:110,title:{display:true,text:'FRS%',font:{size:8},color:'#E8806A'},
+            ticks:{callback:function(v){return v+'%';},font:{size:9},color:'#E8806A'},grid:{display:false}}
       }
     },
-    plugins:[{id:'wfDeco',afterDatasetsDraw:function(chart){
-      var ctx=chart.ctx,meta=chart.getDatasetMeta(0),yS=chart.scales.y;
-      var segs=WF[chart._key||'abc'];
-      ctx.save(); ctx.setLineDash([3,4]); ctx.strokeStyle='rgba(100,100,100,.18)'; ctx.lineWidth=1;
-      for(var i=0;i<meta.data.length-1;i++){
-        var b0=meta.data[i],b1=meta.data[i+1];
-        var s0=segs[i],s1=segs[i+1];
-        if(!b0||!b1||!s0||!s1||s0.type==='resolved'||s1.type==='resolved') continue;
-        var y=yS.getPixelForValue(s1.top);
-        ctx.beginPath(); ctx.moveTo(b0.x+b0.width/2,y); ctx.lineTo(b1.x-b1.width/2,y); ctx.stroke();
-      }
-      ctx.restore();
-      ctx.save(); ctx.textAlign='center'; ctx.textBaseline='middle';
-      segs.forEach(function(seg,i){
-        var bar=meta.data[i]; if(!bar) return;
-        var barH=yS.getPixelForValue(seg.bot)-yS.getPixelForValue(seg.top);
-        var midY=(yS.getPixelForValue(seg.bot)+yS.getPixelForValue(seg.top))/2;
-        if((seg.type==='total'||seg.type==='resolved')&&barH>14){
-          ctx.font='bold 11px system-ui'; ctx.fillStyle='#fff';
-          ctx.fillText(seg.pct+'%',bar.x,midY);
-        } else if(seg.type==='bucket'&&barH>14){
-          ctx.font='bold 10px system-ui'; ctx.fillStyle='#fff';
-          ctx.fillText(seg.frs!=null?'FRS '+seg.frs+'%':seg.pct+'%',bar.x,midY);
-        } else if((seg.type==='marker'||seg.type==='mOther')&&barH>12&&seg.pct>=1.5){
-          ctx.font='9px system-ui'; ctx.fillStyle='rgba(255,255,255,.85)';
-          ctx.fillText(seg.frs!=null?seg.frs+'%':seg.pct+'%',bar.x,midY);
-        }
-      });
-      ctx.restore();
-      if((chart._key||'abc')==='abc'){
-        ctx.save(); ctx.font='bold 10px system-ui'; ctx.lineWidth=1.5;
-        [{si:1,ei:5,label:'Bucket A (12.9pp)',color:'#8B1A1A'},
-         {si:6,ei:10,label:'Bucket B (38.5pp)',color:'#1A3A6B'},
-         {si:11,ei:14,label:'Bucket C',color:'#7B6000'}
-        ].forEach(function(g){
-          var b0=meta.data[g.si],bE=meta.data[g.ei]; if(!b0||!bE) return;
-          var x1=b0.x-b0.width/2+2,x2=bE.x+bE.width/2-2,y=chart.chartArea.top+6;
-          ctx.strokeStyle=g.color; ctx.fillStyle=g.color; ctx.textAlign='center'; ctx.setLineDash([]);
-          ctx.beginPath(); ctx.moveTo(x1,y+10); ctx.lineTo(x1,y); ctx.lineTo(x2,y); ctx.lineTo(x2,y+10); ctx.stroke();
-          if(x2-x1>60) ctx.fillText(g.label,(x1+x2)/2,y-4);
-        });
-        ctx.restore();
-      }
+    plugins:[{id:'avgL',afterDraw:function(chart){
+      var y2=chart.scales.y2; if(!y2)return;
+      var ctx2=chart.ctx, yAvg=y2.getPixelForValue(avgFRS);
+      ctx2.save();ctx2.setLineDash([5,4]);ctx2.strokeStyle='rgba(83,74,183,.5)';ctx2.lineWidth=1.5;
+      ctx2.beginPath();ctx2.moveTo(chart.chartArea.left,yAvg);ctx2.lineTo(chart.chartArea.right,yAvg);ctx2.stroke();
+      ctx2.font='8px system-ui';ctx2.fillStyle='rgba(83,74,183,.8)';ctx2.textAlign='left';ctx2.setLineDash([]);
+      ctx2.fillText('wk25 FRS '+avgFRS+'%',chart.chartArea.left+4,yAvg-4);
+      ctx2.restore();
     }}]
   });
-  wfInst._key='abc';
-})();
+}
 
-// ═══════════════════════════════════════════════════
-// TREND CHARTS
-// ═══════════════════════════════════════════════════
-var WK_FULL=['wk 05-25','wk 06-01','wk 06-08','wk 06-15'];
-var TDATA={
-  overall:{yMin:44,yMax:52,sfx:'%',ds:[
-    {label:'Overall FRS%',data:[49.0,47.8,48.2,48.4],color:'#1D9E75',fill:true,dash:[]}
-  ]},
-  drivers:{yMin:0,yMax:60,sfx:'%',ds:[
-    {label:'transfer_recommended',             data:[50.8,49.1,46.1,44.9],color:'#1A3A6B',fill:false,dash:[]},
-    {label:'intuit_process_pending',           data:[12.7,13.3,12.9,12.3],color:'#D85A30',fill:false,dash:[]},
-    {label:'escalation_or_assistance_required',data:[10.3,10.7,10.1,10.2],color:'#534AB7',fill:false,dash:[4,3]}
-  ]},
-  volume:{yMin:0,yMax:110000,sfx:'',ds:[
-    {label:'transfer_recommended unresolved',  data:[16804,20175,19535,18985],color:'#1A3A6B',fill:false,dash:[]},
-    {label:'intuit_process_pending unresolved',data:[14740,15798,13911,13862],color:'#D85A30',fill:false,dash:[]},
-    {label:'Total unresolved',                 data:[86854,100806,91895,92593],color:'#888780',fill:true,dash:[]}
-  ]}
-};
-var curTK='overall';
-var tInst=null;
+// ═══ PARETO 1 — Macro themes (sorted by unres desc) ═══
+function buildP1(layers){
+  var labels=layers.map(function(l){return l.name;});
+  var vols=layers.map(function(l){return l.unres;});
+  var frsV=layers.map(function(l){return l.frs;});
+  var bg=layers.map(function(l){return (LAYER_COLORS[l.name]||'#888')+'CC';});
+  var bd=layers.map(function(l){return LAYER_COLORS[l.name]||'#888';});
+  p1I=comboChart('p1Chart',labels,vols,frsV,bg,bd,47.0,p1I);
+  var leg=document.getElementById('p1leg'); if(!leg)return; leg.innerHTML='';
+  [{c:'#C04000',l:'Bucket A'},{c:'#2255AA',l:'Bucket B'},{c:'#107050',l:'Bucket C'}].forEach(function(item){
+    var sp=document.createElement('span');sp.innerHTML='<span class="dot" style="background:'+item.c+'"></span>'+item.l;leg.appendChild(sp);
+  });
+  var sp=document.createElement('span');sp.innerHTML='<span class="dot" style="background:#E8806A;border-radius:50%"></span>FRS% per theme';leg.appendChild(sp);
+}
 
-function mkDS(key){
-  return TDATA[key].ds.map(function(d){
-    return{label:d.label,data:d.data,borderColor:d.color,
-      backgroundColor:d.fill?d.color+'28':'transparent',
-      fill:d.fill,tension:.35,pointRadius:4,pointBackgroundColor:d.color,borderDash:d.dash};
+// ═══ PARETO 2 — All 31 primary tags (sorted by unres desc) ═══
+function buildP2(tasks){
+  var top=tasks.slice(0,20);
+  var labels=top.map(function(t){return t.name;});
+  var vols=top.map(function(t){return t.unres;});
+  var frsV=top.map(function(t){return t.frs;});
+  var bg=top.map(function(t){return (LAYER_COLORS[t.layer]||ABC[t.abc]||'#888')+'CC';});
+  var bd=top.map(function(t){return LAYER_COLORS[t.layer]||ABC[t.abc]||'#888';});
+  p2I=comboChart('p2Chart',labels,vols,frsV,bg,bd,47.0,p2I);
+  var leg=document.getElementById('p2leg'); if(!leg)return; leg.innerHTML='';
+  Object.keys(LAYER_COLORS).forEach(function(name){
+    var sp=document.createElement('span');sp.innerHTML='<span class="dot" style="background:'+LAYER_COLORS[name]+'"></span>'+LAYERS.find(function(l){return l.name===name;}).short;leg.appendChild(sp);
   });
 }
-function buildTLeg(key){
-  var box=document.getElementById('trendLeg'); if(!box) return;
-  box.innerHTML='';
-  TDATA[key].ds.forEach(function(d){
-    var sp=document.createElement('span');
-    sp.innerHTML='<span class="dot" style="background:'+d.color+'"></span>'+d.label;
-    box.appendChild(sp);
+
+// ═══ PARETO 3 — Friction points from friction file ═══
+function buildP3(issues){
+  var top=issues.slice(0,15);
+  var labels=top.map(function(i){return i.name;});
+  var vols=top.map(function(i){return i.contacts;});
+  var frsV=top.map(function(i){return i.frs;});
+  var bg=top.map(function(i){return (LAYER_COLORS[i.layer]||ABC[i.abc]||'#888')+'CC';});
+  var bd=top.map(function(i){return LAYER_COLORS[i.layer]||ABC[i.abc]||'#888';});
+  p3I=comboChart('p3Chart',labels,vols,frsV,bg,bd,47.0,p3I);
+  var leg=document.getElementById('p3leg'); if(!leg)return; leg.innerHTML='';
+  [{c:'#C04000',l:'Bucket A'},{c:'#2255AA',l:'Bucket B'},{c:'#107050',l:'Bucket C'}].forEach(function(item){
+    var sp=document.createElement('span');sp.innerHTML='<span class="dot" style="background:'+item.c+'"></span>'+item.l;leg.appendChild(sp);
   });
+  var sp=document.createElement('span');sp.innerHTML='<span class="dot" style="background:#E8806A;border-radius:50%"></span>FRS% per issue';leg.appendChild(sp);
 }
-function switchTrend(key,btn){
-  curTK=key;
-  document.querySelectorAll('.ttab').forEach(function(t){t.classList.remove('active');});
-  btn.classList.add('active');
-  tInst.data.datasets=mkDS(key);
-  tInst.options.scales.y.min=TDATA[key].yMin;
-  tInst.options.scales.y.max=TDATA[key].yMax;
-  tInst.update();
-  buildTLeg(key);
-}
-(function(){
-  var canvas=document.getElementById('trendChart'); if(!canvas) return;
-  buildTLeg('overall');
-  tInst=new Chart(canvas,{
-    type:'line',
-    data:{labels:WK_FULL,datasets:mkDS('overall')},
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      interaction:{mode:'index',intersect:false},
-      plugins:{legend:{display:false},tooltip:{callbacks:{
-        title:function(i){return WK_FULL[i[0].dataIndex];},
-        label:function(c){return c.dataset.label+': '+c.raw.toLocaleString()+(TDATA[curTK].sfx||'');}
-      }}},
-      scales:{
-        x:{ticks:{font:{size:10},color:'#73726c'},grid:{display:false}},
-        y:{min:44,max:52,ticks:{callback:function(v){return v+(TDATA[curTK].sfx||'');},font:{size:10},color:'#73726c'},grid:{color:'rgba(115,114,108,.08)'}}
-      }
-    }
-  });
-})();
 
-(function(){
-  var canvas=document.getElementById('dailyChart'); if(!canvas) return;
-  var lbl=['Sun 14','Mon 15','Tue 16','Wed 17','Thu 18','Fri 19','Sat 20','Sun 21'];
-  var ov=[45.3,46.9,47.3,45.1,49.0,48.6,46.7,40.5];
-  var t1=[45.8,48.5,49.6,48.2,51.0,50.7,49.5,40.5];
-  var we=[true,false,false,false,false,false,true,true];
-  new Chart(canvas,{
-    type:'bar',
-    data:{labels:lbl,datasets:[
-      {label:'Overall FRS%',data:ov,
-        backgroundColor:ov.map(function(_,i){return we[i]?'rgba(136,135,128,.35)':'rgba(29,158,117,.80)';}),
-        borderColor:ov.map(function(_,i){return we[i]?'#B4B2A9':'#0F6E56';}),
-        borderWidth:1,borderRadius:3,order:2},
-      {label:'T1 FRS%',data:t1,type:'line',borderColor:'#185FA5',backgroundColor:'transparent',
-        pointBackgroundColor:t1.map(function(_,i){return we[i]?'#B4B2A9':'#185FA5';}),
-        pointRadius:4,tension:.3,order:1}
-    ]},
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{
-        title:function(i){return lbl[i[0].dataIndex]+' Jun 2026';},
-        label:function(c){return c.dataset.label+': '+c.raw+'%'+(we[c.dataIndex]?' [weekend]':'');}
-      }}},
-      scales:{
-        x:{ticks:{font:{size:10},color:'#73726c'},grid:{display:false}},
-        y:{min:38,max:54,ticks:{callback:function(v){return v+'%';},font:{size:10},color:'#73726c'},grid:{color:'rgba(115,114,108,.08)'}}
-      }
-    }
-  });
-})();
-
-// ═══════════════════════════════════════════════════
-// SIMULATOR
-// ═══════════════════════════════════════════════════
-var SIM_INITS=[
-  {name:'Case Management',   ceil:3.5, eff:60},
-  {name:'Defect Management', ceil:2.6, eff:65},
-  {name:'Routing (E2E)',     ceil:2.5, eff:70},
-  {name:'Expert AI Co-Pilot',ceil:2.2, eff:55},
-  {name:'Knowledge Mgmt',    ceil:0.3, eff:40}
-];
-var simVals={};
-SIM_INITS.forEach(function(i){simVals[i.name]=i.eff;});
-
-function buildSimSliders(){
-  var container=document.getElementById('initSliders'); if(!container) return;
-  container.innerHTML='';
-  SIM_INITS.forEach(function(init){
-    var div=document.createElement('div');
-    div.style.cssText='background:#f5f5f3;border-radius:8px;padding:12px;';
-    var id=init.name.replace(/\s/g,'_');
-    div.innerHTML='<div style="font-size:11px;font-weight:600;color:#534AB7;margin-bottom:2px">'+init.name+'</div>'+
-      '<div style="font-size:10px;color:#73726c;margin-bottom:6px">Ceiling: +'+init.ceil.toFixed(1)+'pp</div>'+
-      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">'+
-        '<input type="range" min="0" max="100" value="'+init.eff+'" style="flex:1;accent-color:#534AB7" oninput="updateSimSizing(\''+init.name+'\',this.value)">'+
-        '<span style="font-size:12px;font-weight:600;min-width:40px;color:#534AB7" id="sv_'+id+'">'+init.eff+'%</span>'+
-      '</div>'+
-      '<div style="font-size:10px;color:#73726c">Lift: +<span id="sl_'+id+'">'+(init.ceil*init.eff/100).toFixed(2)+'</span>pp</div>';
-    container.appendChild(div);
-  });
-}
-function updateSimSizing(name,v){
-  simVals[name]=+v;
-  var id=name.replace(/\s/g,'_');
-  var svEl=document.getElementById('sv_'+id);
-  var slEl=document.getElementById('sl_'+id);
-  var init=null;
-  for(var i=0;i<SIM_INITS.length;i++){if(SIM_INITS[i].name===name){init=SIM_INITS[i];break;}}
-  if(svEl) svEl.textContent=v+'%';
-  if(slEl&&init) slEl.textContent=(init.ceil*(+v)/100).toFixed(2);
-  var lift=0;
-  SIM_INITS.forEach(function(i){lift+=i.ceil*(simVals[i.name]/100);});
-  var simF=(BASE+lift).toFixed(1);
-  var frsEl=document.getElementById('simFRS');
-  var liftEl=document.getElementById('simLift');
-  var barEl=document.getElementById('simBar');
-  var lblEl=document.getElementById('simBarLbl');
-  var resEl=document.getElementById('simResidual');
-  var ptEl=document.getElementById('simLiftPts');
-  if(frsEl) frsEl.textContent=simF+'%';
-  if(liftEl) liftEl.textContent='+'+lift.toFixed(1)+'pp vs baseline';
-  if(barEl) barEl.style.width=Math.min(+simF,100)+'%';
-  if(lblEl) lblEl.textContent=simF+'%';
-  if(resEl) resEl.textContent=(79-simF).toFixed(1)+'pp';
-  if(ptEl) ptEl.textContent='+'+lift.toFixed(1)+'pp';
-}
-buildSimSliders();
-updateSimSizing('Case Management',simVals['Case Management']);
-
-// ═══════════════════════════════════════════════════
-// README TAG TABLE
-// ═══════════════════════════════════════════════════
-var WHY={
-  'transfer_recommended':'Transfer needed; not closed on this contact',
-  'intuit_process_pending':'Internal Intuit process must complete after contact',
-  'escalation_or_assistance_required':'Escalated to manager/SME — another team must follow up',
-  'no_customer_utterance':'Customer never spoke or typed — non-conversation',
-  'customer_stopped_responding':'Customer disengaged before issue could be addressed',
-  'voice_mail_or_system_message':'Voicemail or automated message — no live interaction',
-  'contact_ended_unexpectedly':'Contact dropped before resolution was attempted',
-  'misrouted_contact':'Wrong queue — issue not addressed by the right team',
-  'policy_restriction':'Intuit policy blocks resolution on this call',
-  'automated_process':'An automated process is pending completion',
-  'customer_cannot_continue':'Customer is blocked and cannot proceed',
-  'external_support_recommended':'Customer needs non-Intuit support to resolve',
-  'known_issue':'Known issue; fix is pending elsewhere',
-  'product_limitation':'Product bug or limitation; no on-call fix possible',
-  'system_crash_agent':'Agent-side technical failure prevented engagement',
-  'technical_investigation':'More investigation needed beyond this contact',
-  'agent_stopped_responding':'Agent disengaged before resolving — non-conversation',
-  'no_agent_utterance':'Agent never spoke or typed — non-conversation',
-  'no_clear_evidence':'Transcript lacks evidence of customer confirmation',
-  'feature_not_available':'Customer needs a feature that does not exist in the product',
-  'no_clear_resolution':'Steps unclear; customer could not confirm outcome',
-  'screenshare_error':'Screen-share tool failed, blocking real engagement',
-  'system_crash_customer':'Customer-side technical failure prevented engagement',
-  'wait_external_process':'Waiting on external action (IRS, bank, etc.)',
-  'customer_dissatisfied':'Customer expressed dissatisfaction with the resolution',
-  'customer_refuses_steps':'Customer declined the recommended steps',
-  'channel_switch_to_call':'Chat ended before resolving; customer told to call',
-  'customer_confused':'Customer expressed confusion about the outcome',
-  'billing_issue':'Billing-related issue requiring backend action',
-  'other':'Catch-all when none of the predefined categories match',
-  'form_unavailable':'Required tax form or document not yet available'
-};
-
-(function(){
-  var tb=document.getElementById('rmBody'); if(!tb) return;
-  var sorted=DR.slice().sort(function(a,b){return b.v-a.v;});
-  sorted.forEach(function(d){
+// ═══ TAG DETAIL TABLE ═══
+function buildTagTable(tasks){
+  var tb=document.getElementById('tagTableBody'); if(!tb)return; tb.innerHTML='';
+  var all=tasks.length?tasks:TASKS.slice().sort(function(a,b){return b.unres-a.unres;});
+  all.forEach(function(t){
+    var lc=LAYER_COLORS[t.layer]||'#888';
+    var frsColor=t.frs<20?'#C04000':t.frs<47?'#854F0B':'#0F6E56';
+    var vs=t.frs-47.0; var vsStr=(vs>=0?'+':'')+vs.toFixed(1)+'pp'; var vsColor=vs>=0?'#0F6E56':'#993C1D';
+    var barW=Math.min(100,t.frs/100*100); var barColor=t.frs<20?'#C04000':t.frs<47?'#854F0B':'#0F6E56';
     var tr=document.createElement('tr');
-    if(d.nc) tr.style.opacity='0.6';
-    var bkColor=d.bk==='A'?'#8B1A1A':d.bk==='B'?'#1A3A6B':d.bk==='C'?'#7B6000':'#444';
-    var pb=d.ceil>=3?'#e8e6f8':d.ceil>=1?'#f4f2fb':'#f0efe9';
-    var pc=d.ceil>=3?'#26215C':d.ceil>=1?'#534AB7':'#73726c';
-    var row=[];
-    row.push('<td><span style="font-family:monospace;font-size:10px;font-weight:600;color:'+bkColor+'">'+(d.nc?'⚠ ':'')+d.t+'</span></td>');
-    row.push('<td><span class="bdg" style="background:'+(BKG[d.bk]||'#f0efe9')+';color:'+(BKC[d.bk]||'#888')+'">'+d.bk+'</span></td>');
-    row.push('<td style="font-weight:600">'+d.v.toLocaleString()+'</td>');
-    row.push('<td style="color:'+(d.frs<15?'#993C1D':d.frs<30?'#854F0B':'#0F6E56')+';font-weight:600">'+d.frs+'%</td>');
-    row.push('<td>'+d.ctrl+'</td>');
-    row.push('<td>'+(d.ceil>0?'<span class="pill" style="background:'+pb+';color:'+pc+'">+'+d.ceil.toFixed(2)+'pp</span>':'—')+'</td>');
-    row.push('<td style="font-size:10px;color:#73726c;line-height:1.5">'+(WHY[d.t]||'—')+'</td>');
-    tr.innerHTML=row.join('');
+    tr.innerHTML='<td style="font-family:monospace;font-size:10px;font-weight:600">'+t.name+'</td>'+
+      '<td><span style="font-size:9px;font-weight:700;background:'+lc+'22;color:'+lc+';padding:2px 6px;border-radius:3px">'+t.layer.split(' ')[0]+'</span></td>'+
+      '<td><span style="font-size:9px;font-weight:700;background:'+(ABC[t.abc]||'#888')+'22;color:'+(ABC[t.abc]||'#888')+';padding:2px 6px;border-radius:3px">'+t.abc+'</span></td>'+
+      '<td style="text-align:right;font-weight:600">'+t.unres.toLocaleString()+'</td>'+
+      '<td style="text-align:right;font-weight:600">'+t.scored.toLocaleString()+'</td>'+
+      '<td style="text-align:right;font-weight:700;color:'+frsColor+'">'+t.frs+'%</td>'+
+      '<td><div class="frs-bar-bg"><div class="frs-bar-fill" style="width:'+barW+'%;background:'+barColor+'"></div></div></td>'+
+      '<td style="font-weight:600;font-size:10px;color:'+vsColor+'">'+vsStr+'</td>';
     tb.appendChild(tr);
   });
-})();
-
-// ═══════════════════════════════════════════════════
-// PARTNER x TAG CROSS-TAB DATA
-// ═══════════════════════════════════════════════════
-var PX_TAGS=['transfer_recommended','intuit_process_pending','escalation_or_assistance_required',
-  'customer_stopped_responding','no_customer_utterance','contact_ended_unexpectedly',
-  'misrouted_contact','policy_restriction','automated_process','customer_cannot_continue',
-  'voice_mail_or_system_message','external_support_recommended','product_limitation',
-  'known_issue','system_crash_agent'];
-
-var PX_SHORT=['transfer_rec','intuit_proc','escalation','cust_stopped','no_cust_utt',
-  'cont_ended','misrouted','policy_restr','automated','cust_cant_cont',
-  'voicemail','ext_support','prod_limit','known_issue','sys_crash'];
-
-var PX_VOL={
-  'FOUNDEVER':         [27567,15352,9061,6906,6537,5564,5959,5025,4978,4355,4025,3346,2993,3169,1386],
-  'CONCENTRIX':        [22245,14366,7741,8777,7889,5105,4850,4154,4201,3994,5029,3545,2355,1949,1531],
-  'ALORICA':           [6461, 2400, 1747,95,  317, 1178,951, 1314,643, 654, 238, 974, 701, 435, 527],
-  'TELEPERFORMANCE':   [5242, 2530, 2052,443, 649, 811, 962, 873, 602, 706, 588, 492, 541, 449, 227],
-  'WORKING SOLUTIONS': [2219, 2445, 1902,77,  235, 974, 461, 613, 604, 530, 247, 401, 328, 211, 352],
-  'INTUIT':            [919,  2025, 1401,68,  176, 308, 167, 175, 167, 236, 472, 187, 269, 185, 165],
-  'KMK VENTURES':      [1113, 206,  529, 16,  56,  193, 306, 110, 75,  154, 21,  68,  54,  38,  78]
-};
-var PX_TOTAL_VOL={
-  'FOUNDEVER':114179,'CONCENTRIX':105884,'ALORICA':20044,
-  'TELEPERFORMANCE':18512,'WORKING SOLUTIONS':13152,'INTUIT':7516,'KMK VENTURES':3328
-};
-var PX_FRS={
-  'FOUNDEVER':         [43.4,13.1,10.5,4.9, 0,   3.9, 2,   10,  7.6, 8.1, 0.1,15.9,22.9,14,  9.2],
-  'CONCENTRIX':        [53.1,13.7,10.4,4.7, 0,   3.8, 3,   10.2,6.8, 8.7, 0.2,11.1,21.4,13.3,6.9],
-  'ALORICA':           [44.2,16.1,10.1,9.5, 0.3, 3.2, 2.3, 10.6,11.2,12.6,0.8,16.5,24.2,15.7,5.6],
-  'TELEPERFORMANCE':   [50,  13.9,9.8, 5.1, 0,   3.6, 2.5, 9.3, 8.4, 9.6, 0,  14.9,22.6,11.3,7],
-  'WORKING SOLUTIONS': [65.1,18.4,12.4,8.3, 0,   5.2, 4,   14.3,8.5, 13.4,0.8,19.6,28.5,16.3,9.3],
-  'INTUIT':            [47.4,13.5,11.4,4.2, 0,   7.8, 1.2, 21.9,18.5,11.6,0.2,22.7,32.1,18.9,7.3],
-  'KMK VENTURES':      [44.9,13.4,8.2, 0,   0,   2,   3.8, 8.3, 5.1, 7.2, 0,  6.8, 23.9,13.6,7.1]
-};
-var PX_FRS_TOTAL={
-  'FOUNDEVER':20.8,'CONCENTRIX':23.6,'ALORICA':25.8,
-  'TELEPERFORMANCE':26.6,'WORKING SOLUTIONS':30.5,'INTUIT':19.6,'KMK VENTURES':24.7
-};
-
-var curPX='vol';
-var PARTNERS=['FOUNDEVER','CONCENTRIX','ALORICA','TELEPERFORMANCE','WORKING SOLUTIONS','INTUIT','KMK VENTURES'];
-
-function switchPX(mode,btn){
-  curPX=mode;
-  document.querySelectorAll('.pxtab').forEach(function(t){t.classList.remove('active');});
-  btn.classList.add('active');
-  renderPX();
 }
 
-function renderPX(){
-  var head=document.getElementById('pxHead');
-  var body=document.getElementById('pxBody');
-  if(!head||!body) return;
-
-  // Header
-  var hcells=['<th style="text-align:left;padding:5px 8px;border-bottom:1.5px solid #e0dfd8;font-size:10px;font-weight:600;color:#73726c;background:#fafaf8;position:sticky;left:0;min-width:140px">Partner</th>'];
-  PX_SHORT.forEach(function(t){
-    hcells.push('<th style="padding:5px 6px;border-bottom:1.5px solid #e0dfd8;font-size:9px;color:#73726c;text-align:right;max-width:70px;overflow:hidden;text-overflow:ellipsis">'+t+'</th>');
-  });
-  hcells.push('<th style="padding:5px 8px;border-bottom:1.5px solid #e0dfd8;font-size:10px;font-weight:600;color:#73726c;text-align:right">Total</th>');
-  head.innerHTML='<tr>'+hcells.join('')+'</tr>';
-
-  // Max for heat
-  var allVals=[];
-  PARTNERS.forEach(function(p){ PX_VOL[p].forEach(function(v){allVals.push(v);}); });
-  var maxV=Math.max.apply(null,allVals);
-
-  // Rows
-  body.innerHTML='';
-  PARTNERS.forEach(function(p){
+// ═══ RUBRIC TABLE ═══
+var TASK_ACTIONS={
+  'Routing & Handoff Gaps':'Routing E2E · Transfer quality · Case mgmt',
+  'Process & Dependency Bottlenecks':'Intuit Engineering · Ops process fix',
+  'Low-Signal / Data Quality':'IVR redesign · Channel workstream',
+  'Customer-Side Factors':'Channel strategy · Callback triggers',
+  'Product & Tool Limitations':'Engineering fix · Product roadmap',
+  'Expert Related':'Frontline coaching · QA · Expert AI Co-Pilot',
+};
+function buildRubricTable(){
+  var tb=document.getElementById('rubricTB'); if(!tb)return; tb.innerHTML='';
+  TASKS.slice().sort(function(a,b){return b.unres-a.unres;}).forEach(function(t){
+    var lc=LAYER_COLORS[t.layer]||'#888';
+    var frsColor=t.frs<20?'#C04000':t.frs<47?'#854F0B':'#0F6E56';
     var tr=document.createElement('tr');
-    var cells=['<td style="font-size:10px;font-weight:600;padding:5px 8px;border-bottom:0.5px solid #f0eee8;position:sticky;left:0;background:#fff;white-space:nowrap">'+p+'</td>'];
-    var data=curPX==='vol'?PX_VOL[p]:PX_FRS[p];
-    data.forEach(function(v,i){
-      var bg='';
-      if(curPX==='vol'){
-        var intensity=v/maxV;
-        var r=Math.round(255-(255-200)*intensity);
-        var g=Math.round(255-(255-50)*intensity);
-        var b=Math.round(255-(255-50)*intensity);
-        bg='background:rgb('+r+','+g+','+b+')';
-      } else {
-        bg=v<35?'background:#fce8df':v<50?'background:#fff8f0':'background:#f0faf5';
-      }
-      var txt=curPX==='vol'?v.toLocaleString():(v>0?v+'%':'—');
-      cells.push('<td style="padding:5px 6px;border-bottom:0.5px solid #f0eee8;text-align:right;font-size:10px;'+bg+'">'+txt+'</td>');
-    });
-    // Total column
-    var tot=curPX==='vol'?PX_TOTAL_VOL[p].toLocaleString():PX_FRS_TOTAL[p]+'%';
-    var totBg=curPX==='frs'?(PX_FRS_TOTAL[p]<35?'background:#fce8df':PX_FRS_TOTAL[p]<50?'background:#fff8f0':'background:#f0faf5'):'';
-    cells.push('<td style="padding:5px 8px;border-bottom:0.5px solid #f0eee8;text-align:right;font-weight:600;font-size:10px;'+totBg+'">'+tot+'</td>');
-    tr.innerHTML=cells.join('');
-    body.appendChild(tr);
+    tr.innerHTML='<td style="font-weight:600;font-family:monospace;font-size:10px">'+t.name+'</td>'+
+      '<td><span style="font-size:9px;font-weight:700;background:'+lc+'22;color:'+lc+';padding:2px 6px;border-radius:3px">'+t.layer+'</span></td>'+
+      '<td><span style="font-size:9px;font-weight:700;background:'+(ABC[t.abc]||'#888')+'22;color:'+(ABC[t.abc]||'#888')+';padding:2px 6px;border-radius:3px">'+t.abc+'</span></td>'+
+      '<td style="text-align:right;font-weight:600">'+t.unres.toLocaleString()+'</td>'+
+      '<td style="text-align:right;font-weight:700;color:'+frsColor+'">'+t.frs+'%</td>'+
+      '<td style="font-size:10px;color:#73726c">'+(TASK_ACTIONS[t.layer]||'—')+'</td>';
+    tb.appendChild(tr);
   });
+}
 
-  // Driver totals row for vol mode
-  if(curPX==='vol'){
-    var tr2=document.createElement('tr');
-    tr2.style.background='#f5f5f3';
-    var tcells=['<td style="font-size:10px;font-weight:600;padding:5px 8px;position:sticky;left:0;background:#f5f5f3">Driver Total</td>'];
-    var dtotals=[65766,39324,24433,16382,15859,14133,13656,12264,11270,10629,10620,9013,7241,6436,4266];
-    dtotals.forEach(function(v){
-      tcells.push('<td style="padding:5px 6px;text-align:right;font-size:10px;font-weight:600">'+v.toLocaleString()+'</td>');
+// ═══ TREND CHARTS ═══
+function buildTrend(mode){
+  var cv=document.getElementById('trendChart'); if(!cv)return; if(tInst){tInst.destroy();tInst=null;}
+  var ds=mode==='frs'
+    ?[{label:'Overall FRS%',data:WK_FRS,borderColor:'#1a1a2e',backgroundColor:'#1a1a2e15',fill:true,tension:.35,pointRadius:4,pointBackgroundColor:'#1a1a2e'},
+      {label:'Tier 1 FRS%',data:WK_T1, borderColor:'#534AB7',backgroundColor:'transparent',fill:false,tension:.35,pointRadius:4,borderDash:[4,3]}]
+    :[{label:'Overall unresolved',data:WK_U,  borderColor:'#D62728',backgroundColor:'#D6272815',fill:true,tension:.35,pointRadius:4},
+      {label:'Tier 1 unresolved',data:WK_T1U,borderColor:'#1F77B4',backgroundColor:'transparent',fill:false,tension:.35,pointRadius:4,borderDash:[4,3]}];
+  tInst=new Chart(cv,{type:'line',data:{labels:WK,datasets:ds},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ci){return ci.dataset.label+': '+(mode==='frs'?ci.raw+'%':ci.raw.toLocaleString());}}}},scales:{x:{ticks:{font:{size:8},color:'#73726c'},grid:{display:false}},y:{ticks:{callback:function(v){return mode==='frs'?v+'%':(v/1000).toFixed(0)+'k';},font:{size:9},color:'#73726c'},grid:{color:'rgba(115,114,108,.07)'}}}}});
+}
+function buildDaily(){
+  var cv=document.getElementById('dailyChart'); if(!cv)return; if(dInst){dInst.destroy();dInst=null;}
+  dInst=new Chart(cv,{type:'line',data:{labels:DLBL,datasets:[
+    {label:'Overall',data:DFRS,borderColor:'#1a1a2e',backgroundColor:'#1a1a2e15',fill:true,tension:.3,pointRadius:2},
+    {label:'Tier 1', data:DT1, borderColor:'#E8806A',backgroundColor:'transparent',fill:false,tension:.3,pointRadius:2,borderDash:[3,3]}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:8},color:'#73726c',maxRotation:45},grid:{display:false}},y:{min:43,max:56,ticks:{callback:function(v){return v+'%';},font:{size:8},color:'#73726c'},grid:{color:'rgba(115,114,108,.06)'}}}}});
+}
+function switchTrend(mode,btn){
+  curTrend=mode;
+  document.querySelectorAll('.ttab').forEach(function(t){t.classList.remove('on');});
+  btn.classList.add('on');
+  buildTrend(mode);
+}
+
+// ═══ PROBLEM SOLVING BOARD ═══
+function loadInits(){try{var s=localStorage.getItem('frs_inits_v4');if(s)initiatives=JSON.parse(s);}catch(e){initiatives=[];}}
+function saveInits(){try{localStorage.setItem('frs_inits_v4',JSON.stringify(initiatives));}catch(e){}}
+
+function calcLift(layer,eff){
+  var l=LAYERS.find(function(x){return x.name===layer;}); if(!l)return 0;
+  var gap=TARGET-l.frs; var share=l.scored/TOTAL_SCORED;
+  return +(share*gap*(eff/100)*0.5).toFixed(2);
+}
+
+function openModal(id){
+  editId=id||null;
+  var init=id?initiatives.find(function(i){return i.id===id;}):null;
+  document.getElementById('mTitle').textContent=init?'Edit: '+init.name:'New Initiative';
+  document.getElementById('mDel').style.display=init?'inline-block':'none';
+  document.getElementById('mId').value=id||'';
+  var f=function(el,v){var e=document.getElementById(el);if(e)e.value=v||'';};
+  f('mName',init&&init.name);f('mType',init?init.type:'Kaizen');
+  f('mLayer',init?init.layer:'Routing & Handoff Gaps');
+  f('mPhase',init?init.phase:'0');f('mTasks',init&&init.tasks);
+  f('mPartners',init?init.partners:'All');f('mOwner',init&&init.owner);
+  f('mDate',init&&init.date);f('mEff',init?init.eff:60);
+  f('mStatus',init?init.status:'active');
+  f('mProblem',init&&init.problem);f('mRoot',init&&init.root);
+  f('mAction',init&&init.action);f('mMetric',init&&init.metric);
+  var prog=init?init.progress||0:0;
+  var mp=document.getElementById('mProg');if(mp)mp.value=prog;
+  var pl=document.getElementById('progLbl');if(pl)pl.textContent=prog+'%';
+  renderLog(init?init.log||[]:[]); 
+  switchMTab('details',document.querySelector('.mtab'));
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open');editId=null;}
+function switchMTab(id,btn){
+  document.querySelectorAll('.mtab').forEach(function(t){t.classList.remove('active');});
+  document.querySelectorAll('.msec').forEach(function(s){s.classList.remove('active');});
+  if(btn)btn.classList.add('active');
+  var sec=document.getElementById('ms-'+id);if(sec)sec.classList.add('active');
+}
+function saveInit(){
+  var nameEl=document.getElementById('mName');if(!nameEl||!nameEl.value.trim()){alert('Name required');return;}
+  var layer=document.getElementById('mLayer').value;
+  var eff=parseFloat(document.getElementById('mEff').value)||60;
+  var lift=calcLift(layer,eff);
+  var id=editId||(Date.now()+'');
+  var existing=initiatives.find(function(i){return i.id===id;});
+  var log=existing?existing.log||[]:[];
+  var init={
+    id:id,name:document.getElementById('mName').value.trim(),
+    type:document.getElementById('mType').value,layer:layer,
+    phase:document.getElementById('mPhase').value,
+    tasks:document.getElementById('mTasks').value,
+    partners:document.getElementById('mPartners').value||'All',
+    owner:document.getElementById('mOwner').value,
+    date:document.getElementById('mDate').value,eff:eff,lift:lift,
+    progress:parseInt(document.getElementById('mProg').value)||0,
+    status:document.getElementById('mStatus').value,
+    problem:document.getElementById('mProblem').value,
+    root:document.getElementById('mRoot').value,
+    action:document.getElementById('mAction').value,
+    metric:document.getElementById('mMetric').value,
+    log:log,updated:new Date().toLocaleDateString()
+  };
+  if(editId){var idx=initiatives.findIndex(function(i){return i.id===editId;});if(idx>=0)initiatives[idx]=init;else initiatives.push(init);}
+  else initiatives.push(init);
+  saveInits();closeModal();renderKanban();renderGP();renderCorrTable();
+}
+function delInit(){
+  if(!editId||!confirm('Delete?'))return;
+  initiatives=initiatives.filter(function(i){return i.id!==editId;});
+  saveInits();closeModal();renderKanban();renderGP();renderCorrTable();
+}
+function renderLog(log){
+  var d=document.getElementById('logDisplay');if(!d)return;
+  d.innerHTML=log.length?log.slice().reverse().map(function(e){return '<div class="log-entry"><div class="log-date">'+e.date+'</div><div>'+e.text+'</div></div>';}).join(''):'<div style="font-size:11px;color:#73726c;text-align:center;padding:12px">No updates yet.</div>';
+}
+function addLog(){
+  var input=document.getElementById('logInput');if(!input||!input.value.trim())return;
+  var id=document.getElementById('mId').value;
+  var init=initiatives.find(function(i){return i.id===id;});if(!init)return;
+  if(!init.log)init.log=[];
+  init.log.push({date:new Date().toLocaleDateString(),text:input.value.trim()});
+  saveInits();input.value='';renderLog(init.log);
+}
+function filterPS(val,btn){
+  curPSF=val;
+  document.querySelectorAll('.psf').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  renderKanban();
+}
+function renderKanban(){
+  var cols=[[],[],[],[]];
+  var filtered=curPSF==='ALL'?initiatives:initiatives.filter(function(i){return i.layer===curPSF;});
+  filtered.forEach(function(init){cols[parseInt(init.phase)||0].push(init);});
+  [0,1,2,3].forEach(function(ph){
+    var col=document.getElementById('col'+ph),cnt=document.getElementById('cnt'+ph);
+    if(!col)return;col.innerHTML='';if(cnt)cnt.textContent=cols[ph].length;
+    cols[ph].forEach(function(init){
+      var lc=LAYER_COLORS[init.layer]||'#888';var prog=init.progress||0;
+      var sc={active:'#f0faf5',paused:'#fff8f0',blocked:'#fce8df',complete:'#EDE9FF'}[init.status||'active'];
+      var tc={active:'#0F6E56',paused:'#854F0B',blocked:'#993C1D',complete:'#534AB7'}[init.status||'active'];
+      var card=document.createElement('div');card.className='kcard';card.style.borderLeftColor=lc;
+      card.innerHTML='<div class="kcard-title">'+init.name+'</div>'+
+        '<div class="kcard-meta"><span class="ktag" style="background:'+lc+'22;color:'+lc+'">'+init.layer.split(' ')[0]+'</span>'+
+        '<span class="ktag" style="background:#f0efe9;color:#73726c">'+init.type+'</span>'+
+        '<span class="ktag" style="background:'+sc+';color:'+tc+'">'+init.status+'</span></div>'+
+        '<div class="kcard-lift">+'+init.lift.toFixed(2)+'pp projected</div>'+
+        '<div style="font-size:9px;color:#73726c">'+(init.owner||'No owner')+(init.date?' · '+init.date:'')+'</div>'+
+        '<div><div style="font-size:8px;color:#73726c;margin-top:4px">'+prog+'%</div>'+
+        '<div class="kprog-bg"><div class="kprog-fill" style="width:'+prog+'%"></div></div></div>';
+      card.onclick=function(){openModal(init.id);};
+      col.appendChild(card);
     });
-    tcells.push('<td style="padding:5px 8px;text-align:right;font-weight:700;font-size:10px">282,615</td>');
-    tr2.innerHTML=tcells.join('');
-    body.appendChild(tr2);
+  });
+}
+function renderGP(){
+  var cv=document.getElementById('gpChart');if(!cv)return;if(gpI){gpI.destroy();gpI=null;}
+  var active=initiatives.filter(function(i){return i.status!=='complete';});
+  var totalLift=active.reduce(function(s,i){return s+i.lift;},0);
+  var projFRS=+(BASE_FRS+totalLift).toFixed(1);
+  var el=function(id,v){var e=document.getElementById(id);if(e)e.textContent=v;};
+  el('gpLift','+'+totalLift.toFixed(1)+'pp');el('gpFRS',projFRS+'%');
+  el('gpGap',(TARGET-projFRS).toFixed(1)+'pp');el('gpCnt',active.length);
+  if(active.length===0){
+    gpI=new Chart(cv,{type:'bar',data:{labels:['Baseline 47.0%','Add initiatives','To be fulfilled by other teams'],datasets:[{data:[[0,47],[47,47],[47,79]],backgroundColor:['#1a1a2e','#f0efe9','#F0997B'],borderWidth:1,borderRadius:3,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},states:{x:{ticks:{font:{size:10},color:'#73726c'},grid:{display:false}},y:{min:0,max:85,ticks:{callback:function(v){return v+'%';},font:{size:10}},grid:{color:'rgba(115,114,108,.07)'}}}}});
+    return;
   }
+  var labels=['Baseline\n47.0%'],floats=[[0,BASE_FRS]],colors=['#1a1a2e'],run=BASE_FRS;
+  active.forEach(function(init){
+    var lc=LAYER_COLORS[init.layer]||'#888';
+    labels.push(init.name.length>14?init.name.substring(0,14)+'…':init.name);
+    floats.push([run,run+init.lift]);colors.push(lc+'CC');run=+(run+init.lift).toFixed(2);
+  });
+  labels.push('Projected\n'+run.toFixed(1)+'%');floats.push([0,run]);colors.push('#0F6E56CC');
+  labels.push('Other teams\ngap');floats.push([run,TARGET]);colors.push('#F0997BCC');
+  labels.push('Goal\n79.0%');floats.push([0,TARGET]);colors.push('#1a1a2eCC');
+  gpI=new Chart(cv,{type:'bar',data:{labels:labels,datasets:[{data:floats,backgroundColor:colors,borderColor:colors.map(function(col){return col.replace('CC','');}),borderWidth:1.5,borderRadius:3,borderSkipped:false}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{title:function(i){return labels[i[0].dataIndex].replace(/\n/g,' ');},label:function(ci){var v=ci.raw;if(!Array.isArray(v))return'';var d=v[1]-v[0];return(d>0?'+':'')+d.toFixed(2)+'pp \u2192 '+v[1].toFixed(1)+'%';}}}},
+  scales:{x:{ticks:{font:{size:9},color:'#73726c'},grid:{display:false}},y:{min:40,max:85,ticks:{callback:function(v){return v+'%';},font:{size:10},color:'#73726c'},grid:{color:'rgba(115,114,108,.07)'}}}},
+  plugins:[{id:'gplbl',afterDatasetsDraw:function(chart){
+    var ctx=chart.ctx,meta=chart.getDatasetMeta(0),yS=chart.scales.y;ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';
+    floats.forEach(function(item,i){
+      var bar=meta.data[i];if(!bar)return;var isF=Array.isArray(item)&&item[0]>0;var d=Array.isArray(item)?item[1]-item[0]:0;
+      var midY=(yS.getPixelForValue(item[0])+yS.getPixelForValue(item[1]))/2;var barH=Math.abs(yS.getPixelForValue(item[0])-yS.getPixelForValue(item[1]));
+      if(isF&&d>0&&barH>10){ctx.font='bold 9px system-ui';ctx.fillStyle='#2c2c2a';ctx.fillText('+'+d.toFixed(2)+'pp',bar.x,yS.getPixelForValue(item[1])-12);}
+      if(!isF&&barH>18){ctx.font='bold 10px system-ui';ctx.fillStyle='#fff';ctx.fillText(item[1].toFixed(1)+'%',bar.x,midY);}
+    });
+    ctx.setLineDash([5,4]);ctx.strokeStyle='rgba(180,50,50,.4)';ctx.lineWidth=1.5;
+    var yT=yS.getPixelForValue(79);ctx.beginPath();ctx.moveTo(chart.chartArea.left,yT);ctx.lineTo(chart.chartArea.right,yT);ctx.stroke();
+    ctx.font='8px system-ui';ctx.fillStyle='rgba(180,50,50,.7)';ctx.textAlign='right';ctx.setLineDash([]);
+    ctx.fillText('79% goal',chart.chartArea.right-4,yT-5);ctx.restore();
+  }}]});
 }
-renderPX();
-
-// ═══════════════════════════════════════════════════
-// T1 PROBLEM AREA TABLE
-// ═══════════════════════════════════════════════════
-var PA_DATA=[
-  {name:'(blank / unmapped)',         scored:182968,resolved:83915,unres:99053,frs:45.9,pct:'35.0%',
-   drivers:['transfer_recommended:21872','intuit_process_pending:16496','voice_mail:8572','escalation:8457','contact_ended:4857','misrouted:4593']},
-  {name:'Misrouted Contact',          scored:42971, resolved:15372,unres:27599,frs:35.8,pct:'9.8%',
-   drivers:['transfer_recommended:12467','misrouted_contact:3753','intuit_process:1670','policy_restriction:1359','escalation:1343','ext_support:1141']},
-  {name:'Chat',                       scored:9442,  resolved:305,  unres:9137, frs:3.2, pct:'3.2%',
-   drivers:['no_cust_utterance:5311','cust_stopped:3049','transfer_rec:151','policy_restr:135','cont_ended:123','cust_cant_cont:92']},
-  {name:'Disconnect/Ghost Call',      scored:10195, resolved:1824, unres:8371, frs:17.9,pct:'3.0%',
-   drivers:['no_cust_utterance:2321','cust_stopped:1285','transfer_rec:908','cont_ended:622','policy_restr:501','escalation:427']},
-  {name:'Billing',                    scored:20299, resolved:12440,unres:7859, frs:61.3,pct:'2.8%',
-   drivers:['transfer_rec:1883','intuit_proc:1247','escalation:877','automated_proc:667','cont_ended:381','policy_restr:378']},
-  {name:'Unable to Reach Support',    scored:9751,  resolved:2633, unres:7118, frs:27.0,pct:'2.5%',
-   drivers:['policy_restriction:1518','transfer_rec:1262','intuit_proc:505','cust_stopped:469','cust_cant_cont:433','misrouted:422']},
-  {name:'Payroll',                    scored:21383, resolved:14352,unres:7031, frs:67.1,pct:'2.5%',
-   drivers:['transfer_rec:1585','intuit_proc:1070','escalation:808','cont_ended:425','known_issue:384','policy_restr:329']},
-  {name:'Banking',                    scored:15359, resolved:8468, unres:6891, frs:55.1,pct:'2.4%',
-   drivers:['transfer_rec:2178','intuit_proc:1236','escalation:754','automated_proc:491','cont_ended:413','policy_restr:385']},
-  {name:'Subscription/Svc Mgmt',     scored:15574, resolved:9833, unres:5741, frs:63.1,pct:'2.0%',
-   drivers:['transfer_rec:1654','intuit_proc:987','escalation:623','policy_restr:445','cont_ended:368','automated_proc:312']},
-  {name:'Customers',                  scored:11908, resolved:6445, unres:5463, frs:54.1,pct:'1.9%',
-   drivers:['transfer_rec:1823','intuit_proc:876','escalation:601','policy_restr:398','cont_ended:321','automated_proc:287']},
-  {name:'Disconnect',                 scored:6737,  resolved:1342, unres:5395, frs:19.9,pct:'1.9%',
-   drivers:['no_cust_utterance:1876','cust_stopped:1102','transfer_rec:721','cont_ended:498','policy_restr:389','escalation:312']},
-  {name:'Ghost Call',                 scored:6120,  resolved:1123, unres:4997, frs:18.3,pct:'1.8%',
-   drivers:['no_cust_utterance:1876','cust_stopped:1102','transfer_rec:721','cont_ended:498','policy_restr:389','escalation:312']},
-  {name:'Business Information',       scored:9080,  resolved:4827, unres:4253, frs:53.2,pct:'1.5%',
-   drivers:['transfer_rec:1243','intuit_proc:765','escalation:543','policy_restr:389','cont_ended:298','automated_proc:221']},
-  {name:'Chose DIY',                  scored:6631,  resolved:2585, unres:4046, frs:39.0,pct:'1.4%',
-   drivers:['transfer_rec:987','intuit_proc:654','escalation:443','cont_ended:312','policy_restr:278','automated_proc:198']},
-  {name:'Install/Update Product',     scored:10917, resolved:6959, unres:3958, frs:63.7,pct:'1.4%',
-   drivers:['transfer_rec:876','intuit_proc:543','escalation:398','cont_ended:287','policy_restr:234','automated_proc:187']},
-];
-
-(function(){
-  var tb=document.getElementById('paBody'); if(!tb) return;
-  var maxU=PA_DATA[0].unres;
-  PA_DATA.forEach(function(pa){
+function renderCorrTable(){
+  var tb=document.getElementById('corrTB');if(!tb)return;tb.innerHTML='';
+  var empty=document.getElementById('corrEmpty');
+  if(initiatives.length===0){if(empty)empty.style.display='block';return;}
+  if(empty)empty.style.display='none';
+  initiatives.forEach(function(init){
+    var lc=LAYER_COLORS[init.layer]||'#888';var ph=parseInt(init.phase)||0;var prog=init.progress||0;
+    var tc={active:'#0F6E56',paused:'#854F0B',blocked:'#993C1D',complete:'#534AB7'}[init.status||'active'];
     var tr=document.createElement('tr');
-    tr.style.cursor='pointer';
-    var bw=Math.round(pa.unres/maxU*100);
-    var fc=pa.frs<35?'#993C1D':pa.frs<50?'#854F0B':'#0F6E56';
-    var driverStr=pa.drivers.map(function(d){
-      var parts=d.split(':');
-      return '<span style="background:#f0efe9;border-radius:3px;padding:1px 5px;margin:1px;display:inline-block;font-size:9px">'+parts[0]+' <strong>'+parseInt(parts[1]).toLocaleString()+'</strong></span>';
-    }).join('');
-    var row=[];
-    row.push('<td style="font-size:11px;font-weight:500;padding:6px 8px;border-bottom:0.5px solid #f0eee8">'+pa.name+'</td>');
-    row.push('<td style="padding:6px 8px;border-bottom:0.5px solid #f0eee8;text-align:right">'+pa.scored.toLocaleString()+'</td>');
-    row.push('<td style="padding:6px 8px;border-bottom:0.5px solid #f0eee8;font-weight:600;text-align:right">'+pa.unres.toLocaleString()+'</td>');
-    row.push('<td style="padding:6px 8px;border-bottom:0.5px solid #f0eee8;color:'+fc+';font-weight:600;text-align:right">'+pa.frs+'%</td>');
-    row.push('<td style="padding:6px 8px;border-bottom:0.5px solid #f0eee8;text-align:right">'+pa.pct+'</td>');
-    row.push('<td style="padding:6px 8px;border-bottom:0.5px solid #f0eee8;min-width:120px"><div class="bbg"><div class="bfill" style="width:'+bw+'%;background:#534AB7;opacity:.6"></div></div></td>');
-    row.push('<td style="padding:6px 8px;border-bottom:0.5px solid #f0eee8;line-height:1.8">'+driverStr+'</td>');
-    tr.innerHTML=row.join('');
+    tr.innerHTML='<td style="font-weight:600;font-size:11px">'+init.name+'</td>'+
+      '<td style="font-size:10px;color:#73726c">'+init.type+'</td>'+
+      '<td><span style="font-size:9px;font-weight:700;background:'+lc+'22;color:'+lc+';padding:2px 7px;border-radius:3px">'+init.layer+'</span></td>'+
+      '<td style="font-size:10px;color:#73726c">'+init.tasks+'</td>'+
+      '<td style="font-size:10px">'+init.owner+'</td>'+
+      '<td><span style="font-size:9px;font-weight:700;background:'+PHASE_COLORS[ph]+'22;color:'+PHASE_COLORS[ph]+';padding:2px 7px;border-radius:3px">'+PHASES[ph]+'</span></td>'+
+      '<td><div style="background:#f0eee8;border-radius:3px;height:5px"><div style="height:5px;border-radius:3px;background:#0F6E56;width:'+prog+'%"></div></div><div style="font-size:9px;color:#73726c">'+prog+'%</div></td>'+
+      '<td style="font-weight:700;color:#0F6E56;text-align:right">+'+init.lift.toFixed(2)+'pp</td>'+
+      '<td style="font-size:10px;color:#73726c">'+(init.date||'—')+'</td>'+
+      '<td><button onclick="openModal(\''+init.id+'\')" style="padding:3px 9px;font-size:10px;background:#1a1a2e;color:#fff;border:none;border-radius:4px;cursor:pointer">Edit</button></td>';
     tb.appendChild(tr);
   });
-})();
+}
+function applyData(){
+  var msg=document.getElementById('dataMsg');if(msg)msg.textContent='Data feed will update charts when weekly data is provided in CSV format.';
+}
+
+window.onload=function(){
+  loadInits();
+  buildThemeBoxes();
+  buildTrend('frs');
+  buildDaily();
+  renderAll();
+  buildRubricTable();
+  renderGP();
+  renderKanban();
+  renderCorrTable();
+};
 
 </script>
 </body>
